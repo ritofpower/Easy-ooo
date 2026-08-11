@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<!--
+  EZD6 + TRIPLE-O ผู้ช่วย GM (ฉบับภาษาไทย)
+  ดัดแปลงกลไกจาก EZD6 (Vagabond Cavalier Studios) และ
+  Triple-O — The Player Character Emulator v1.0.2 โดย Cezar Capacle (Critical Kit Ltd., CC BY-SA 4.0)
+  ตารางจุดประกาย/ตารางเฉพาะทางของ Triple-O นำมาจากฉบับแปลไทยเดิมของผู้ใช้ (ritofpower)
+  ไฟล์นี้เป็นเครื่องมือช่วยเล่น ไม่ใช่สำเนาคู่มือ เนื้อหากลไก/เลขสถิติถูกย่อและแปลใหม่
+-->
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14160F">
+<title>EZD6 × Triple-O · ผู้ช่วย GM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Mitr:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E3E5DF; --paper2:#D5D8D0; --ink:#14160F; --soft:#5E635A;
+  --blue:#2540D6; --pink:#FF3D6E; --green:#2F7D4F; --green2:#E4EFE7;
+  --line:3px; --pad:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:'IBM Plex Sans Thai',system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%;
+  padding-bottom:calc(80px + env(safe-area-inset-bottom));
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(var(--ink) .5px,transparent .6px);
+  background-size:4px 4px;opacity:.07;
+}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:var(--pad)}
+button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.top{
+  position:sticky;top:0;z-index:5;background:var(--ink);color:var(--paper);
+  padding:9px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.brand{font-family:'Mitr',sans-serif;font-weight:600;font-size:19px;line-height:1.1;letter-spacing:.01em;
+  text-shadow:2px 0 0 var(--pink),-2px 0 0 var(--blue);}
+.brand-sub{font-size:11px;color:#9EA396;letter-spacing:.02em}
+
+.nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--paper);border-top:var(--line) solid var(--ink);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav button{background:none;border:0;border-right:var(--line) solid var(--ink);
+  font-family:'Mitr',sans-serif;font-weight:500;font-size:12px;padding:11px 2px;line-height:1.2;}
+.nav button:last-child{border-right:0}
+.nav button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+
+.card{background:var(--paper);border:var(--line) solid var(--ink);box-shadow:5px 5px 0 var(--ink);margin-bottom:18px}
+.card>h2{margin:0;padding:9px 12px;background:var(--ink);color:var(--paper);
+  font-family:'Mitr',sans-serif;font-weight:500;font-size:16px;letter-spacing:.02em;
+  display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card.ez>h2{background:var(--green)}
+.card>h2 .en{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9EA396;letter-spacing:.08em}
+.card-body{padding:12px}
+
+.btn{font-family:'Mitr',sans-serif;font-weight:500;background:var(--paper);
+  border:var(--line) solid var(--ink);box-shadow:3px 3px 0 var(--ink);
+  padding:9px 14px;transition:transform .06s ease,box-shadow .06s ease;}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn.main{background:var(--ink);color:var(--paper)}
+.btn.main.ez{background:var(--green);border-color:var(--green)}
+.btn.wide{width:100%}
+.btn.sm{padding:6px 10px;font-size:13px;box-shadow:2px 2px 0 var(--ink)}
+.btn.sm:active{transform:translate(2px,2px)}
+.btn.xs{padding:3px 8px;font-size:12px;box-shadow:2px 2px 0 var(--ink)}
+.btn.on{background:var(--green);color:#fff;border-color:var(--green)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grow{flex:1 1 auto;min-width:0}
+.hint{font-size:13px;color:var(--soft);margin:6px 0 0}
+.fld-label{font-family:'Mitr',sans-serif;font-weight:500;font-size:13px}
+
+label.fld{display:block;margin-bottom:10px}
+label.fld>span{display:block;font-family:'Mitr',sans-serif;font-weight:500;font-size:13px;margin-bottom:3px}
+input[type=text],input[type=number],textarea,select{
+  width:100%;background:var(--paper);border:var(--line) solid var(--ink);padding:8px 10px;border-radius:0;}
+textarea{resize:vertical;line-height:1.6}
+select{-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 18px) center,calc(100% - 13px) center;background-size:5px 5px,5px 5px;background-repeat:no-repeat;}
+::placeholder{color:#9AA093}
+
+/* ---------- ชิป ---------- */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{font-family:'Mitr',sans-serif;font-weight:500;font-size:14px;background:var(--paper);
+  border:var(--line) solid var(--ink);padding:6px 12px;}
+.chip[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+
+/* ---------- แถวรายการ (ลิสต์แบบลบ/เพิ่มได้) ---------- */
+.lrow{display:flex;align-items:stretch;border:var(--line) solid var(--ink);margin-bottom:8px}
+.lrow textarea.lval{border:0;flex:1 1 auto;min-width:0;min-height:38px;background:none;padding:8px;resize:none;overflow:hidden;line-height:1.45}
+.lrow .ldel{flex:0 0 34px;background:none;border:0;border-left:var(--line) solid var(--ink);font-size:17px}
+.lrow .ldel:active{background:var(--pink);color:#fff}
+
+/* ---------- คุณลักษณะ (Triple-O trait) ---------- */
+.trait{display:flex;align-items:stretch;border:var(--line) solid var(--ink);margin-bottom:8px}
+.trait .st{flex:0 0 32px;border-right:var(--line) solid var(--ink);background:var(--paper2);display:grid;place-items:center}
+.sw{display:inline-block;width:19px;height:19px;border:2px solid var(--ink)}
+.sw.empty{border-style:dashed;background:transparent}
+.sw.def{background:var(--soft)}
+.sw.prom{background:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.sw.tmp{background:repeating-linear-gradient(45deg,var(--ink) 0 2px,transparent 2px 5px)}
+.trait textarea.tx{border:0;flex:1 1 auto;width:auto;min-width:0;min-height:38px;background:none;padding:8px;resize:none;overflow:hidden;line-height:1.45}
+.trait input.cat{border:0;border-left:var(--line) solid var(--ink);flex:0 0 40px;min-width:0;background:none;padding:8px 2px;
+  font-family:'IBM Plex Mono',monospace;font-size:16px;text-align:center;text-transform:uppercase}
+.trait .del{flex:0 0 34px;background:none;border:0;border-left:var(--line) solid var(--ink);font-size:17px}
+.trait .del:active{background:var(--pink);color:#fff}
+.legend{font-size:13px;color:var(--soft);display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.legend span{display:flex;gap:6px;align-items:center}
+
+/* ---------- แถบ HP ---------- */
+.hpbar{margin:6px 0 10px}
+.hpbar-track{border:2px solid var(--ink);height:14px;background:var(--paper2)}
+.hpbar-fill{height:100%;background:var(--ink)}
+.hpbar-fill.green{background:var(--green)}
+.hpbar-fill.pink{background:var(--pink)}
+.hpbar-row{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.hpnum{font-family:'IBM Plex Mono',monospace;font-size:15px;min-width:64px;text-align:center}
+.mini-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+.mini-row .knum{font-family:'IBM Plex Mono',monospace;font-size:16px;min-width:18px;text-align:center}
+.wealth-row{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13px}
+.radio{display:flex;align-items:center;gap:5px}
+
+/* ---------- การ์ดในสนามรบ ---------- */
+.ecard{border:var(--line) solid var(--ink);background:var(--paper);margin-bottom:12px;padding:10px}
+.ecard.defeated{opacity:.5}
+.ecard.defeated .hpnum{text-decoration:line-through}
+.ecard-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.ecard-head b{font-family:'Mitr',sans-serif;font-weight:500;font-size:15px;flex:1 1 auto}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--paper2);border:2px solid var(--ink);padding:2px 6px}
+.tag.pink{border-color:var(--pink);color:var(--pink)}
+.csummary{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.csummary .tag{font-size:11px;padding:4px 7px}
+.ecard .del{background:none;border:2px solid var(--ink);width:26px;height:26px;font-size:15px;line-height:1}
+.ecard .del:active{background:var(--pink);color:#fff;border-color:var(--pink)}
+.enote{font-size:13px;color:var(--soft);margin:2px 0 6px}
+.dead-tag{font-family:'Mitr',sans-serif;font-size:12px;color:var(--pink);text-align:center;margin:2px 0 0}
+
+/* ---------- เพิ่มศัตรู / ตัวเลือกสัตว์ประหลาด ---------- */
+.addform{border:2px dashed var(--soft);padding:10px;margin:10px 0}
+.addform .row{margin-bottom:8px}
+.brow{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;
+  background:var(--paper);border:2px solid var(--ink);border-top:0;padding:8px 10px;font-size:14px}
+.brow:first-of-type{border-top:2px solid var(--ink)}
+.brow:active{background:var(--green2)}
+.bname{font-family:'Mitr',sans-serif;font-weight:500}
+.bstat{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--soft);flex:0 0 auto;margin-left:8px;text-align:right}
+.bcat-h{font-family:'Mitr',sans-serif;font-weight:500;font-size:13px;background:var(--paper2);border:2px solid var(--ink);
+  border-bottom:0;padding:6px 10px;margin-top:10px}
+
+/* ---------- ลูกเต๋า ---------- */
+.dice-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;margin:10px 0 12px}
+.die{width:56px;height:56px;flex:none;background:var(--paper);border:var(--line) solid var(--ink);
+  box-shadow:4px 4px 0 var(--ink);display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:6px;gap:2px;}
+.die.pick{border-color:var(--green);box-shadow:4px 4px 0 var(--green)}
+.die.roll{animation:shake .28s ease}
+@keyframes shake{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(-3px,2px) rotate(-6deg)}
+  60%{transform:translate(3px,-2px) rotate(5deg)}100%{transform:translate(0,0) rotate(0)}}
+.pip{width:10px;height:10px;background:var(--ink);border-radius:50%;align-self:center;justify-self:center}
+
+.band{display:grid;grid-template-columns:repeat(6,1fr);border:var(--line) solid var(--ink);margin:2px 0 12px}
+.band div{padding:7px 2px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:13px;
+  border-right:2px solid var(--ink);background:var(--paper)}
+.band div:last-child{border-right:0}
+.band div.odd.on{background:var(--pink);color:#fff}
+.band div.opt.on{background:var(--blue);color:#fff}
+.band div.obv.on{background:var(--ink);color:var(--paper)}
+
+.stamp-wrap{text-align:center;padding:6px 0 2px}
+.stamp{display:inline-block;transform:rotate(-2.5deg);border:4px solid var(--ink);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:22px;line-height:1.2;padding:3px 16px}
+.stamp small{display:block;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:10px;letter-spacing:.14em}
+.stamp.odd{border-color:var(--pink);color:var(--pink)}
+.stamp.opt{border-color:var(--blue);color:var(--blue)}
+.stamp.obv{border-color:var(--ink);color:var(--ink)}
+.stamp.crit{border-color:var(--green);color:var(--green)}
+.stamp-note{margin:10px 0 0;font-size:16px;text-align:center;min-height:1.6em}
+.flag{margin:12px 0 0;border:var(--line) solid var(--pink);padding:9px 11px;font-size:14px;
+  display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.flag b{font-family:'Mitr',sans-serif;font-weight:500;color:var(--pink)}
+.flag.g{border-color:var(--green)}
+.flag.g b{color:var(--green)}
+
+/* ---------- ส่วนควบคุมทอย EZD6 ---------- */
+.seg{display:grid;border:var(--line) solid var(--ink);box-shadow:4px 4px 0 var(--ink);margin-bottom:18px}
+.seg.n2{grid-template-columns:1fr 1fr}
+.seg.n3{grid-template-columns:repeat(3,1fr)}
+.seg button{background:var(--paper);border:0;border-right:var(--line) solid var(--ink);padding:10px 4px;
+  font-family:'Mitr',sans-serif;font-weight:500;font-size:13px}
+.seg button:last-child{border-right:0}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.seg.ezmode button[aria-selected="true"]{background:var(--green)}
+.segn{display:flex;gap:6px;flex-wrap:wrap}
+.segn button{background:var(--paper);border:2px solid var(--ink);padding:6px 9px;font-size:13px;font-family:'Mitr',sans-serif}
+.segn button.sel{background:var(--green);color:#fff;border-color:var(--green)}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper b{font-family:'IBM Plex Mono',monospace;font-size:16px;min-width:14px;text-align:center}
+
+/* ---------- ตาราง ---------- */
+.tbl{display:flex;align-items:stretch;border:var(--line) solid var(--ink);margin-bottom:12px;background:var(--paper)}
+.tbl .nm{flex:0 0 92px;background:var(--paper2);border-right:var(--line) solid var(--ink);padding:8px;
+  font-family:'Mitr',sans-serif;font-weight:500;font-size:14px;line-height:1.25;display:flex;flex-direction:column;justify-content:center}
+.tbl .nm em{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:9px;letter-spacing:.1em;color:var(--soft);text-transform:uppercase}
+.tbl .res{flex:1 1 auto;min-width:0;background:none;border:0;text-align:left;padding:8px 10px;display:flex;gap:10px;align-items:center}
+.tbl .res .code{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--blue);flex:none}
+.tbl .res .txt{min-width:0}
+.tbl .res .th{display:block;font-weight:500;line-height:1.35;overflow-wrap:anywhere}
+.tbl .res .en{display:block;font-size:11px;color:var(--soft);letter-spacing:.02em}
+.tbl .res .empty{color:#9AA093;font-weight:400}
+.tbl .add{flex:0 0 46px;background:var(--paper);border:0;border-left:var(--line) solid var(--ink);font-family:'Mitr',sans-serif;font-size:20px;line-height:1}
+.tbl .add:active{background:var(--ink);color:var(--paper)}
+
+/* ---------- อ้างอิง (details/summary) ---------- */
+details.ref{border:var(--line) solid var(--ink);margin-bottom:14px;background:var(--paper)}
+details.ref>summary{cursor:pointer;list-style:none;padding:10px 12px;font-family:'Mitr',sans-serif;font-weight:500;
+  background:var(--paper2);display:flex;justify-content:space-between;align-items:center}
+details.ref>summary::-webkit-details-marker{display:none}
+details.ref>summary::after{content:'▾';font-size:12px}
+details.ref[open]>summary::after{content:'▴'}
+details.ref .rc-body{padding:12px;font-size:14px}
+details.ref .rc-body p{margin:4px 0}
+details.ref .rc-body b{font-family:'Mitr',sans-serif}
+.refline{margin:5px 0;padding-left:14px;position:relative}
+.refline::before{content:'•';position:absolute;left:0}
+
+#c-details,.autosize{resize:none;overflow:hidden;min-height:46px}
+#pad{min-height:320px;font-size:15px}
+footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) solid var(--ink);padding:14px 0 4px;margin-top:6px}
+.hide{display:none !important}
+#loading{position:fixed;inset:0;background:var(--paper);z-index:99;display:flex;align-items:center;justify-content:center;
+  font-family:'Mitr',sans-serif;font-size:16px}
+
+/* ---------- ปุ่มลอยทอยเต๋า + drawer ---------- */
+.dice-fab{position:fixed;top:12px;right:12px;z-index:20;width:58px;height:58px;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.d20-shape{display:flex;align-items:center;justify-content:center;width:100%;height:100%;
+  background:var(--green);color:#fff;border:3px solid var(--ink);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  box-shadow:4px 4px 0 var(--ink);transition:transform .06s ease,box-shadow .06s ease}
+.dice-fab:active .d20-shape{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.d20-num{font-family:'Mitr',sans-serif;font-weight:600;font-size:20px;transform:translateY(-1px)}
+.dice-overlay{position:fixed;inset:0;z-index:18;background:rgba(20,22,15,.6);display:flex;align-items:flex-end;justify-content:center}
+.dice-drawer{position:relative;z-index:1;width:100%;max-width:760px;max-height:88vh;overflow-y:auto;
+  background:var(--paper);border-top:var(--line) solid var(--ink);box-shadow:0 -6px 0 var(--ink);
+  padding:10px 14px calc(20px + env(safe-area-inset-bottom));animation:drawerup .2s ease}
+@keyframes drawerup{from{transform:translateY(24px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.drawer-handle{width:42px;height:5px;background:var(--soft);border-radius:3px;margin:2px auto 10px}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+@media (min-width:620px){.tbl .nm{flex-basis:120px;font-size:15px}.brand{font-size:23px}.nav button{font-size:13px}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div id="loading">กำลังโหลด…</div>
+
+<header class="top">
+  <div class="brand">EZD6 × TRIPLE-O</div>
+  <div class="brand-sub">ผู้ช่วย GM ฉบับภาษาไทย — ติดตามปาร์ตี้ไปทำภารกิจ</div>
+</header>
+
+<main class="wrap">
+
+<!-- ============================================================ แท็บ: ตัวละคร ============================================================ -->
+<section id="tab-chars">
+  <div class="chips" id="char-chips"></div>
+
+  <div class="card ez"><h2>ตัวละคร <span class="en">HERO</span></h2><div class="card-body">
+    <label class="fld"><span>ชื่อ</span><input type="text" id="c-name" placeholder="เช่น ไบรอัน นักรบ"></label>
+    <div class="csummary" id="c-summary"></div>
+  </div></div>
+
+  <div class="card ez"><h2>สถานะ <span class="en">STATUS</span></h2><div class="card-body" id="c-status-wrap"></div></div>
+
+  <div class="card"><h2>คุณลักษณะ (Traits) <span class="en">TRIPLE-O</span></h2><div class="card-body">
+    <div id="trait-list"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn sm" id="btn-add-trait">＋ เพิ่มคุณลักษณะ</button>
+    </div>
+    <div class="legend">
+      <span><i class="sw empty"></i>ว่าง</span><span><i class="sw def"></i>ปกติ</span>
+      <span><i class="sw prom"></i>เด่น</span><span><i class="sw tmp"></i>ชั่วคราว</span>
+    </div>
+    <p class="hint">แตะช่องสถานะเพื่อสลับ · ช่องขวาใส่หมวดสั้นๆ เช่น CL คลาส, PR นิสัย, BG ภูมิหลัง, MT แรงจูงใจ, CN สภาพ</p>
+  </div></div>
+
+  <details class="ref" id="c-build-details"><summary>ข้อมูลตัวละคร & ปูมหลัง (แตะเพื่อแก้ไข)</summary><div class="rc-body">
+
+    <label class="fld"><span>เส้นทางฮีโร่ (Hero Path)</span><select id="c-path"></select></label>
+    <label class="fld"><span>เผ่าพันธุ์ (Species)</span><select id="c-species"></select></label>
+    <label class="fld"><span>ความสามารถเผ่าพันธุ์</span><textarea id="c-speciesnote" class="autosize" rows="1" placeholder="เติมอัตโนมัติเมื่อเลือกเผ่าพันธุ์ แก้ไขได้"></textarea></label>
+    <label class="fld"><span>โบนัส (Boon)</span><textarea id="c-boon" class="autosize" rows="1" placeholder="เติมอัตโนมัติเมื่อเลือกเส้นทางฮีโร่"></textarea></label>
+    <label class="fld"><span>ความสามารถประจำเส้นทาง</span><textarea id="c-features" class="autosize" rows="2" placeholder="เติมอัตโนมัติ แก้ไข/เพิ่มเองได้"></textarea></label>
+
+    <label class="fld" style="margin-top:14px"><span>แนวถนัด (Inclinations)</span></label>
+    <div id="inc-list"></div>
+    <div class="row"><button class="btn sm grow" id="btn-add-inc">＋ เพิ่มบรรทัดว่าง</button></div>
+    <label class="fld" style="margin-top:10px"><span>หยิบจากรายการแนวถนัด (30 แบบ)</span>
+      <div class="row"><select class="grow" id="c-inc-picker"></select><button class="btn sm" id="btn-inc-add-picker">＋ ใส่</button></div>
+    </label>
+
+    <label class="fld" style="margin-top:14px"><span>ตระกูลเวท (ถ้าเป็นคอนจัวเรอร์)</span><select id="c-circle"></select></label>
+    <label class="fld"><span>รายละเอียดตระกูลเวท</span><textarea id="c-circlenote" class="autosize" rows="1" placeholder="เติมอัตโนมัติเมื่อเลือก"></textarea></label>
+
+    <label class="fld" style="margin-top:14px"><span>อุปกรณ์ทั่วไป</span></label>
+    <div id="equip-list"></div>
+    <button class="btn sm wide" id="btn-add-equip" style="margin-bottom:14px">＋ เพิ่มอุปกรณ์</button>
+    <label class="fld"><span>อาวุธ</span></label>
+    <div id="weap-list"></div>
+    <button class="btn sm wide" id="btn-add-weap" style="margin-bottom:14px">＋ เพิ่มอาวุธ</button>
+    <label class="fld"><span>ยาน้ำ (Potions)</span></label>
+    <div id="pot-list"></div>
+    <button class="btn sm wide" id="btn-add-pot" style="margin-bottom:14px">＋ เพิ่มยาน้ำ</button>
+    <label class="fld"><span>ม้วนคาถา (Scrolls)</span></label>
+    <div id="scr-list"></div>
+    <button class="btn sm wide" id="btn-add-scr">＋ เพิ่มม้วนคาถา</button>
+
+    <label class="fld" style="margin-top:14px"><span>ระดับทรัพย์สิน</span>
+      <div id="c-wealth-wrap"></div>
+    </label>
+
+    <label class="fld" style="margin-top:14px"><span>รายละเอียด / ภูมิหลัง</span><textarea id="c-details" rows="2" placeholder="รูปร่าง อายุ ของติดตัว ปูมหลังย่อ"></textarea></label>
+
+    <button class="btn sm wide" id="btn-del-char" style="margin-top:16px">ลบตัวละครนี้</button>
+  </div></details>
+</section>
+
+<!-- ============================================================ แท็บ: ต่อสู้ ============================================================ -->
+<section id="tab-combat" class="hide">
+  <div class="card ez"><h2>ฉากการต่อสู้ <span class="en">ENCOUNTER</span></h2><div class="card-body">
+    <div class="row" style="justify-content:space-between">
+      <span class="fld-label">รอบที่</span>
+      <div class="stepper"><button class="btn xs" id="enc-round-minus">−</button><b id="enc-round">1</b><button class="btn xs" id="enc-round-plus">+</button></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn sm grow" id="btn-clear-enemies">ล้างเฉพาะศัตรู</button>
+      <button class="btn sm grow" id="btn-reset-encounter">เริ่มฉากใหม่ทั้งหมด</button>
+    </div>
+  </div></div>
+
+  <div class="card ez"><h2>ฝ่ายฮีโร่ลงสนาม <span class="en">PARTY</span></h2><div class="card-body">
+    <p class="hint" style="margin:0 0 8px">แตะชื่อเพื่อส่ง/เรียกตัวละครกลับจากสนาม</p>
+    <div class="chips" id="party-chips"></div>
+    <div id="party-list"></div>
+  </div></div>
+
+  <div class="card ez"><h2>ศัตรู <span class="en">ENEMIES</span></h2><div class="card-body">
+    <div class="row">
+      <button class="btn sm grow" id="btn-toggle-addform">＋ เพิ่มศัตรูเอง</button>
+      <button class="btn sm grow" id="btn-toggle-bestiary">＋ เลือกจากมอนสเตอร์</button>
+    </div>
+    <div class="addform hide" id="add-enemy-form">
+      <div class="row"><input type="text" id="ne-name" placeholder="ชื่อศัตรู"></div>
+      <div class="row">
+        <input type="number" id="ne-max" placeholder="แต้มเจ็บ (Strikes)" min="1" style="flex:1 1 120px">
+        <input type="number" id="ne-tohit" placeholder="โดนที่เลข (3)" min="2" max="6" style="flex:1 1 120px">
+      </div>
+      <div class="row"><input type="text" id="ne-note" placeholder="โน้ตความสามารถสั้นๆ"></div>
+      <button class="btn sm main wide" id="btn-add-enemy">เพิ่มเข้าฉาก</button>
+    </div>
+    <div class="hide" id="bestiary-wrap">
+      <div id="bestiary-list-combat"></div>
+    </div>
+    <div id="enemy-list" style="margin-top:12px"></div>
+  </div></div>
+
+  <details class="ref"><summary>ทวิสต์เหตุการณ์/การต่อสู้ (1D6)</summary><div class="rc-body">
+    <div class="row"><button class="btn sm" id="btn-roll-enctwist">ทอยทวิสต์เหตุการณ์</button><span id="enctwist-result"></span></div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" id="btn-roll-battletwist">ทอยทวิสต์การต่อสู้</button><span id="battletwist-result"></span></div>
+  </details>
+
+  <div class="card"><h2>โน้ตฉากนี้ <span class="en">NOTES</span></h2><div class="card-body">
+    <textarea id="enc-notes" rows="3" placeholder="รายละเอียดฉาก จุดสังเกต แผนที่คร่าวๆ"></textarea>
+  </div></div>
+</section>
+
+<!-- ============================================================ แท็บ: ตาราง ============================================================ -->
+<section id="tab-tables" class="hide">
+
+  <div class="seg n3" role="tablist">
+    <button role="tab" id="seg-spark" aria-selected="true">จุดประกาย</button>
+    <button role="tab" id="seg-spec" aria-selected="false">เฉพาะทาง</button>
+    <button role="tab" id="seg-ezref" aria-selected="false">อ้างอิง EZD6</button>
+  </div>
+  <div id="spark-list"></div>
+  <div id="spec-list" class="hide"></div>
+  <div id="ezref-pane" class="hide"></div>
+  <div class="row hide" id="tables-roll-all-row" style="margin-bottom:18px">
+    <button class="btn grow" id="btn-roll-all">ทอยทั้งหมด</button>
+    <button class="btn grow" id="btn-save-all">＋ เก็บทั้งหมด</button>
+  </div>
+  <p class="hint" id="tables-hint">แตะที่ผลลัพธ์เพื่อทอยใหม่ · ปุ่ม ＋ เก็บผลนั้นลงบันทึก</p>
+</section>
+
+<!-- ============================================================ แท็บ: บันทึก ============================================================ -->
+<section id="tab-pad" class="hide">
+  <div class="card"><h2>บันทึกการเล่น <span class="en">SCRATCHPAD</span></h2><div class="card-body">
+    <textarea id="pad" placeholder="ผลทอยที่กด ＋ จะมาต่อท้ายที่นี่ พิมพ์แทรกเองได้เลย"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button class="btn sm" id="btn-copy">คัดลอก</button>
+      <button class="btn sm" id="btn-undo">ย้อนกลับ</button>
+      <button class="btn sm" id="btn-clear-pad">ล้าง</button>
+    </div>
+  </div></div>
+  <footer>
+    ผู้ช่วยเล่นนี้ดัดแปลงกลไกจาก <b>EZD6</b> (Vagabond Cavalier Studios) และ
+    <b>Triple-O — The Player Character Emulator</b> v1.0.2 โดย Cezar Capacle (Critical Kit Ltd.)
+    · ตัวบทของ Triple-O อยู่ภายใต้ <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.th" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+    · เนื้อหากลไกในแอปนี้ถูกย่อและแปลใหม่เพื่อใช้เป็นเครื่องมือช่วยเล่นเท่านั้น ไม่ใช่สำเนาคู่มือฉบับเต็ม
+  </footer>
+</section>
+
+</main>
+
+<!-- ============================================================ ทอยเต๋า (ลอย + drawer) ============================================================ -->
+<button id="dice-fab" class="dice-fab" aria-label="เปิดช่องทอยเต๋า" aria-haspopup="dialog">
+  <span class="d20-shape"><span class="d20-num">20</span></span>
+</button>
+<div id="dice-overlay" class="dice-overlay hide">
+  <div id="dice-drawer" class="dice-drawer" role="dialog" aria-label="ทอยเต๋า">
+    <div class="drawer-handle"></div>
+    <div class="drawer-head">
+      <span class="brand" style="font-size:17px;text-shadow:1px 0 0 var(--pink),-1px 0 0 var(--blue)">ทอยเต๋า</span>
+      <button id="dice-close" class="btn sm" aria-label="ปิดช่องทอยเต๋า">✕ ปิด</button>
+    </div>
+
+  <div class="seg n2" role="tablist">
+    <button role="tab" id="seg-ez" aria-selected="true">ทอย EZD6</button>
+    <button role="tab" id="seg-check" aria-selected="false">เช็ก Triple-O</button>
+  </div>
+
+  <div id="pane-ez">
+    <div class="card ez"><h2>ทอยแอ็กชัน <span class="en">EZD6 ROLL</span></h2><div class="card-body">
+      <label class="fld"><span>ตัวละคร (ใช้คาร์มา/เต๋าฮีโร่)</span><select id="ez-char"></select></label>
+      <label class="fld"><span>เลขเป้า</span></label>
+      <div class="segn" id="ez-target-quick" style="margin-bottom:12px">
+        <button data-t="2">ง่าย 2</button><button data-t="3">ปกติ 3</button><button data-t="4">ยาก 4</button>
+        <button data-t="5">ยากมาก 5</button><button data-t="6">ยากสุด 6</button>
+      </div>
+      <div class="seg n3 ezmode" id="ez-mode">
+        <button data-m="normal" aria-selected="true">ปกติ 1D6</button>
+        <button data-m="boon">โบว์น (เลือกสูง)</button>
+        <button data-m="bane">เบน (เลือกต่ำ)</button>
+      </div>
+      <div class="row" style="margin-bottom:10px">
+        <span class="fld-label">เต๋าเสริม</span>
+        <div class="stepper"><button class="btn xs" id="ez-extra-minus">−</button><b id="ez-extra-val">0</b><button class="btn xs" id="ez-extra-plus">+</button></div>
+        <span class="hint" style="margin:0">(ช่วยเหลือ/อาวุธคู่ ฯลฯ)</span>
+      </div>
+      <button class="btn main ez wide" id="btn-ez-roll">ทอยลูกเต๋า</button>
+      <div class="dice-row" id="ez-dice"></div>
+      <div class="stamp-wrap" id="ez-result" aria-live="polite"></div>
+      <div class="row" id="ez-karma-row" style="margin-top:10px"></div>
+      <div id="ez-crit-box"></div>
+    </div></div>
+
+    <details class="ref"><summary>อ้างอิงกฎเร็ว EZD6</summary><div class="rc-body" id="rules-ref"></div></details>
+
+    <div class="card"><h2>ร่ายเวท / ปาฏิหาริย์ (ย่อ) <span class="en">CASTING</span></h2><div class="card-body">
+      <div class="row" style="justify-content:space-between">
+        <span class="fld-label">พลังเวท (Power Level)</span>
+        <div class="stepper"><button class="btn xs" data-pl="-1">−</button><b id="pl-val">1</b><button class="btn xs" data-pl="1">+</button>D6</div>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <span class="fld-label">แต้มต้านของเป้าหมาย (Resistance)</span>
+        <div class="stepper"><button class="btn xs" data-rs="-1">−</button><b id="rs-val">1</b><button class="btn xs" data-rs="1">+</button>D6</div>
+      </div>
+      <button class="btn sm wide" id="btn-cast-roll" style="margin-top:10px">ทอยร่ายเวท</button>
+      <div id="cast-result"></div>
+      <p class="hint">คาร์มาใช้กับการร่ายเวท/ปาฏิหาริย์ไม่ได้ · ลูกที่ออก 1 ในกองพลังเวท = เสี่ยงจุดไฟเวท (รับดาเมจ 1/ลูกเพื่อฝืนร่ายต่อ)</p>
+    </div></div>
+  </div>
+
+  <div id="pane-check" class="hide">
+    <div class="card"><h2>เช็ก Triple-O <span class="en">1D6</span></h2><div class="card-body">
+      <label class="fld"><span>ปกติ · The Obvious</span><input type="text" id="f-obv" placeholder="สิ่งที่ตัวละครนี้ทำแน่ๆ"></label>
+      <label class="fld"><span>เป็นไปได้ · The Option</span><input type="text" id="f-opt" placeholder="ทางเลือกที่ไม่ค่อยคาดคิด แต่ยังสมเหตุสมผล"></label>
+      <label class="fld"><span>ประหลาด · The Odd</span><input type="text" id="f-odd" placeholder="สิ่งที่เขาแทบไม่เคยทำ (เว้นว่างไว้ก่อนก็ได้)"></label>
+      <div class="row" style="margin-top:4px">
+        <button class="btn main grow" id="btn-check-roll">ทอย 1d6</button>
+        <button class="btn grow" id="btn-check-dd">ดับเบิลดาวน์ 2d6</button>
+      </div>
+      <div class="dice-row" id="check-dice"></div>
+      <div class="band" id="check-band">
+        <div class="odd">1</div><div class="opt">2</div><div class="opt">3</div>
+        <div class="obv">4</div><div class="obv">5</div><div class="obv">6</div>
+      </div>
+      <div class="stamp-wrap" id="check-stamp-wrap" aria-live="polite"></div>
+      <p class="stamp-note" id="check-stamp-note"></p>
+      <div id="check-dd-flag"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn sm" id="btn-save-check">＋ เก็บลงบันทึก</button>
+        <button class="btn sm" id="btn-clear-check">ล้างช่อง</button>
+      </div>
+    </div></div>
+    <p class="hint">ดับเบิลดาวน์: ทอย 2 ลูกแล้ว<b>เลือกลูกที่ชอบ</b> (แตะที่ลูกเต๋า) — ถ้าออกเลขเหมือนกัน พฤติกรรมนั้นจะเด่นขึ้นถาวร กดปุ่มที่ขึ้นมาเพื่อบันทึกเป็นคุณลักษณะเด่น</p>
+  </div>
+  </div>
+</div>
+
+
+<nav class="nav" role="tablist">
+  <button role="tab" data-tab="chars" aria-selected="true">ตัวละคร</button>
+  <button role="tab" data-tab="combat" aria-selected="false">ต่อสู้</button>
+  <button role="tab" data-tab="tables" aria-selected="false">ตาราง</button>
+  <button role="tab" data-tab="pad" aria-selected="false">บันทึก</button>
+</nav>
+
+<script>
+/* =========================================================================
+   ตัวช่วยทั่วไป
+   ========================================================================= */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const d6=()=>1+Math.floor(Math.random()*6);
+const uid=()=>Date.now()*1000+Math.floor(Math.random()*1000);
+function grow(el){ if(!el) return; el.style.height='auto'; el.style.height=(el.scrollHeight+3)+'px'; }
+function growAllIn(sel){ $$(sel+' textarea').forEach(grow); }
+const codeOf=i=>(Math.floor(i/6)+1)*10+(i%6+1);
+const PIPS={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
+function dieHTML(n,extra){let c='';for(let i=1;i<=9;i++)c+=PIPS[n].includes(i)?'<i class="pip"></i>':'<i></i>';
+  return '<div class="die roll '+(extra||'')+'" data-face="'+n+'">'+c+'</div>';}
+function idxMax(a){let bi=0;for(let i=1;i<a.length;i++)if(a[i]>a[bi])bi=i;return bi;}
+function idxMin(a){let bi=0;for(let i=1;i<a.length;i++)if(a[i]<a[bi])bi=i;return bi;}
+function flashNav(tab){const nav=document.querySelector('.nav button[data-tab="'+tab+'"]');
+  nav&&nav.animate&&nav.animate([{background:'#FF3D6E'},{background:'transparent'}],{duration:600});}
+function flashEl(el){el&&el.animate&&el.animate([{background:'#2F7D4F',color:'#fff'},{background:'',color:''}],{duration:500});}
+
+/* =========================================================================
+   ระบบเก็บข้อมูลถาวร (window.storage — ไม่ใช่ localStorage)
+   ========================================================================= */
+async function loadKey(key, fallback){
+  try{ const r = await window.storage.get(key, false); return (r && r.value) ? JSON.parse(r.value) : fallback; }
+  catch(e){ return fallback; }
+}
+/* คิวเขียนต่อคีย์ — กันไม่ให้เขียนคีย์เดียวกันพร้อมกันหลายจุด (สาเหตุของ "Unexpected response type")
+   และไม่ปล่อยให้ promise reject ออกไปโดยไม่ถูกจับ (ไม่งั้นจะขึ้นเป็นข้อความ error ให้เห็น) */
+const _writeQueues={};
+function saveKeyNow(key, val){
+  const payload = JSON.stringify(val);
+  const prevChain = _writeQueues[key] || Promise.resolve();
+  const nextChain = prevChain.catch(()=>{})
+    .then(()=> window.storage.set(key, payload, false))
+    .catch(err=>{ console.warn('บันทึกไม่สำเร็จ (ข้ามไป ไม่กระทบการเล่น):', key, err); });
+  _writeQueues[key]=nextChain;
+  return nextChain;
+}
+const _timers={};
+function saveKeyDebounced(key, getVal, delay){
+  clearTimeout(_timers[key]);
+  _timers[key]=setTimeout(()=>{ saveKeyNow(key, getVal()); }, delay||600);
+}
+
+/* =========================================================================
+   ข้อมูล EZD6 — เส้นทางฮีโร่ / เผ่าพันธุ์ / ตระกูลเวท / แนวถนัด / ทรัพย์สิน / เกราะ
+   ========================================================================= */
+const ARMOR_PRESETS={
+  light:{th:'เบา', save:'เซฟ 6 · ปาฏิหาริย์ 6'},
+  medium:{th:'กลาง', save:'เซฟ 5+ · ปาฏิหาริย์ 6'},
+  heavy:{th:'หนัก', save:'เซฟ 3+ มีโล่ / 4+ ไม่มีโล่ · ปาฏิหาริย์ 6'},
+  custom:{th:'กำหนดเอง', save:''}
+};
+const PATHS={
+  warrior:{th:'นักรบ', health:3, armorType:'heavy',
+    boon:'งานประชิดตัวและงานใช้กำลัง',
+    features:'• สละโล่: ฟรีแอ็กชัน (1/ฉาก) กันดาเมจทั้งหมดให้ตัวเองหรือพวกใกล้ตัว แต่โล่พัง (เสีย 5 คาร์มาไม่ให้พัง) เกราะเหลือเซฟ 4+\n• จอมฟันสะบั้น: คริติคอลที่ 5-6 แทน 6 (ต้องไม่ถือโล่)\n• คู่อาวุธ: ถืออาวุธคู่มือ ทอย 3D6 เลือกสูงสุดตอนโจมตี (ต้องไม่ถือโล่)'},
+  warden:{th:'วอร์เดน (ผู้พิทักษ์ป่า)', health:3, armorType:'medium',
+    boon:'อาวุธระยะไกลและงานในป่าเถื่อน',
+    features:'• นักตามรอย: ตามรอยสิ่งมีชีวิตที่ผ่านมาได้\n• นักหาเสบียง: หาเลี้ยงตัวเองในป่าได้ เลี้ยงคนอื่นได้ตามสถานการณ์'},
+  delver:{th:'เดลเวอร์ (นักบุกถ้ำ)', health:3, armorType:'medium',
+    boon:'อาวุธประชิด/ระยะไกล และงานสำรวจใต้ดิน',
+    features:'• อุปกรณ์: ชุดปีนเขา เชือกแข็งแรง 50 ฟุต คบเพลิง 5 อัน ค้อนเล็ก ชอล์กขาว ติดตัวเสมอ\n• เก่งรอบด้าน: เลือกแนวถนัดเสริมได้ 1 อัน (มนุษย์เลือกได้รวม 4, เผ่าอื่นรวม 3)'},
+  brute:{th:'บรูท (จอมพลัง)', health:5, armorType:'light',
+    boon:'งานประชิดตัวและงานใช้กำลัง',
+    features:'• คลั่งพลัง: สละแต้มเจ็บตัวเอง 1 แต้ม เพิ่มดาเมจอีก 1 แต้มให้การโจมตีที่โดน\n• เชื่องช้าต่อไสยศาสตร์: โบนัสต้านเวทที่ไม่ต้องการ'},
+  rascal:{th:'รัสคัล (จอมกวน)', health:3, armorType:'light',
+    boon:'งานผาดโผน/ความคล่องตัว (เซฟเกราะ/ปาฏิหาริย์ทอย 2 ลูกเลือกสูง)',
+    features:'• เจ้าเล่ห์: ฟรีแอ็กชัน (1/เทิร์น) หลบการโจมตีประชิด 1 ครั้งได้ (ยกเว้นทอยได้ 6)\n• จ้วงฉวย: จู่โจมกะทันหันหรือศัตรูติดพันคนอื่นอยู่ → ทอยโจมตี 2D6 โดนกี่ลูกดาเมจเท่านั้น'},
+  conjurer:{th:'คอนจัวเรอร์ (นักเสก)', health:3, armorType:'light',
+    boon:'งานเวทมนตร์ลึกลับ',
+    features:'• กำแพงเวท: ป้องกันตัวเองด้วยเวทจนกว่าจะรับดาเมจหรือสลบ\n• เจ้าแห่งเวท: เชี่ยวชาญตระกูลเวท 1 ตระกูล\n• ผู้แสวงหาวิทยาเวท: ใช้ม้วนคาถาได้ เริ่มเกมด้วยม้วนคาถาสุ่ม 2 ม้วน\n• คทา/ไม้เท้า: ยิงกระสุนเวทระยะไกล 1 เป้า 1D6 ไม่คริติคอล ดาเมจ 1 แต้มเสมอ'},
+  friar:{th:'ไฟรเออร์ (นักบวช)', health:3, armorType:'medium',
+    boon:'ต้านพลังนอกรีตและความรู้ศาสนา',
+    features:'• รักษาด้วยใจ: ฟรีแอ็กชัน ดูดแต้มเจ็บ 1 จากคนใกล้ตัวมารักษาตัวเอง 1\n• แสงศักดิ์สิทธิ์: เรียกแสงรักษาพวก/ทำร้ายศัตรู ใช้ได้วันละครั้ง (เสีย 5 คาร์มาเพื่อใช้ซ้ำ)'},
+  skald:{th:'สกาลด์ (นักเล่าเรื่อง)', health:3, armorType:'medium',
+    boon:'งานภูมิปัญญาและการแสดง',
+    features:'• ปรมาจารย์ม้วนคาถา: ใช้ม้วนคาถาได้ เริ่มเกมด้วยม้วนคาถาสุ่ม 2 ม้วน\n• นักเดินทาง: เลือกทักษะถนัด 1 อย่าง ได้โบนัสในทักษะนั้น\n• สายใยแห่งโชคชะตา: เพื่อนในทีมใช้คาร์มาสู้กับ RR ได้เมื่ออยู่ใกล้'},
+  beastmaster:{th:'บีสต์มาสเตอร์ (สหายสัตว์)', health:3, armorType:'medium',
+    boon:'อาวุธประชิด/ระยะไกล และความเข้าใจสัตว์',
+    features:'• คุยกับสัตว์: สื่อสารกับสัตว์ทุกชนิดได้\n• ช่วยเหลือจากสัตว์: ชักชวนสัตว์ป่ามาช่วยชั่วคราวได้\n• สหายสัตว์: เริ่มเกมพร้อมสัตว์คู่ใจ (ขนาดกลาง 2 แต้มเจ็บ / เล็ก 1 แต้ม)'}
+};
+const SPECIES={
+  human:{th:'มนุษย์', note:'เลือกแนวถนัดได้ 3 อัน (มากกว่าเผ่าอื่น 1 อัน)'},
+  elf:{th:'เอลฟ์', note:'ตาพลบค่ำ: มองไกลเป็น 2 เท่าในที่แสงน้อย · โบนัสต้านเวทครอบงำจิตใจ'},
+  dwarf:{th:'ดวอร์ฟ', note:'ตาทะลุอุโมงค์: มองไกลเป็น 2 เท่าในที่แสงน้อย · โบนัสต้านพิษ'},
+  halfling:{th:'แฮฟลิง', note:'อาหารเช้ามื้อสอง: เริ่มเกมพร้อมยาฟื้นพลัง (รักษา 2 แต้ม ดื่มฟรีแอ็กชัน) · ศัตรูตัวใหญ่โดนยาก (+1 เลขเป้าที่ต้องทอย)'},
+  goblin:{th:'กอบลิน', note:'หลบเข้าซอก: กระโดดเข้าที่กำบังหลบการโจมตีได้ 1 เทิร์นถ้าไม่โจมตี (ต้องมีที่กำบังใกล้) · สายตากลางคืน มองไกลเป็น 2 เท่าในที่แสงน้อย'}
+};
+const CIRCLES={
+  arcane:{th:'สายพันธนาการ (Arcane Bands)', note:'เส้นพลังเวทจับ/ย้ายวัตถุหรือรัดศัตรู ต้องคงสมาธิ (anchor) ไว้ตลอด'},
+  blastmaster:{th:'จอมระเบิด (Blastmaster)', note:'พลังทำลายล้างดิบ 2 แต้มดาเมจ/ครั้ง แต่เสี่ยงจุดไฟเวทหนักกว่าปกติ'},
+  botanicalist:{th:'นักพฤกษา (Botanicalist)', note:'บงการพืชให้เติบโตทันใจ เช่น กำแพงหนาม เถาวัลย์เป็นเชือก'},
+  elementalist:{th:'นักธาตุ (Elementalist)', note:'เลือก 1 ธาตุ (ไฟ/ดิน/ลม/น้ำ) ยิงโบลต์ธาตุ + เอฟเฟกต์เสริมตามธาตุ'},
+  illusionist:{th:'นักภาพลวง (Illusionist)', note:'สร้างภาพลวงตาในใจผู้อื่น ภาพจะหายไปเมื่อถูกพิสูจน์ว่าปลอม'},
+  necromancer:{th:'จอมเนโครแมนซ์ (Necromancer)', note:'ปลุกอันเดดไร้สติมารับใช้ พูดกับผีได้จำกัด'},
+  seer:{th:'ผู้หยั่งรู้ (Seer)', note:'ทำนายอนาคต สัมผัสวัตถุอ่านประวัติ มีวิญญาณคู่หู หลบดาเมจได้ที่ 3+'},
+  shadoweaver:{th:'นักถักเงา (Shadoweaver)', note:'บงการเงาและความมืด มองในที่มืดสนิทได้'},
+  shapeshifter:{th:'นักแปลงกาย (Shapeshifter)', note:'แปลงร่างเป็นสัตว์ที่เคยเห็น ขนาดตามแต้มเจ็บที่มี'}
+};
+const INCLINATIONS=[
+ {th:'นักเล่นแร่แปรธาตุ', desc:'ต้มยาได้ โบนัสระบุสาร เริ่มด้วยยาฟื้นพลังฟรี 2 ขวด'},
+ {th:'จิตไวรับรู้', desc:'สู้ในที่มืดสนิทได้ ไม่หลงทิศเมื่อสายตาพร่า'},
+ {th:'เกลียดชังสิ่งไม่บริสุทธิ์', desc:'โจมตีอันเดด/ปีศาจ ทอยได้ 6 = คริติคอลอัตโนมัติ'},
+ {th:'เกิดมามีพร', desc:'เริ่มเซสชันด้วยคาร์มา 6 แทน 3'},
+ {th:'คล่องแคล่วดั่งแมว', desc:'ล้มก็ต่อเมื่อโดนคริติคอล · เซฟตกที่ 4+'},
+ {th:'สกัดกั้น', desc:'สกัดศัตรูที่พยายามผ่าน/ถอยได้ฟรี'},
+ {th:'หมอสนาม', desc:'รักษาพวกได้ 1 แต้มระหว่างฉาก มีชุดปฐมพยาบาล 6 ครั้ง'},
+ {th:'ช่างฝีมือ', desc:'มีอาชีพเสริม (กำหนดผ่านลักษณะเฉพาะ)'},
+ {th:'สุภาพชน', desc:'โบนัสในการเช็กด้านสังคมทั้งหมด'},
+ {th:'สัมผัสอันตราย', desc:'ไม่มีวันโดนเซอร์ไพรส์ · โบนัสหลบกับดัก'},
+ {th:'ผู้ศรัทธา', desc:'ขอปาฏิหาริย์จากเทพได้'},
+ {th:'ผู้ซื่อสัตย์ต่อศรัทธา', desc:'อันเดด/ปีศาจโจมตีโดนที่ 5+ เท่านั้น'},
+ {th:'ผู้ติดตามลึกลับ', desc:'มีสัตว์ผู้ช่วยตัวเล็กที่ต้องป้อนเลือด'},
+ {th:'ผู้ถูกโชคชะตาสัมผัส', desc:'เริ่มเกมด้วยเต๋าฮีโร่ 2 ลูก'},
+ {th:'นักสู้', desc:'โบนัสอาวุธประชิด'},
+ {th:'จอมเวทตกสำรวจ', desc:'ใช้ม้วนคาถาได้แม้ไม่มีสายเวท เริ่มด้วยม้วนคาถาสุ่ม 2 ม้วน'},
+ {th:'สร้างแรงบันดาลใจ', desc:'แบ่งคาร์มาให้คนที่มองเห็นได้'},
+ {th:'เจตจำนงเหล็ก', desc:'โบนัสต้านการโจมตีทางจิต/ความกลัว'},
+ {th:'งัดกุญแจ', desc:'ไขกุญแจกลไกทั่วไปได้เสมอถ้ามีชุดไขกุญแจ (เริ่มมี 3 ชุด)'},
+ {th:'มือแม่นปืน', desc:'โบนัสอาวุธระยะไกล'},
+ {th:'แสงลอยนำทาง', desc:'เรียกลูกแสงลอยตามตัวได้ฟรีแอ็กชัน'},
+ {th:'ลื่นไหลหนีเก่ง', desc:'หนีสถานการณ์แย่ๆ ได้ที่ 4+ (รวมงัดหลุดจากการจับล็อก)'},
+ {th:'ซุ่มเงียบ', desc:'โบนัสซ่อนตัว/แอบเคลื่อนที่'},
+ {th:'มือไว', desc:'ขโมยของชิ้นเล็กแบบไม่ให้จับได้ (ยกเว้นทอยได้ 1)'},
+ {th:'โจมตีกวาด/รวดเร็ว', desc:'โจมตีศัตรูทุกตัวประชิดตัวได้ในแอ็กชันเดียว'},
+ {th:'เวทเล็กน้อย', desc:'ใช้มายากลเล็กๆ ไร้อันตราย เช่น ขยับของ ภาพลวงเล็กน้อย'},
+ {th:'แกร่งเกินคาด', desc:'ก่อนตายแต้มสุดท้าย ทอย 1 ลูกได้ 4+ รอดไม่เสียแต้ม'},
+ {th:'นักหากับดัก', desc:'โบนัสหา/ปลดกับดัก'},
+ {th:'สัมผัสขุมทรัพย์', desc:'รับรู้ขุมทรัพย์ที่ซ่อนอยู่ใกล้ๆ เสมอ'},
+ {th:'พ่ายแพ้คือชัยชนะ', desc:'ได้คาร์มา 2 แต้มทุกครั้งที่ทอยพลาด'}
+];
+const WEALTH=[
+ {k:'pauper',th:'ยาจก'},{k:'cashpoor',th:'จนเงินสด'},{k:'moderate',th:'พอมีพอกิน'},
+ {k:'wealthy',th:'มั่งคั่ง'},{k:'lordly',th:'มั่งคั่งระดับขุนนาง'},{k:'kingly',th:'มั่งคั่งระดับกษัตริย์'}
+];
+const DIFF_SCALE=[
+ {n:2,th:'ง่าย',en:'ศัตรูอ่อนแอ/ช้า'},{n:3,th:'ปกติ',en:'ศัตรูทั่วไป'},{n:4,th:'ยาก',en:'ศัตรูแกร่ง/เร็ว'},
+ {n:5,th:'ยากมาก',en:'ศัตรูระดับหัวหน้า/เร็วกว่า'},{n:6,th:'ยากที่สุด',en:'ศัตรูโหดที่สุด/เร็วที่สุด'}
+];
+const RULES_REF_LINES=[
+ '<b>กฎหลัก:</b> ทอย 1D6 ให้ได้เท่ากับหรือมากกว่าเลขเป้า',
+ '<b>โบว์น (Boon):</b> ทอยเพิ่ม 1 ลูก เลือกลูกที่สูงกว่า',
+ '<b>เบน (Bane):</b> ทอยเพิ่ม 1 ลูก เลือกลูกที่ต่ำกว่า (ถ้ามีมากกว่า 1 ลูกอยู่แล้ว ให้ตัดออก 1 ลูกแทน)',
+ '<b>เลข 1</b> พลาดเสมอ / <b>เลข 6</b> สำเร็จเสมอ และ "ระเบิด" — ได้แต้มเจ็บเพิ่ม 1 แล้วทอยลูกเดียวซ้ำได้อีก',
+ '<b>คาร์มา:</b> เริ่มเซสชันได้ 3 แต้ม ทอยพลาด 1 ครั้ง/เทิร์นได้ 1 แต้ม ใช้ปรับตาเต๋าใดก็ได้ครั้งละ 1 แต้ม/1 พิพ (ห้ามใช้ปรับเลข 1, ห้ามใช้กับเวท/ปาฏิหาริย์) เสีย 5 แต้มแลกเต๋าฮีโร่คืน',
+ '<b>เต๋าฮีโร่:</b> ใช้ทอยลูกใดลูกหนึ่งใหม่ได้ (แม้เป็นเลข 1)',
+ '<b>เกราะ:</b> โดนตี ทอยเซฟเกราะ 1 ครั้ง/แต้มเจ็บ ถ้าผ่านไม่เสียแต้ม',
+ '<b>เซฟปาฏิหาริย์:</b> ใช้แทนเซฟเกราะกับเหตุการณ์ที่เกราะช่วยไม่ได้ (ตกที่สูง ไฟไหม้ พิษ)',
+ '<b>ระยะ:</b> ใกล้ = ในระยะ 30 ฟุต / ไกล = เกิน 30 ฟุต',
+ '<b>1 เทิร์นทำได้:</b> เดิน + แอ็กชันหลัก 1 + แอ็กชันฟรี 1'
+];
+const ENC_TWISTS=[
+ 'อะไรวะเนี่ย — มีบางอย่างที่ไม่ควรอยู่ตรงนี้โผล่มา',
+ 'ลักษณะเฉพาะ — สุ่มเลือกลักษณะเฉพาะของฮีโร่คนหนึ่งในทีม แล้วมันถูกขยายผลจนพลิกสถานการณ์',
+ 'ผลกรรมเก่า — ผลจากการกระทำก่อนหน้าของฮีโร่ตามมาสมทบเพิ่มอันตราย',
+ 'ทางแพร่ง — ต้องเลือกระหว่างทางศีลธรรม 2 ทางที่ต่างสุดขั้ว',
+ 'ล้ำค่าเกินตี — ของสำคัญของฮีโร่ถูกเปิดเผย ถูกขโมย ทำหาย หรือกลายเป็นของปลอม',
+ 'ภาระติดพัน — ต้องรับมือ NPC ที่บาดเจ็บ/พิการ/ตกอยู่ในอันตราย เพื่อเอาชนะ'
+];
+const BATTLE_TWISTS=[
+ 'กำลังเสริม! — มีศัตรูตัวรองเข้าร่วมศึกจำนวนมาก ตีปีกหรือแอบโผล่มุมใหม่',
+ 'เวลาไม่พอ — เวลาที่มีเหลือน้อยกว่าที่คิด ศัตรูเร่งเหตุการณ์ร้ายแรงให้เร็วขึ้น',
+ 'สลับตัว — สัตว์ประหลาดที่เจอเป็นของปลอม/ภาพลวง/ปลอมตัวเป็นสัตว์อื่น',
+ 'ถูกหลอก — NPC/ไกด์/แผนที่ให้ข้อมูลผิด ทำให้ทางตัน ติดกับ หรือหลงทาง',
+ 'มาร่วมกับข้า — ศัตรูเสนอทางเลือกทางศีลธรรม โดยรู้ข้อมูลลับของฮีโร่คนนั้น',
+ 'เพื่อเกียรติยศ! — สถานการณ์เฉพาะเจาะจงเรียกร้องหน้าที่ของฮีโร่คนหนึ่งอย่างต้านทานไม่ได้'
+];
+const POWERUPS=[
+ 'ระดับ 1 — หุ้มเกราะ: +1 แต้มเจ็บ','ระดับ 2 — หุ้มเกราะหนา: +2 แต้มเจ็บ',
+ 'ระดับ 3 — ร้อยโท (หรือ NPC สำคัญ): +1 แต้มเจ็บ','ระดับ 4 — กัปตัน (หรือ NPC สำคัญกว่า): +2 แต้มเจ็บ',
+ 'ระดับ 5 — ผู้นำ (หรือ NPC คนสำคัญที่สุด): +3 แต้มเจ็บ'
+];
+
+/* ---------- มอนสเตอร์ (ชื่อ, แต้มเจ็บ, เลขที่โดนตี, โน้ตย่อ) ---------- */
+const BESTIARY={
+ minion:[
+  ['ออร์ค',1,3,'โบนัสงานใช้กำลัง'],['โจร',1,3,'โบนัสลอบเร้น มักจู่โจมกะทันหัน'],
+  ['จระเข้',1,3,'โบนัสว่ายน้ำ/ซุ่มโจมตี'],['ทหารยาม',1,4,'เกราะ โดนที่ 4+'],
+  ['เอป',1,3,'โบนัสกำลัง/ปีนป่าย'],['กอบลิน',1,3,'หลบเข้าที่กำบังหลังโจมตีประชิด'],
+  ['มอร์ล็อค',1,3,'โบนัสจู่โจมกะทันหัน'],['ลัทธินิยม',1,3,'คลั่งลัทธิ โบนัสต้านจิต'],
+  ['หมาป่า',1,3,'รุมล้อม: มีมากกว่า 1 ตัวบนเป้าเดียว → คริติคอลที่ 5+'],
+  ['แมวใหญ่',1,3,'โบนัสลอบเร้น/จู่โจมกะทันหัน'],['อันธพาล',1,3,'จู่โจมก่อนเมื่อฮีโร่เดินเข้าประชิด'],
+  ['ฝูงชนไร้ระเบียบ',1,4,'ไม่ผ่านการฝึก โจมตีโดนที่ 4+ เท่านั้น']
+ ],
+ classic:[
+  ['สัตว์ป่า',2,3,'ปรับตามขนาด: เล็ก-กลาง 1-2, ใหญ่ 3, มหึมา 5, มโหฬาร 10 · ตัวใหญ่คริติคอลที่ 5+'],
+  ['โครงกระดูกไม่ตาย',1,3,'อาวุธขึ้นสนิม 1 โจมตี · เปราะแตกง่าย · ไร้จิต ต้านพลังจิต'],
+  ['ปีศาจชั้นต่ำ',10,4,'4 โจมตี (กรงเล็บ/กรงเล็บ/กัด/ขวิด) · ต้านไฟ · ระเบิดไฟเมื่อตาย'],
+  ['ปีศาจชั้นสูง',30,5,'โจมตีกวาดพื้นที่ 2 แต้ม · บินได้ · ต้านไฟ · ระเบิดไฟเมื่อตาย'],
+  ['มังกรวัยอ่อน',15,4,'4 โจมตี · บินได้ · พ่นไฟทุก 3 รอบ · ต้านเวท 3D6'],
+  ['มังกรโบราณ',25,5,'4 โจมตี (2 แต้ม/ครั้ง) · บินได้ · พ่นไฟทุก 2 รอบ · ต้านเวท 5D6'],
+  ['ธาตุกายสิทธิ์',3,3,'โดนตีเฉพาะอาวุธ/เวทวิเศษ · ไม่คริติคอล · เวท 3D6'],
+  ['ผู้ติดตามปีศาจ',1,5,'โจมตีรวม 1 ครั้ง ไม่คริติคอล · ตัวเล็กไวโดนยาก'],
+  ['การ์กอยล์',2,3,'4 โจมตี · นิ่งเป็นหินได้ · บินได้'],
+  ['ยักษ์',7,3,'โจมตีกวาดทุกเป้าประชิด · อาวุธใหญ่ 2 แต้ม'],
+  ['โกเลม',6,3,'โดนตีเฉพาะอาวุธ/เวทวิเศษ · ไม่คริติคอล'],
+  ['เจลลี/อูซ',2,3,'เล็ก 1 หนวด กลาง 2 หนวด ใหญ่ห่อหุ้มดาเมจกรด · โดนคริติคอลเท่านั้นถึงตาย'],
+  ['แมนทิคอร์',5,3,'3 โจมตี · บินได้ · หางพิษจู่โจมกลางอากาศ'],
+  ['เมดูซ่า',5,3,'หางจับ+สายตากลายเป็นหิน หรือกัดพิษ · ยิงธนู · เวท 3D6'],
+  ['นักเวทกระจก',2,3,'ระเบิดแสงทำตาบอด · โล่กระจกโดนตีเฉพาะทอยได้ 6'],
+  ['โอเกอร์',3,3,'ตีกระบองยักษ์คริติคอลที่ 5+ · โบนัสกำลัง/ปล้ำ/ประชิด'],
+  ['แมงมุมยักษ์',2,3,'กัดพิษ ไม่คริติคอล · ไต่ผนัง · ใยเหนียว'],
+  ['ฝูงสัตว์เล็ก',3,3,'รุมกัดโดนที่ 2+ · ไม่คริติคอลทั้งสองฝ่าย · กำจัดด้วยไฟ/น้ำ'],
+  ['โทรลล์',5,3,'3 โจมตี · ฟื้นแต้มเอง 1/รอบ (หยุดด้วยไฟ/กรด/เยือกแข็ง)'],
+  ['วิญญาณร้าย (Wraith)',3,5,'อาวุธสาปทะลุเกราะ · โดนตีเฉพาะอาวุธวิเศษ · ไม่คริติคอล'],
+  ['ซอมบี้',2,3,'กัด/ข่วนโดนที่ 4+ ไม่คริติคอล · เชื่องช้า · ไร้จิต']
+ ],
+ ezd6:[
+  ['เดอะบีสต์',10,3,'3 โจมตี (กรงเล็บ/กรงเล็บ/กัด + หางตี) · ต้านเวท 4D6 · กลิ่นเหม็นสยอง · หางฟาดคนแอบจู่โจม'],
+  ['เดธเลิร์กเกอร์',3,5,'2 โจมตี ไม่คริติคอล · โครงกระดูกแข็งโดนที่ 5+ · เหล้าแรงทำดาเมจ 1'],
+  ['เดร็ก',1,3,'1 โจมตีอาวุธหยาบ · หนามหลังทิ่มคนพลาดโจมตี · ชอบซุ่มโจมตี'],
+  ['เฟสตอยด์',2,5,'กัด+หนวดพิษทำอัมพาต · กระโดดไกล 10 ฟุต เกาะผนังได้ · ลานดักตัวบวมพิษ'],
+  ['กอร์กวอร์',2,3,'โจมตีโดน 2 เป้าประชิด · คลั่งพลังโต้กลับหลังโดน 2 แต้ม'],
+  ['กรีบลิกซ์',1,6,'ต้านเวท 3D6 · ตัวเล็กไวขโมยเก่ง · ให้โบนัสวันละครั้งถ้าไม่ถูกทำร้าย'],
+  ['เกรย์วันส์',2,3,'1 โจมตีอาวุธ คริติคอล 5-6 ถ้าจู่โจมกะทันหัน · หลบในเงามืด'],
+  ['กรับเบอร์',3,3,'รุมโดนที่ 2+ ไม่คริติคอลทั้งคู่ · ขโมยของ · กำจัดด้วยไฟ/น้ำ'],
+  ['ราชินีกรับเบอร์',10,2,'เวท 3D6 · อาวุธเปื้อนเลือดเหนียวติดอาวุธ · เจาะความกลัวในใจ'],
+  ['น็อบลอกก์',5,6,'6 หนวดจับ+ทุบ · เสียหนวดทุกแต้มเจ็บที่โดน · ซุ่มนิ่งจนเกือบมองไม่เห็น'],
+  ['คราเกอร์',2,3,'3 โจมตี (กรงเล็บ/กรงเล็บ/กัด) · ร่อนได้ · จมูกไวดมกลิ่น'],
+  ['มิสตี้สปอว์น',2,5,'จับกอดดูดชีวิต · ต้านเวท 3D6 · หลบเข้าความมืดเมื่อโดนแสงจ้า · บทกวีรักสะกดจิต'],
+  ['เมอร์เดรธ',6,3,'3 โจมตี (หนวดหนาม×2 + กัด) จับ "ผู้ถูกเลือก" · เสียงเลียนแบบล่อใจ · สลายพาตัวไปมิติอื่น'],
+  ['เมิร์กสไตรค์',6,3,'กัดกลืนเหยื่อ ต้องงัดหลุดหรือเสียแต้มทุกรอบ · ซุ่มในโคลน · น้ำขุ่นทำให้มองยาก'],
+  ['ซาร์ลาคาร์น',12,3,'3 หนวดโจมตี จับ+น้ำย่อยกรด · ซุ่มใต้ดิน · ลากเหยื่อเข้าปากกลืนทั้งตัว'],
+  ['ซันสเกลโฟล์ก',2,3,'อาวุธระยะไกล/ประชิด + กัด · ว่ายในทรายได้ · หนามทิ่มคนที่มาปล้ำ'],
+  ['วอร์ปแบต',4,3,'กรงเล็บลากไปกิน+กัด · ไม่มีตาใช้เสียงสะท้อน · กรีดร้องทำร้ายจิตเวท 2D6'],
+  ['เวียร์ดลิง',2,3,'1 โจมตีไม่คริติคอล ต้องทอยได้ 4+ ถึงโดน · ต้านเวท 3D6 · ปล่อยพลังเวทเมื่อโดนตี'],
+  ['ไวท์',2,3,'2 โจมตีดูดชีวิตทะลุเกราะ · ไม่ออกกลางวัน · ฝุ่นฟุ้งทำให้คนโจมตีเสียเปรียบ'],
+  ['หนอนแห่งทะเลทราย',10,4,'กัดใหญ่ 2 แต้ม กลืนเหยื่อ · ว่ายในทรายได้ · ดิ้นสะบัดทรายทำให้เสียจังหวะ']
+ ]
+};
+
+/* =========================================================================
+   ข้อมูล Triple-O — ตารางจุดประกาย (SPARK) และตารางเฉพาะทาง (SPEC)
+   ========================================================================= */
+const SPARK=[
+ {key:'action', th:'การกระทำ', en:'Action', rows:[
+  ["ล้มเลิก","Abort"],["รุกคืบ","Advance"],["เล็ง","Aim"],["ขวางกั้น","Block"],["หัก/ทำให้พัง","Break"],["ท้าทาย","Challenge"],
+  ["ปีน","Climb"],["พุ่งชน","Collide"],["สู้รบ","Combat"],["จดจ่อ","Concentrate"],["รวบรวมกำลัง","Consolidate"],["ประสานงาน","Coordinate"],
+  ["กำบัง","Cover"],["หลอกลวง","Deceive"],["เบี่ยงเบน","Deflect"],["ขุดค้น","Delve"],["ทำลาย","Destroy"],["หลบ","Dodge"],
+  ["อดทน","Endure"],["ใช้กำลัง","Force"],["คว้า","Grab"],["ช่วยเหลือ","Help"],["กระแทก","Impact"],["เพิ่มความรุนแรง","Intensify"],
+  ["ทุ่มเท","Invest"],["ทำให้ล้ม","Knock down"],["สูญเสีย","Lose"],["ต่อต้าน","Oppose"],["เจาะทะลุ","Penetrate"],["พากเพียร","Persevere"],
+  ["สืบเสาะ","Probe"],["ปกป้อง","Protect"],["ถอย","Retreat"],["แยกจากกัน","Separate"],["ทำให้มึนงง","Stun"],["ทำให้ประหลาดใจ","Surprise"]
+ ]},
+ {key:'focus', th:'จุดสนใจ', en:'Focus', rows:[
+  ["ความได้เปรียบ","Advantage"],["พันธมิตร","Ally"],["สมดุล","Balance"],["สิ่งกีดขวาง","Barrier"],["โอกาส","Chance"],["การควบคุม","Control"],
+  ["ความกล้า","Courage"],["ความเสียหาย","Damage"],["การป้องกัน","Defense"],["ความมุ่งมั่น","Determination"],["สภาพแวดล้อม","Environment"],["ความกลัว","Fear"],
+  ["ความดุร้าย","Ferocity"],["สมาธิ","Focus"],["แรงกระตุ้น","Impulse"],["สัญชาตญาณ","Instinct"],["ชั้นเชิงการเคลื่อนไหว","Maneuver"],["วัตถุ","Object"],
+  ["ช่องโหว่","Opening"],["ตำแหน่ง","Position"],["ท่าทาง","Posture"],["พลัง","Power"],["ความแม่นยำ","Precision"],["ศักดิ์ศรี","Pride"],
+  ["ระยะเอื้อม","Reach"],["ทรัพยากร","Resource"],["ประสาทสัมผัส","Senses"],["ความเร็ว","Speed"],["กลยุทธ์","Strategy"],["ความแข็งแกร่ง","Strength"],
+  ["ความแนบเนียน","Subtlety"],["เทคนิค","Technique"],["จุดอ่อน","Weakness"],["อาวุธ","Weapon"],["ไหวพริบ","Wits"],["บาดแผล","Wound"]
+ ]},
+ {key:'method', th:'วิธีการ', en:'Method', rows:[
+  ["การปรับตัว","Adaptation"],["ความคล่องแคล่ว","Agility"],["การพรางตัว","Camouflage"],["การบีบบังคับ","Coercion"],["เล่ห์เหลี่ยม","Cunning"],["การหลอกลวง","Deception"],
+  ["การเบี่ยงเบนความสนใจ","Distraction"],["ความกลัว","Fear"],["เล่ห์กล","Guile"],["การเลียนแบบ","Imitation"],["การด้นสด","Improvisation"],["ความคิดพลิกแพลง","Ingenuity"],
+  ["สัญชาตญาณ","Instinct"],["การข่มขู่","Intimidation"],["ความรู้","Knowledge"],["เวทมนตร์","Magic"],["การชักใย","Manipulation"],["การสังเกต","Observation"],
+  ["ความใจเย็น","Patience"],["ความพากเพียร","Persistence"],["ความทรหด","Resilience"],["การเสียสละ","Sacrifice"],["การวางแผนลับ","Scheming"],["มนตร์ดำ","Sorcery"],
+  ["ความเร็ว","Speed"],["การลอบเร้น","Stealth"],["กลยุทธ์","Strategy"],["กำลัง","Strength"],["การใช้อุบาย","Subterfuge"],["ความไม่คาดคิด","Surprise"],
+  ["เทคโนโลยี","Technology"],["ความไม่ยอมแพ้","Tenacity"],["ภูมิประเทศ","Terrain"],["กลลวง","Trickery"],["ความรุนแรง","Violence"],["อาวุธ","Weapons"]
+ ]},
+ {key:'disp', th:'ท่าที', en:'Disposition', rows:[
+  ["ก้าวร้าว","Aggressive"],["เย็นชา","Aloof"],["สองจิตสองใจ","Ambivalent"],["เป็นปฏิปักษ์","Antagonistic"],["กล้าหาญ","Bold"],["ระมัดระวัง","Cautious"],
+  ["ร่าเริง","Cheerful"],["มั่นใจ","Confident"],["ให้ความร่วมมือ","Cooperative"],["อยากรู้อยากเห็น","Curious"],["ตั้งการ์ด","Defensive"],["ห่างเหิน","Detached"],
+  ["ปัดทิ้ง","Dismissive"],["ไม่ไว้ใจ","Distrustful"],["ใจจดใจจ่อ","Eager"],["กระตือรือร้น","Enthusiastic"],["เป็นมิตร","Friendly"],["ระแวดระวังตัว","Guarded"],
+  ["ชอบช่วยเหลือ","Helpful"],["เป็นศัตรู","Hostile"],["เฉยชา","Indifferent"],["ช่างซักถาม","Inquisitive"],["สนใจ","Interested"],["ชวนเข้าหา","Inviting"],
+  ["เปิดใจ","Open"],["มองโลกในแง่ดี","Optimistic"],["มองโลกในแง่ร้าย","Pessimistic"],["ไม่เต็มใจ","Reluctant"],["ขุ่นเคือง","Resentful"],["ให้เกียรติ","Respectful"],
+  ["คลางแคลงใจ","Suspicious"],["เห็นอกเห็นใจ","Sympathetic"],["ขลาดกลัว","Timid"],["ไม่สนใจ","Uninterested"],["อบอุ่น","Warm"],["ระแวง","Wary"]
+ ]},
+ {key:'motiv', th:'แรงจูงใจ', en:'Motivation', rows:[
+  ["ความทะเยอทะยาน","Ambition"],["ความโกรธ","Anger"],["การไถ่บาป","Atonement"],["การทรยศ","Betrayal"],["การท้าทาย","Challenge"],["ความอยากรู้","Curiosity"],
+  ["ความสิ้นหวัง","Despair"],["หน้าที่","Duty"],["ความเห็นอกเห็นใจ","Empathy"],["ความอิจฉา","Envy"],["ศรัทธา","Faith"],["ความกลัว","Fear"],
+  ["ความโลภ","Greed"],["ความรู้สึกผิด","Guilt"],["ความเกลียดชัง","Hate"],["เกียรติยศ","Honor"],["ความหวัง","Hope"],["อุดมการณ์","Ideology"],
+  ["ความยุติธรรม","Justice"],["ความรู้","Knowledge"],["มรดกที่ทิ้งไว้","Legacy"],["ความรัก","Love"],["ความภักดี","Loyalty"],["ความเชี่ยวชาญ","Mastery"],
+  ["ความหมกมุ่น","Obsession"],["แรงปรารถนา","Passion"],["ความภาคภูมิ","Pride"],["ความเสียใจ","Regret"],["การชิงดีชิงเด่น","Rivalry"],["การเสียสละ","Sacrifice"],
+  ["ความอับอาย","Shame"],["ความโศกเศร้า","Sorrow"],["การเอาตัวรอด","Survival"],["ความตื่นเต้นเร้าใจ","Thrill"],["ธรรมเนียม","Tradition"],["การล้างแค้น","Vengeance"]
+ ]},
+ {key:'dyn', th:'ความสัมพันธ์', en:'Dynamics', rows:[
+  ["ชื่นชม","Admiring"],["รักใคร่","Affectionate"],["ขบขัน","Amused"],["สบายใจด้วย","Comfortable"],["ชอบแข่งขัน","Competitive"],["ขัดแย้งในใจ","Conflicted"],
+  ["ดูถูก","Contemptuous"],["เกรงใจ","Deferential"],["ท้าทายไม่ยอม","Defiant"],["พึ่งพา","Dependent"],["ผิดหวัง","Disappointed"],["ห่างเหิน","Distant"],
+  ["อิจฉา","Envious"],["หงุดหงิดระอา","Exasperated"],["หลงใหล","Fascinated"],["สำนึกบุญคุณ","Grateful"],["รู้สึกผิด","Guilty"],["เฉยเมย","Indifferent"],
+  ["ได้แรงบันดาลใจ","Inspired"],["เกรงกลัว","Intimidated"],["สนใจใคร่รู้","Intrigued"],["ชอบตัดสิน","Judgmental"],["ภักดี","Loyal"],["คอยสังเกต","Observant"],
+  ["วางตัวเหนือกว่า","Patronizing"],["คอยปกป้อง","Protective"],["ขุ่นแค้น","Resentful"],["เคารพ","Respectful"],["กังขา","Skeptical"],["คอยสนับสนุน","Supportive"],
+  ["ระแวงสงสัย","Suspicious"],["เห็นใจ","Sympathetic"],["ชอบแหย่","Teasing"],["รู้สึกถูกคุกคาม","Threatened"],["ไว้ใจ","Trusting"],["อึดอัดใจ","Uneasy"]
+ ]},
+ {key:'appr', th:'ลีลา', en:'Approaches', rows:[
+  ["อย่างก้าวร้าว","Aggressively"],["อย่างระมัดระวัง","Carefully"],["อย่างร่าเริง","Cheerfully"],["อย่างซุ่มซ่าม","Clumsily"],["อย่างลับๆ","Covertly"],["อย่างห้าวหาญ","Daringly"],
+  ["อย่างเด็ดขาด","Decisively"],["อย่างหมดหนทาง","Desperately"],["อย่างมีชั้นเชิง","Diplomatically"],["อย่างตรงไปตรงมา","Directly"],["อย่างไม่เอิกเกริก","Discreetly"],["อย่างเว่อร์วัง","Dramatically"],
+  ["อย่างมีประสิทธิภาพ","Efficiently"],["อย่างเอาแน่เอานอนไม่ได้","Erratically"],["อย่างลนลาน","Frantically"],["อย่างนุ่มนวล","Gently"],["อย่างขัดใจ","Grudgingly"],["อย่างรีบร้อน","Hastily"],
+  ["อย่างลังเล","Hesitantly"],["อย่างซื่อตรง","Honestly"],["อย่างวู่วาม","Impulsively"],["อย่างอ้อมๆ","Indirectly"],["ตามสัญชาตญาณ","Intuitively"],["อย่างขี้เกียจ","Lazily"],
+  ["อย่างเอะอะเสียงดัง","Loudly"],["อย่างเป็นขั้นเป็นตอน","Methodically"],["อย่างไร้เดียงสา","Naively"],["อย่างประหม่า","Nervously"],["อย่างใจเย็น","Patiently"],["อย่างขี้เล่น","Playfully"],
+  ["อย่างแม่นยำ","Precisely"],["อย่างเงียบๆ","Quietly"],["อย่างบ้าบิ่น","Recklessly"],["อย่างไม่เต็มใจ","Reluctantly"],["อย่างโหดเหี้ยม","Ruthlessly"],["อย่างดื้อรั้น","Stubbornly"]
+ ]}
+];
+const SPEC=[
+ {key:'combat', th:'การต่อสู้', en:'Combat', rows:[
+  ["เล็งอย่างระวัง รอจังหวะช่องโหว่","Aim carefully, wait for an opening"],
+  ["โจมตีตรงๆ ด้วยอาวุธหลัก","Attack directly with primary weapon"],
+  ["โจมตีด้วยอาวุธรอง","Attack with secondary weapon"],
+  ["พยายามปลดอาวุธศัตรู","Attempt to disarm the enemy"],
+  ["พยายามหนี","Attempt to flee"],
+  ["เรียกให้ร่วมมือโจมตีพร้อมกัน","Call for a combined action"],
+  ["ขอเจรจา","Call for parley"],
+  ["ร่ายเวทหรือใช้ความสามารถพิเศษ","Cast a spell or use a special ability"],
+  ["เปลี่ยนระดับความสูง (ปีน กระโดด)","Change elevation (climb, jump)"],
+  ["พุ่งเข้าใส่แบบไม่คิดชีวิต","Charge recklessly"],
+  ["สร้างพื้นที่ขรุขระหรือสิ่งกีดขวาง","Create difficult terrain or obstacles"],
+  ["ทำลายที่กำบังหรือทรัพยากรของศัตรู","Destroy enemy cover or resources"],
+  ["เบี่ยงเบนความสนใจหรือหลอกล่อ","Distract or mislead"],
+  ["ดึงความสนใจ/ยั่วยุศัตรู","Draw attention/taunt the enemy"],
+  ["ทิ้งอาวุธ/ยอมแพ้","Drop your weapons/surrender"],
+  ["ถอยไปตั้งหลักใหม่","Fall back and regroup"],
+  ["ตีโอบหรือเปลี่ยนตำแหน่ง","Flank or reposition"],
+  ["บังคับให้เคลื่อนที่ (ผลัก ดึง จับย้าย)","Force movement (push, pull, reposition)"],
+  ["เข้าปล้ำหรือล็อกตัวคู่ต่อสู้","Grapple or restrain an opponent"],
+  ["รักษา เสริมพลัง หรือปกป้องพวกพ้อง","Heal, buff, or protect an ally"],
+  ["ช่วยเสริมการกระทำของพวกพ้อง","Help or assist an ally's action"],
+  ["ยืนหยัดในตำแหน่งและตั้งรับ","Hold position and guard"],
+  ["ด้นสดหาอาวุธเฉพาะหน้า","Improvise a weapon"],
+  ["มองหาจุดอ่อน","Look for a weakness"],
+  ["ออกท่าหลอกหรือโจมตีลวง","Make a feint or fake attack"],
+  ["ปลุกใจให้กำลังใจเพื่อน","Rally/inspire to boost morale"],
+  ["เตรียมท่าไว้ตอบโต้เมื่อถึงจังหวะ","Ready an action to respond to a trigger"],
+  ["วางกับดักหรือซุ่มโจมตี","Set up an ambush or trap"],
+  ["เปลี่ยนอาวุธหรือกลยุทธ์","Switch weapons or tactics"],
+  ["เข้าที่กำบังหรือหมอบหลบ","Take cover or duck behind something"],
+  ["พุ่งเป้าไปที่หัวหน้าหรือคนสำคัญ","Target a leader or key figure"],
+  ["ข่มขู่ให้ถอยไป","Try to intimidate or scare them off"],
+  ["ใช้ไอเทมสิ้นเปลือง","Use a consumable item"],
+  ["ใช้สภาพแวดล้อมให้เป็นประโยชน์","Use environment to their advantage"],
+  ["ถอนตัวออกมาอย่างปลอดภัย","Withdraw or disengage safely"],
+  ["ตะโกนเตือนหรือร้องขอความช่วยเหลือ","Yell a warning or call for help"]
+ ]},
+ {key:'social', th:'สังคม', en:'Social', rows:[
+  ["เร้าอารมณ์ความรู้สึก","Appeal to emotion"],
+  ["ใช้เหตุผล","Appeal to logic"],
+  ["อ้างกฎ กฎหมาย หรือธรรมเนียม","Appeal to rules, laws, or customs"],
+  ["อ้างค่านิยมหรือความเชื่อของอีกฝ่าย","Appeal to their values or beliefs"],
+  ["ใช้ข้อต่อรอง/แบล็กเมล","Apply leverage/blackmail"],
+  ["ถามคำถามเจาะลึก","Ask probing questions"],
+  ["บลัฟหรือพูดเกินจริง","Bluff or exaggerate"],
+  ["ติดสินบนหรือเสนอผลประโยชน์","Bribe or offer incentive"],
+  ["ท้าดวล ท้าแข่ง หรือท้าพนัน","Challenge to a duel, contest, or wager"],
+  ["ชมหรือประจบ","Compliment or flatter someone"],
+  ["เปิดเผยความลับให้ฟัง","Confide a secret"],
+  ["ถามตรงๆ ถึงข้อมูลที่ต้องการ","Directly inquire about a piece of information"],
+  ["เห็นอกเห็นใจสถานการณ์หรือความรู้สึกของเขา","Empathize with their situation or feelings"],
+  ["ฉวยใช้ความเป็นคู่แข่งหรือผลประโยชน์ที่ขัดกัน","Exploit rivalries or conflicting interests"],
+  ["มอบของขวัญหรือสิ่งแทนไมตรี","Give a gift or token of goodwill"],
+  ["ต่อรองราคาหรือเงื่อนไข","Haggle over price or terms"],
+  ["อ้างค่านิยม ประเพณี หรืออดีตร่วมกัน","Invoke shared values, traditions, or history"],
+  ["อ้างสถานะ ยศ หรือชื่อเสียง","Invoke status, rank, or reputation"],
+  ["ยอมถอยบางส่วนเพื่อให้เจรจาเดินหน้า","Make a concession to move talks"],
+  ["เบี่ยงประเด็นหรือเปลี่ยนเรื่อง","Misdirect or change the subject"],
+  ["เอ่ยชื่อคนสำคัญที่รู้จัก","Name-drop important connections"],
+  ["เสนอแลกเปลี่ยนหรือข้อตกลง","Offer a trade or bargain"],
+  ["เสนอความช่วยเหลือ","Offer help or assistance"],
+  ["แสดงความสามารถเพื่อเอาใจ","Perform/entertain to win favor"],
+  ["แกล้งเห็นด้วย","Pretend to agree"],
+  ["สัญญาในสิ่งที่ไม่แน่นอน","Promise something uncertain"],
+  ["อ่านบรรยากาศและความสัมพันธ์ในห้อง","Read the room for mood and dynamics"],
+  ["ขีดเส้นและยืนยันขอบเขต","Set and enforce boundaries"],
+  ["เล่าเรื่องส่วนตัวหรือเปิดจุดอ่อนให้เห็น","Share a personal story or vulnerability"],
+  ["พูดตรงไปตรงมาอย่างเปิดอก","Speak honestly and openly"],
+  ["เงียบไว้แล้วสังเกต","Stay silent and observe"],
+  ["เล่าเรื่องตลกผ่อนบรรยากาศ","Tell a joke or lighten the mood"],
+  ["พยายามสร้างเสน่ห์หรือทำให้ประทับใจ","Try to charm or impress"],
+  ["หาจุดร่วม","Try to find common ground"],
+  ["พยายามอ่านเจตนาของอีกฝ่าย","Try to read their intentions"],
+  ["ข่มขู่หรือแสดงแสนยานุภาพ","Use threats or a show of force"]
+ ]},
+ {key:'explore', th:'การสำรวจ', en:'Exploration', rows:[
+  ["ประเมินภูมิประเทศข้างหน้า","Assess the terrain ahead"],
+  ["ตรวจหากับดักหรืออันตราย","Check for traps or hazards"],
+  ["ปีนขึ้นที่สูงหาจุดมองเห็น","Climb or seek vantage point"],
+  ["เก็บตัวอย่างสิ่งของหรือสิ่งมีชีวิต","Collect specimens or samples"],
+  ["กลบร่องรอย","Cover tracks"],
+  ["บันทึกสิ่งที่ค้นพบ","Document discoveries"],
+  ["หาอาหาร น้ำ หรือเสบียง","Forage for food, water, or supplies"],
+  ["รั้งรอไว้แล้วสังเกตการณ์","Hold back and observe"],
+  ["ล่าสัตว์หรือตกปลา","Hunt or fish"],
+  ["ทิ้งข้อความหรือเครื่องหมายไว้","Leave messages or signs"],
+  ["ฟังเสียงสะท้อน/น้ำ/ลม/สัตว์","Listen for echoes/water/wind/animals"],
+  ["มองหาปรากฏการณ์เวทมนตร์หรือสิ่งผิดปกติ","Look for magical or strange phenomena"],
+  ["หาที่หลบสภาพอากาศ","Look for shelter from the elements"],
+  ["มองหาร่องรอยผู้คน","Look for signs of civilization"],
+  ["มองหารอยเท้าหรือร่องรอยการผ่านไป","Look for tracks or signs of passage"],
+  ["ทำแผนที่หรือทำเครื่องหมายพื้นที่","Map or mark the area"],
+  ["นำทางด้วยดาว/ดวงอาทิตย์/จุดสังเกต","Navigate by stars/sun/landmarks"],
+  ["สังเกตพฤติกรรมสัตว์ป่าเพื่อหาเบาะแส","Observe wildlife patterns for clues"],
+  ["จุดไฟหรือหาแหล่งแสงสว่าง","Produce source of light or heat"],
+  ["เสนอเปลี่ยนลำดับขบวนหรือจังหวะเดิน","Propose a change in marching order or pace"],
+  ["เสนอให้พักสั้นๆ","Propose a short rest"],
+  ["เร่งฝีเท้าให้ไปได้ไกลขึ้น","Rush to cover more ground"],
+  ["ออกลาดตระเวนล่วงหน้าอย่างระวัง","Scout ahead carefully"],
+  ["ค้นหาเส้นทางลับ","Search for hidden paths"],
+  ["ส่งสัตว์คู่ใจหรือสิ่งที่อัญเชิญมาไปข้างหน้า","Send a companion or summoned being ahead"],
+  ["ยืนยามเฝ้าระวัง","Stand guard or keep watch"],
+  ["ตื่นตัวไว้และเคลื่อนที่ช้าๆ","Stay alert and move slowly"],
+  ["ดูลมฟ้าอากาศ","Study the weather"],
+  ["เสนอให้เดินทางต่ออีกหน่อย","Suggest to press on for longer"],
+  ["เสนอให้แยกกลุ่มกัน","Suggest to split up the group"],
+  ["เสี่ยงเพื่อประหยัดเวลา","Take a risk to save time"],
+  ["ทดสอบอากาศหรือน้ำ","Test the air or water"],
+  ["ทดสอบพื้นดินหรือความลึก","Test the ground or depth"],
+  ["ลองเส้นทางอื่น","Try a different route"],
+  ["พยายามระบุชนิดพืช สัตว์ หรือจุดสังเกต","Try to identify a plant, creature, or landmark"],
+  ["ใช้เครื่องมือเฉพาะทาง","Use a specialized instrument"]
+ ]},
+ {key:'delve', th:'ลงลึก', en:'Delving', rows:[
+  ["ปรับรูปขบวนหรือระยะห่าง","Adjust formation or spacing"],
+  ["ย้อนกลับไปทางแยกก่อนหน้า","Backtrack to a previous junction"],
+  ["ตรวจหาแผ่นกดหรือเส้นลวดสะดุด","Check for pressure plates or tripwires"],
+  ["ตรวจหาร่องรอยการผ่านมาเมื่อไม่นาน","Check for recent signs of passage or presence"],
+  ["ตรวจเพดานหาอันตรายหรือความไม่มั่นคง","Check the ceiling for hazards or instability"],
+  ["ปีนขึ้นไปยึดที่สูง","Climb or take the high ground"],
+  ["เก็บตัวอย่าง","Collect samples"],
+  ["กลบร่องรอยหรือปกปิดการมีอยู่","Cover tracks or conceal presence"],
+  ["สร้างสิ่งล่อ เบี่ยงเบน หรือตัวหลอก","Create a distraction, lure, or decoy"],
+  ["บันทึกสิ่งที่พบและคำเตือน","Document findings and warnings"],
+  ["ตรวจซากหรือเศษซากหาเบาะแส","Examine remains or debris for clues"],
+  ["ตรวจโครงสร้างหาจุดอ่อน","Examine the structure for weaknesses"],
+  ["สัมผัสกระแสลมหรือการเปลี่ยนอุณหภูมิ","Feel for air currents or temperature changes"],
+  ["ตามเส้นทางที่ยังไม่เคยสำรวจ","Follow an unexplored route"],
+  ["ซ่อนในเงามืดหรือช่องแคบ","Hide in the shadows or a crawlspace"],
+  ["แนบหูฟังที่ประตู กำแพง หรือทางเดิน","Listen at a door, wall, or passage"],
+  ["มองหารอยสัตว์ เครื่องหมายอาณาเขต หรือร่องรอยรัง","Look for creature tracks, territorial signs, or lair markings"],
+  ["ทำแผนผังและเส้นทางเชื่อม","Map the layout and connections"],
+  ["ทำเครื่องหมายทางเดินกันหลงวน","Mark your path to avoid going in circles"],
+  ["แอบส่องห้องด้วยกระจกหรืออุปกรณ์","Peek into a room using a mirror or tool"],
+  ["ใช้ไม้ยาวแหย่พื้นหรือผนัง","Probe the floor or walls with a pole"],
+  ["ดันทุรังเดินหน้าต่อ","Push recklessly onward"],
+  ["เรียกทุกคนหยุดพักหายใจ","Rally the group for a breather"],
+  ["ล่วงหน้าไปสำรวจก่อนกลุ่ม","Scout ahead of the party"],
+  ["ปิดผนึก กั้น หรือทำเครื่องกีดขวางทางเข้า","Seal, block, or barricade an entry"],
+  ["ค้นหาประตูลับ ทางลับ หรือกลไก","Search for hidden doors, passages, or mechanisms"],
+  ["ค้นหาของมีค่าหรือเสบียงที่ซุกไว้","Search for hidden loot or cached supplies"],
+  ["ค้นหาจารึก รอยสลัก หรือสัญลักษณ์","Search for inscriptions, carvings, or symbols"],
+  ["ส่งสัตว์คู่ใจหรือสิ่งอัญเชิญเข้าไปก่อน","Send a familiar or summoned creature ahead first"],
+  ["ส่งแหล่งแสงเข้าไปก่อน","Send a light source ahead"],
+  ["สัมผัสหาร่องรอยเวทมนตร์","Sense for magical residues"],
+  ["วางลวดสะดุด สัญญาณเตือน หรือเครื่องหมายเตือน","Set tripwires, alarms, or warning markers"],
+  ["ดมอากาศหาแก๊ส ควัน กลิ่นเน่า หรือสารเคมี","Sniff the air for gas, smoke, rot, or chemicals"],
+  ["ศึกษาสถาปัตยกรรมดูจุดประสงค์ ที่มา หรืออายุ","Study architecture for purpose, origin, logic, or age"],
+  ["ดูแลบาดแผล ความเหนื่อยล้า หรือขวัญกำลังใจ","Tend to wounds, fatigue, or morale"],
+  ["โยนของเข้าไปทดสอบห้องก่อน","Toss something ahead to test a room"]
+ ]},
+ {key:'interp', th:'การตีความ', en:'Interpretation', rows:[
+  ["เชื่อว่าเป็นกับดักหรือบททดสอบ","Believe it's a trap or test"],
+  ["เชื่อว่ากำลังถูกโกหกหรือหลอก","Believe they are being lied to or deceived"],
+  ["เชื่อมโยงเข้ากับรูปแบบที่ใหญ่กว่า","Connect it to a larger pattern"],
+  ["ปัดทิ้งว่าเป็นแค่สิ่งเบี่ยงเบน","Dismiss it as a distraction or misdirection"],
+  ["รู้สึกถึงหน้าที่หรือความรับผิดชอบอย่างแรงกล้า","Feel a strong sense of personal duty or responsibility"],
+  ["รู้สึกไม่ไว้ใจหรือคลางแคลง","Feel distrust or suspicion"],
+  ["รู้สึกอยากรู้อยากเห็นหรือหลงใหลอย่างสุดกลั้น","Feel intense, unfiltered curiosity or fascination"],
+  ["รู้สึกคิดถึงอดีตหรือเหมือนเคยเจอมาก่อน","Feel nostalgia or déjà vu"],
+  ["รู้สึกท่วมท้นรับมือไม่ไหว","Feel overwhelmed"],
+  ["สัญชาตญาณบอกแรงๆ ว่ามีบางอย่างผิดปกติ","Get a strong gut feeling that something is wrong"],
+  ["ตีความว่าเป็นสาสน์เชิงสัญลักษณ์หรือคำเตือน","Interpret it as a symbolic message or warning"],
+  ["ตีความสถานการณ์ผิดไปคนละเรื่อง","Misinterpret the situation entirely"],
+  ["ตัดสินเจตนาของคนอื่นผิด","Misjudge the intentions of others"],
+  ["หมกมุ่นกับรายละเอียดเดียว","Obsess over one detail"],
+  ["วิเคราะห์ทุกรายละเอียดมากเกินไป","Overanalyze every detail"],
+  ["หาเหตุผลกลบเกลื่อนให้มันไม่สำคัญ","Rationalize it away"],
+  ["อ่านว่าเป็นลางร้าย","Read it as a bad omen or a dark portent"],
+  ["มองออกว่าบางอย่างมีค่าหรือมีประโยชน์","Recognize something as valuable or useful"],
+  ["เห็นความเชื่อมโยงกับเหตุการณ์ก่อนหน้า","See connections to previous events"],
+  ["เห็นอันตรายหรือภัยที่ซ่อนอยู่","See hidden danger or threat"],
+  ["มองว่าเป็นการท้าทายหรือยั่วยุ","See it as a challenge or provocation"],
+  ["คว้าไว้เป็นจังหวะเหมาะที่จะลงมือ","Seize it as the perfect chance to act"],
+  ["สัมผัสได้ถึงโอกาสหรือความได้เปรียบ","Sense opportunity or advantage"],
+  ["สงสัยว่ามีรางวัลหรือความลับซ่อนอยู่ใกล้ๆ","Suspect a hidden reward or secret is nearby"],
+  ["สงสัยว่ามีการซุ่มโจมตี","Suspect an ambush"],
+  ["ถือว่าเป็นคำเชิญหรือการต้อนรับ","Take it as an invitation or welcome"],
+  ["เชื่อตามที่เห็นตรงๆ","Take it at face value"],
+  ["เก็บมาคิดว่าเป็นเรื่องส่วนตัว","Take it personally"],
+  ["คิดว่าเป็นเรื่องบังเอิญ","Think it's a coincidence"],
+  ["คิดว่าเป็นการเสแสร้ง","Think it's a performance or an act"],
+  ["ถือเป็นเบาะแสสำคัญของปริศนาที่ใหญ่กว่า","Treat it as a key clue to a larger mystery"],
+  ["ถือว่าเป็นโชคชะตา","Treat it as fate or destiny"],
+  ["เชื่อสัญชาตญาณมากกว่าเหตุผล","Trust intuition over logic"],
+  ["พยายามอ่านความหมายที่ซ่อนอยู่","Try to read between the lines"],
+  ["มองว่าเป็นปริศนาที่ต้องไข","View it as a puzzle that needs to be solved"],
+  ["มองว่าเป็นโอกาสแสดงฝีมือให้ประทับใจ","View it as an audition or chance to impress"]
+ ]},
+ {key:'down', th:'ช่วงพัก', en:'Downtime', rows:[
+  ["ยอมรับความกลัวหรือจุดอ่อน","Admit a fear or weakness"],
+  ["ขอคำแนะนำเรื่องส่วนตัวจากเพื่อนร่วมทาง","Ask an ally for advice on a personal dilemma"],
+  ["ถามใครสักคนถึงแรงจูงใจ","Ask someone about their motives"],
+  ["เปรียบเทียบความเชื่อหรือปรัชญา","Compare beliefs or philosophies"],
+  ["สารภาพความลับ คำโกหก หรือเจตนาที่ซ่อนไว้","Confess a secret, a lie, or a hidden motive"],
+  ["เล่าความข้องใจที่ค้างคา","Confide a lingering doubt"],
+  ["ทำอาหาร แบ่งอาหาร หรือชวนดื่มด้วยความตั้งใจ","Cook, share food, or offer a drink with intention"],
+  ["ถกเถียงเรื่องทางเลือกทางศีลธรรม","Debate a moral choice"],
+  ["คุยถึงความฝันหลังการเดินทางจบลง","Discuss long-term dreams for when the journey ends"],
+  ["บอกความชื่นชมหรือขอบคุณ","Express admiration or gratitude"],
+  ["บอกว่าคิดถึงบ้านหรือคิดถึงใครบางคน","Express homesickness or longing"],
+  ["เล่นพนันหรือเล่นเกมวัดดวงวัดฝีมือ","Gamble or play a game of chance or skill"],
+  ["ไว้อาลัยสิ่งที่สูญเสียไป","Grieve something lost"],
+  ["ปล่อยตัวไปกับนิสัยที่ใช้ปลอบใจตัวเอง","Indulge in a personal coping mechanism or vice"],
+  ["ถามถึงบ้านเกิดหรือครอบครัวของเพื่อนร่วมทาง","Inquire about an ally's homeland or family"],
+  ["ปลอบใจหรือให้กำลังใจ","Offer comfort or encouragement"],
+  ["ครุ่นคิดถึงตัวตนที่แท้จริงของศัตรู","Ponder about the true nature of their enemies"],
+  ["ฝึกฝนทักษะหรือทำงานอดิเรก","Practice a skill or hobby"],
+  ["สวดมนต์ ทำสมาธิ หรือทำพิธีส่วนตัว","Pray, meditate, or observe a personal tradition"],
+  ["เสนอคำสาบานหรือข้อตกลงจริงจัง","Propose a solemn pact"],
+  ["ตั้งคำถามถึงทิศทางหรือเป้าหมายของกลุ่ม","Question the group's direction or purpose"],
+  ["ปลุกใจกลุ่มด้วยคำพูดหรือการชนแก้ว","Rally the group with a speech or toast"],
+  ["แบ่งปันพิธีกรรม เพลง หรือคำพังเพยประจำถิ่น","Share a cultural ritual, song, or saying"],
+  ["อวดของที่ระลึกพร้อมเล่าเรื่องของมัน","Share a keepsake or memento and its story"],
+  ["เล่าเรื่องสมัยเด็ก","Share a story from their childhood"],
+  ["เล่าข่าวลือหรือข้อสันนิษฐาน","Share rumors or speculation"],
+  ["ร้องเพลง เล่นดนตรี หรือแสดงให้กลุ่มดู","Sing, play music, or perform for the group"],
+  ["เสนอให้เปลี่ยนแผน","Suggest a change in plans"],
+  ["เล่าถึงความฝันที่เคยฝัน","Talk about a dream you once had"],
+  ["พูดถึงคนที่ทิ้งไว้ข้างหลัง","Talk about someone you left behind"],
+  ["แหย่ ล้อเล่น หรือทำให้บรรยากาศเบาลง","Tease, joke, or try to lighten the mood"],
+  ["เล่าเรื่องความล้มเหลวหรือความรุ่งโรจน์","Tell a story of failure or glory"],
+  ["ดูแลบาดแผลหรือซ่อมของที่สึกหรอ","Tend to wounds or worn gear"],
+  ["สอนทักษะ เทคนิค หรือคำพูดเล็กๆ ให้เพื่อน","Try to teach an ally a minor skill, trick, or phrase"],
+  ["เดินหายเข้าไปในความมืดคนเดียว","Wander off alone into the dark"],
+  ["เขียน วาด หรือบันทึกความคิด","Write, sketch, or record thoughts"]
+ ]},
+ {key:'plan', th:'การวางแผน', en:'Planning', rows:[
+  ["เลี่ยงการเผชิญหน้าไปเลย","Avoid confrontation entirely"],
+  ["ทวงบุญคุณหรือหนี้เก่า","Call in a favor or old debt"],
+  ["ดูลาง เสี่ยงทาย หรือขอคำชี้นำทางจิตวิญญาณ","Consult omens, divination, or spiritual guidance"],
+  ["ติดต่อหรือเจรจากับพันธมิตร/กลุ่มอำนาจที่เป็นไปได้","Contact or negotiate with a potential ally/faction"],
+  ["ถกเถียงถึงต้นทุนทางศีลธรรมและความเป็นจริง","Debate moral/ethical/practical costs"],
+  ["ยกให้หัวหน้ากลุ่มตัดสิน","Defer to the party's leader"],
+  ["กำจัดภัยคุกคามเฉพาะจุดก่อน","Eliminate a specific threat first"],
+  ["ตามสัญชาตญาณและด้นสด","Follow instinct and improvise"],
+  ["เก็บข่าวลือหรือข้อมูลในพื้นที่เพิ่ม","Gather more local rumors or intel"],
+  ["จ้างคนช่วยหรือกำลังคนในพื้นที่","Hire local help or muscle"],
+  ["ศึกษาภูมิประเทศในพื้นที่","Learn the local terrain"],
+  ["หาคนติดต่อ คนรับของโจร สายข่าว หรือคนวงใน","Look for a local contact, fence, informant, or insider"],
+  ["เตรียมตัวส่วนตัวขั้นสุดท้าย","Make final personal preparations"],
+  ["เปลี่ยนไปตามเบาะแสรอง","Pivot to a secondary lead"],
+  ["วางแผนเบี่ยงเบนความสนใจ","Plan a distraction or diversion"],
+  ["เตรียมการรักษาหรือการป้องกัน","Prepare healing or protective measures"],
+  ["เสนอแผนเสี่ยงสูง","Propose a high-stakes gamble"],
+  ["ผลักดันให้บุกตรงทันที","Push for a direct, immediate strike"],
+  ["ตั้งคำถามถึงจุดประสงค์ของภารกิจทั้งหมด","Question the entire mission's purpose"],
+  ["ซ่อม อัปเกรด เสกเวท หรือดัดแปลงอุปกรณ์","Repair, upgrade, enchant, or modify equipment"],
+  ["พักฟื้นก่อนลงมือ","Rest and recover before acting"],
+  ["เติมเสบียงและตรวจนับของ","Restock and audit supplies"],
+  ["ทิ้งแผนเดิมแล้วเริ่มใหม่","Scrap the plan and start over"],
+  ["หาผู้เชี่ยวชาญ นักปราชญ์ ไกด์ หรือผู้ชำนาญ","Seek an expert, sage, guide, or specialist"],
+  ["ส่งคนแฝงตัวเข้าไป","Send someone undercover"],
+  ["วางกับดักหรือซุ่มโจมตี","Set a trap or ambush"],
+  ["กำหนดสัญญาณ รหัสลับ หรือจุดนัดถอย","Set signals, code words, or fallback points"],
+  ["เปิดเผยข้อมูลที่เคยปิดไว้","Share previously withheld knowledge"],
+  ["แยกกลุ่ม","Split the party"],
+  ["ศึกษาแผนที่ แผนภูมิ ตำนาน หรือบันทึกประวัติศาสตร์","Study maps, charts, myths, or historical records"],
+  ["ฝึกซ้อมทักษะหรือกลยุทธ์เฉพาะ","Train or practice a specific skill/tactic"],
+  ["ใช้สินบนหรือเส้นสาย","Use bribery or social leverage"],
+  ["อาสารับส่วนที่อันตราย","Volunteer for the dangerous part"],
+  ["อาสาไปลาดตระเวนล่วงหน้าคนเดียว","Volunteer to scout ahead alone"],
+  ["รอจังหวะ สภาพอากาศ หรือเหตุการณ์ที่เหมาะกว่า","Wait for better timing/weather/specific event"],
+  ["เตือนว่าอาจมีกับดัก","Warn of a potential trap"]
+ ]}
+];
+
+/* =========================================================================
+   สถานะแอป
+   ========================================================================= */
+function newChar(){
+  return {id:uid(), name:'', path:'', species:'', boon:'', features:'', speciesNote:'',
+    inclinations:[], circle:'', circleNote:'',
+    equipment:[], weapons:[], potions:[], scrolls:[],
+    healthMax:3, healthCur:3, armorType:'medium', armorSave:ARMOR_PRESETS.medium.save,
+    karma:3, heroDie:true, wealth:'moderate', details:'',
+    traits:[{t:'',c:'',s:1},{t:'',c:'',s:1},{t:'',c:'',s:1}]};
+}
+function newEnemy(name,max,tohit,note){
+  max=Math.max(1,parseInt(max)||1);
+  return {id:uid(), name:name||'ศัตรูไม่มีชื่อ', max:max, cur:max, tohit:parseInt(tohit)||3, note:note||''};
+}
+let chars=[newChar()];
+let active=0;
+let encounter={round:1, enemies:[], partyIds:[], notes:''};
+let notesState={pad:'', obv:'', opt:'', odd:''};
+let check={dice:[], pick:0, dbl:false};
+let rollsState={spark:{}, spec:{}};
+let padStack=[];
+let ez={dice:[], pick:0, mode:'normal', extra:0, target:3, charId:null, crit:{total:0,done:false}};
+let cast={pl:1, rs:1};
+
+function saveCharsNow(){ saveKeyNow('characters', {list:chars, active}); }
+function saveCharsDebounced(){ saveKeyDebounced('characters', ()=>({list:chars, active})); }
+
+/* =========================================================================
+   เริ่มต้นแอป
+   ========================================================================= */
+function waitForStorage(timeoutMs){
+  return new Promise(resolve=>{
+    const start=Date.now();
+    (function poll(){
+      if(window.storage) return resolve(true);
+      if(Date.now()-start>timeoutMs) return resolve(false);
+      setTimeout(poll, 50);
+    })();
+  });
+}
+async function init(){
+  await waitForStorage(4000);
+  try{
+    const store = await loadKey('characters', null);
+    if(store && Array.isArray(store.list) && store.list.length){
+      chars = store.list.map(c=>Object.assign(newChar(), c));
+      active = store.active||0; if(active>=chars.length) active=0;
+    }
+    encounter = Object.assign({round:1,enemies:[],partyIds:[],notes:''}, await loadKey('encounter', {}));
+    notesState = Object.assign({pad:'',obv:'',opt:'',odd:''}, await loadKey('notes', {}));
+  }catch(e){ console.warn('โหลดข้อมูลเดิมไม่สำเร็จ เริ่มจากค่าว่าง:', e); }
+
+  buildStaticSelectors();
+  buildBestiaryLists();
+  buildEzRefTab();
+  buildRulesRef();
+  buildSparkSpecTables();
+  wireNav();
+  wireDiceFab();
+  wireCharTab();
+  wireCombatTab();
+  wireDiceTab();
+  wireTablesTab();
+  wirePadTab();
+
+  renderChar();
+  renderCombat();
+  renderEzCharOptions();
+  if(!chars[active].name && !chars[active].path) $('#c-build-details').open = true; // ตัวละครแรกยังว่าง เปิดให้กรอกทันที
+
+  $('#loading').classList.add('hide');
+}
+init();
+
+/* =========================================================================
+   ตัวเลือกแบบสถิต (dropdown ต่างๆ)
+   ========================================================================= */
+function buildStaticSelectors(){
+  $('#c-path').innerHTML = '<option value="">— เลือกเส้นทางฮีโร่ —</option>'
+    + Object.entries(PATHS).map(([k,p])=>`<option value="${k}">${esc(p.th)}</option>`).join('')
+    + '<option value="custom">กำหนดเอง</option>';
+  $('#c-species').innerHTML = '<option value="">— เลือกเผ่าพันธุ์ —</option>'
+    + Object.entries(SPECIES).map(([k,p])=>`<option value="${k}">${esc(p.th)}</option>`).join('')
+    + '<option value="custom">กำหนดเอง</option>';
+  $('#c-circle').innerHTML = '<option value="">— ไม่มี / ไม่ใช่นักเสก —</option>'
+    + Object.entries(CIRCLES).map(([k,p])=>`<option value="${k}">${esc(p.th)}</option>`).join('')
+    + '<option value="custom">กำหนดเอง</option>';
+  $('#c-inc-picker').innerHTML = INCLINATIONS.map((inc,i)=>`<option value="${i}">${esc(inc.th)}</option>`).join('');
+}
+
+/* =========================================================================
+   แท็บนำทาง
+   ========================================================================= */
+function wireNav(){
+  $$('.nav button').forEach(b=>b.addEventListener('click',()=>{
+    $$('.nav button').forEach(x=>x.setAttribute('aria-selected', x===b));
+    ['chars','combat','tables','pad'].forEach(t=>$('#tab-'+t).classList.toggle('hide', t!==b.dataset.tab));
+    if(b.dataset.tab==='chars') growAllIn('#tab-chars');
+    window.scrollTo({top:0});
+  }));
+}
+function openDiceDrawer(){
+  $('#dice-overlay').classList.remove('hide');
+  renderEzCharOptions();
+}
+function closeDiceDrawer(){ $('#dice-overlay').classList.add('hide'); }
+function wireDiceFab(){
+  $('#dice-fab').addEventListener('click', ()=>{
+    $('#dice-overlay').classList.contains('hide') ? openDiceDrawer() : closeDiceDrawer();
+  });
+  $('#dice-close').addEventListener('click', closeDiceDrawer);
+  $('#dice-overlay').addEventListener('click', e=>{ if(e.target.id==='dice-overlay') closeDiceDrawer(); });
+}
+
+/* =========================================================================
+   ตัวจัดการ HP/คาร์มา/เต๋าฮีโร่ ที่ใช้ร่วมกันระหว่างแท็บตัวละครและแท็บต่อสู้
+   ========================================================================= */
+document.addEventListener('click', e=>{
+  const wrap = e.target.closest('[data-kind]'); if(!wrap) return;
+  const kind = wrap.dataset.kind, id = Number(wrap.dataset.id);
+  const entity = kind==='char' ? chars.find(c=>c.id===id) : encounter.enemies.find(x=>x.id===id);
+  if(!entity) return;
+  const hpBtn = e.target.closest('[data-hp]');
+  const actBtn = e.target.closest('[data-act]');
+  if(hpBtn){
+    const d = hpBtn.dataset.hp;
+    const maxKey = kind==='char'?'healthMax':'max', curKey = kind==='char'?'healthCur':'cur';
+    if(d==='full') entity[curKey]=entity[maxKey];
+    else if(d==='maxup') entity[maxKey]++;
+    else if(d==='maxdown'){ entity[maxKey]=Math.max(0,entity[maxKey]-1); if(entity[curKey]>entity[maxKey]) entity[curKey]=entity[maxKey]; }
+    else entity[curKey]=Math.max(0, Math.min(entity[maxKey], entity[curKey]+(+d)));
+  } else if(actBtn){
+    const a=actBtn.dataset.act;
+    if(kind==='char'){
+      if(a==='karma-1') entity.karma=Math.max(0,entity.karma-1);
+      else if(a==='karma+1') entity.karma++;
+      else if(a==='hero-toggle'){ if(entity.heroDie) entity.heroDie=false; else if(entity.karma>=5){ entity.karma-=5; entity.heroDie=true; } }
+      else if(a==='session-reset'){ entity.karma=3; entity.heroDie=true; }
+      else if(a==='del-enemy'){} // n/a for char
+    } else {
+      if(a==='del-enemy'){ encounter.enemies = encounter.enemies.filter(x=>x.id!==id); saveKeyNow('encounter',encounter); renderCombat(); return; }
+    }
+  } else { return; }
+  if(kind==='char') saveCharsNow(); else saveKeyNow('encounter', encounter);
+  if(!$('#tab-chars').classList.contains('hide')) renderChar();
+  if(!$('#tab-combat').classList.contains('hide')) renderCombat();
+});
+document.addEventListener('change', e=>{
+  const wrap = e.target.closest('[data-kind="char"]'); if(!wrap) return;
+  const id = Number(wrap.dataset.id);
+  const c = chars.find(x=>x.id===id); if(!c) return;
+  const field = e.target.dataset.field;
+  if(field==='armorType'){
+    c.armorType = e.target.value;
+    if(c.armorType!=='custom' && ARMOR_PRESETS[c.armorType]) c.armorSave = ARMOR_PRESETS[c.armorType].save;
+    saveCharsNow(); renderChar(); return;
+  }
+  if(field==='armorSave'){ c.armorSave = e.target.value; saveCharsDebounced(); return; }
+  if(e.target.name && e.target.name.indexOf('wealth-')===0){ c.wealth = e.target.value; $('#c-summary').innerHTML=charSummaryHTML(c); saveCharsNow(); return; }
+});
+
+/* =========================================================================
+   แท็บตัวละคร
+   ========================================================================= */
+function charStatusHTML(c){
+  const pct = c.healthMax>0 ? Math.max(0,Math.min(100,Math.round(c.healthCur/c.healthMax*100))) : 0;
+  return `<div data-kind="char" data-id="${c.id}">
+    <div class="row" style="justify-content:space-between;margin-bottom:4px">
+      <span class="fld-label">แต้มเจ็บสูงสุด (Strikes)</span>
+      <div class="stepper"><button class="btn xs" data-hp="maxdown">−</button><b>${c.healthMax}</b><button class="btn xs" data-hp="maxup">+</button></div>
+    </div>
+    <div class="hpbar"><div class="hpbar-track"><div class="hpbar-fill green" style="width:${pct}%"></div></div>
+      <div class="hpbar-row">
+        <button class="btn sm" data-hp="-1">−1</button>
+        <span class="hpnum">${c.healthCur} / ${c.healthMax}</span>
+        <button class="btn sm" data-hp="1">+1</button>
+        <button class="btn sm" data-hp="full">ฟื้นเต็ม</button>
+      </div>
+    </div>
+    <label class="fld"><span>เกราะ</span>
+      <select data-field="armorType">
+        <option value="light" ${c.armorType==='light'?'selected':''}>เบา</option>
+        <option value="medium" ${c.armorType==='medium'?'selected':''}>กลาง</option>
+        <option value="heavy" ${c.armorType==='heavy'?'selected':''}>หนัก</option>
+        <option value="custom" ${c.armorType==='custom'?'selected':''}>กำหนดเอง</option>
+      </select>
+    </label>
+    <label class="fld"><span>รายละเอียดการเซฟ</span><input type="text" data-field="armorSave" value="${esc(c.armorSave)}"></label>
+    <div class="mini-row">
+      <span class="fld-label">คาร์มา:</span>
+      <button class="btn sm" data-act="karma-1">−1</button>
+      <b class="knum">${c.karma}</b>
+      <button class="btn sm" data-act="karma+1">+1</button>
+    </div>
+    <div class="mini-row">
+      <button class="btn sm ${c.heroDie?'on':''}" data-act="hero-toggle">${c.heroDie?'เต๋าฮีโร่: พร้อมใช้':'เต๋าฮีโร่: ใช้ไปแล้ว (แตะเพื่อจ่าย 5 คาร์มา)'}</button>
+    </div>
+    <button class="btn sm wide" data-act="session-reset" style="margin:8px 0 0">เริ่มเซสชันใหม่ (คาร์มา→3, เต๋าฮีโร่→พร้อมใช้)</button>
+  </div>`;
+}
+function wealthHTML(c){
+  return `<div data-kind="char" data-id="${c.id}" class="wealth-row">${WEALTH.map(w=>`<label class="radio"><input type="radio" name="wealth-${c.id}" value="${w.k}" ${c.wealth===w.k?'checked':''}> ${w.th}</label>`).join('')}</div>`;
+}
+function charSummaryHTML(c){
+  const pathTh = PATHS[c.path] ? PATHS[c.path].th : (c.path==='custom' ? 'กำหนดเอง' : '— ยังไม่เลือกเส้นทาง —');
+  const spTh = SPECIES[c.species] ? SPECIES[c.species].th : (c.species==='custom' ? 'กำหนดเอง' : '— ยังไม่เลือกเผ่าพันธุ์ —');
+  const wTh = (WEALTH.find(w=>w.k===c.wealth)||{}).th || '—';
+  return `<span class="tag">${esc(pathTh)}</span><span class="tag">${esc(spTh)}</span><span class="tag">${esc(wTh)}</span>`;
+}
+
+function renderCharChips(){
+  $('#char-chips').innerHTML = chars.map((c,i)=>`<button class="chip" data-i="${i}" aria-selected="${i===active}">${esc(c.name||('ตัวละคร '+(i+1)))}</button>`).join('')
+    + '<button class="chip" data-new="1">＋ ใหม่</button>';
+}
+$('#char-chips').addEventListener('click', e=>{
+  const b=e.target.closest('.chip'); if(!b) return;
+  const isNew = !!b.dataset.new;
+  if(isNew){ chars.push(newChar()); active=chars.length-1; }
+  else active=+b.dataset.i;
+  saveCharsNow(); renderChar(); renderCombat();
+  if(isNew) $('#c-build-details').open = true; // ตัวละครใหม่ยังไม่มีข้อมูล เปิดให้กรอกทันที
+});
+
+function renderChar(){
+  renderCharChips();
+  const c=chars[active];
+  $('#c-name').value=c.name;
+  $('#c-summary').innerHTML = charSummaryHTML(c);
+  $('#c-path').value=c.path;
+  $('#c-species').value=c.species;
+  $('#c-boon').value=c.boon; grow($('#c-boon'));
+  $('#c-features').value=c.features; grow($('#c-features'));
+  $('#c-speciesnote').value=c.speciesNote; grow($('#c-speciesnote'));
+  $('#c-details').value=c.details; grow($('#c-details'));
+  $('#c-circle').value=c.circle;
+  $('#c-circlenote').value=c.circleNote; grow($('#c-circlenote'));
+  $('#c-status-wrap').innerHTML = charStatusHTML(c);
+  $('#c-wealth-wrap').innerHTML = wealthHTML(c);
+  renderInclinations(); renderEquipment(); renderWeapons(); renderPotions(); renderScrolls(); renderTraits();
+  growAllIn('#tab-chars');
+}
+
+$('#c-name').addEventListener('input', e=>{ chars[active].name=e.target.value; renderCharChips(); saveCharsDebounced(); });
+$('#c-details').addEventListener('input', e=>{ chars[active].details=e.target.value; grow(e.target); saveCharsDebounced(); });
+$('#c-boon').addEventListener('input', e=>{ chars[active].boon=e.target.value; grow(e.target); saveCharsDebounced(); });
+$('#c-features').addEventListener('input', e=>{ chars[active].features=e.target.value; grow(e.target); saveCharsDebounced(); });
+$('#c-speciesnote').addEventListener('input', e=>{ chars[active].speciesNote=e.target.value; grow(e.target); saveCharsDebounced(); });
+$('#c-circlenote').addEventListener('input', e=>{ chars[active].circleNote=e.target.value; grow(e.target); saveCharsDebounced(); });
+
+$('#c-path').addEventListener('change', e=>{
+  const c=chars[active]; c.path=e.target.value;
+  const p=PATHS[c.path];
+  if(p){
+    const oldMax=c.healthMax;
+    c.boon=p.boon; c.features=p.features;
+    if(c.healthCur===oldMax || c.healthCur<1) c.healthCur=p.health;
+    c.healthMax=p.health;
+    c.armorType=p.armorType; c.armorSave=ARMOR_PRESETS[p.armorType].save;
+  }
+  renderChar(); saveCharsNow();
+});
+$('#c-species').addEventListener('change', e=>{
+  const c=chars[active]; c.species=e.target.value;
+  const s=SPECIES[c.species]; c.speciesNote = s? s.note : (c.species==='custom' ? c.speciesNote : '');
+  renderChar(); saveCharsNow();
+});
+$('#c-circle').addEventListener('change', e=>{
+  const c=chars[active]; c.circle=e.target.value;
+  const ci=CIRCLES[c.circle]; c.circleNote = ci? ci.note : '';
+  renderChar(); saveCharsNow();
+});
+$('#btn-inc-add-picker').addEventListener('click', ()=>{
+  const inc=INCLINATIONS[+$('#c-inc-picker').value]; if(!inc) return;
+  chars[active].inclinations.push(inc.th+' — '+inc.desc);
+  renderInclinations(); saveCharsNow();
+});
+
+function makeListEditor(field, containerSel, addBtnSel, placeholder){
+  function render(){
+    const arr = chars[active][field] || (chars[active][field]=[]);
+    $(containerSel).innerHTML = arr.map((v,i)=>`<div class="lrow" data-i="${i}"><textarea class="lval" rows="1" placeholder="${esc(placeholder)}"></textarea><button class="ldel" data-act="ldel" aria-label="ลบ">×</button></div>`).join('');
+    $$(containerSel+' textarea').forEach((ta,i)=>{ ta.value=arr[i]; grow(ta); });
+  }
+  $(containerSel).addEventListener('input', e=>{
+    const ta=e.target.closest('textarea'); if(!ta) return;
+    const i=+ta.closest('.lrow').dataset.i;
+    chars[active][field][i]=ta.value; grow(ta); saveCharsDebounced();
+  });
+  $(containerSel).addEventListener('click', e=>{
+    const b=e.target.closest('[data-act="ldel"]'); if(!b) return;
+    const i=+b.closest('.lrow').dataset.i;
+    chars[active][field].splice(i,1); render(); saveCharsNow();
+  });
+  $(addBtnSel).addEventListener('click', ()=>{
+    chars[active][field].push(''); render(); saveCharsNow();
+    const tas=$$(containerSel+' textarea'); tas.length && tas[tas.length-1].focus();
+  });
+  return render;
+}
+let renderInclinations, renderEquipment, renderWeapons, renderPotions, renderScrolls;
+function wireCharTab(){
+  renderInclinations = makeListEditor('inclinations','#inc-list','#btn-add-inc','แนวถนัด เช่น มือแม่นปืน');
+  renderEquipment = makeListEditor('equipment','#equip-list','#btn-add-equip','อุปกรณ์');
+  renderWeapons = makeListEditor('weapons','#weap-list','#btn-add-weap','อาวุธ');
+  renderPotions = makeListEditor('potions','#pot-list','#btn-add-pot','ยาน้ำ');
+  renderScrolls = makeListEditor('scrolls','#scr-list','#btn-add-scr','ม้วนคาถา');
+
+  $('#btn-add-trait').addEventListener('click', ()=>{ chars[active].traits.push({t:'',c:'',s:1}); saveCharsNow(); renderTraits(); });
+  $('#trait-list').addEventListener('click', e=>{
+    const b=e.target.closest('button[data-act]'); if(!b) return;
+    const i=+b.closest('.trait').dataset.i, tr=chars[active].traits;
+    if(b.dataset.act==='st') tr[i].s=(tr[i].s+1)%4; else tr.splice(i,1);
+    saveCharsNow(); renderTraits();
+  });
+  $('#trait-list').addEventListener('input', e=>{
+    const inp=e.target.closest('[data-act="tx"],[data-act="cat"]'); if(!inp) return;
+    const i=+inp.closest('.trait').dataset.i;
+    if(inp.dataset.act==='tx'){ chars[active].traits[i].t=inp.value; grow(inp); } else chars[active].traits[i].c=inp.value;
+    saveCharsDebounced();
+  });
+  $('#btn-del-char').addEventListener('click', ()=>{
+    if(!confirm('ลบตัวละครนี้ทั้งแผ่น?')) return;
+    const id = chars[active].id;
+    chars.splice(active,1);
+    encounter.partyIds = encounter.partyIds.filter(x=>x!==id);
+    if(!chars.length) chars=[newChar()];
+    active=0; saveCharsNow(); saveKeyNow('encounter',encounter); renderChar(); renderCombat();
+  });
+}
+const STAT=[{c:'empty',th:'ว่าง'},{c:'def',th:'ปกติ'},{c:'prom',th:'เด่น'},{c:'tmp',th:'ชั่วคราว'}];
+function renderTraits(){
+  $('#trait-list').innerHTML = chars[active].traits.map((t,i)=>
+    '<div class="trait" data-i="'+i+'">'
+    +'<button class="st" data-act="st" aria-label="สถานะ: '+STAT[t.s].th+'"><i class="sw '+STAT[t.s].c+'"></i></button>'
+    +'<textarea class="tx" data-act="tx" rows="1" placeholder="คุณลักษณะ เช่น ระวังตัวเกินเหตุ"></textarea>'
+    +'<input class="cat" data-act="cat" value="'+esc(t.c)+'" placeholder="—" maxlength="2" size="2">'
+    +'<button class="del" data-act="del" aria-label="ลบแถวนี้">×</button></div>').join('');
+  $$('#trait-list textarea.tx').forEach((ta,i)=>{ ta.value=chars[active].traits[i].t; grow(ta); });
+}
+
+/* =========================================================================
+   แท็บต่อสู้
+   ========================================================================= */
+function partyCardHTML(c){
+  const pct = c.healthMax>0 ? Math.max(0,Math.min(100,Math.round(c.healthCur/c.healthMax*100))) : 0;
+  const pathTh = PATHS[c.path]? PATHS[c.path].th : (c.path||'—');
+  return `<div class="ecard" data-kind="char" data-id="${c.id}">
+    <div class="ecard-head"><b>${esc(c.name||'ไม่มีชื่อ')}</b><span class="tag">${esc(pathTh)}</span></div>
+    <div class="hpbar"><div class="hpbar-track"><div class="hpbar-fill green" style="width:${pct}%"></div></div>
+      <div class="hpbar-row"><button class="btn sm" data-hp="-1">−1</button><span class="hpnum">${c.healthCur}/${c.healthMax} แต้ม</span><button class="btn sm" data-hp="1">+1</button></div>
+    </div>
+    <div class="mini-row"><span class="hint" style="margin:0">เกราะ: ${esc(c.armorSave||'—')}</span></div>
+    <div class="mini-row">
+      <span class="fld-label">คาร์มา:</span><button class="btn xs" data-act="karma-1">−1</button><b class="knum">${c.karma}</b><button class="btn xs" data-act="karma+1">+1</button>
+      <button class="btn xs ${c.heroDie?'on':''}" data-act="hero-toggle">${c.heroDie?'เต๋าฮีโร่ ✓':'เต๋าฮีโร่ ใช้แล้ว'}</button>
+    </div>
+  </div>`;
+}
+function enemyCardHTML(en){
+  const pct = en.max>0 ? Math.max(0,Math.min(100,Math.round(en.cur/en.max*100))) : 0;
+  const dead = en.cur<=0;
+  return `<div class="ecard ${dead?'defeated':''}" data-kind="enemy" data-id="${en.id}">
+    <div class="ecard-head"><b>${esc(en.name)}</b><span class="tag pink">โดนที่ ${esc(en.tohit)}+</span><button class="del" data-act="del-enemy" aria-label="ลบศัตรู">×</button></div>
+    ${en.note?`<p class="enote">${esc(en.note)}</p>`:''}
+    <div class="hpbar"><div class="hpbar-track"><div class="hpbar-fill pink" style="width:${pct}%"></div></div>
+      <div class="hpbar-row"><button class="btn sm" data-hp="-5">−5</button><button class="btn sm" data-hp="-1">−1</button>
+      <span class="hpnum">${en.cur}/${en.max}</span><button class="btn sm" data-hp="1">+1</button><button class="btn sm" data-hp="5">+5</button></div>
+    </div>
+    ${dead?'<p class="dead-tag">ปราบแล้ว</p>':''}
+  </div>`;
+}
+function renderCombat(){
+  $('#enc-round').textContent = encounter.round;
+  $('#party-chips').innerHTML = chars.map(c=>`<button class="chip" data-pid="${c.id}" aria-selected="${encounter.partyIds.includes(c.id)}">${esc(c.name||'ไม่มีชื่อ')}</button>`).join('');
+  const partyChars = chars.filter(c=>encounter.partyIds.includes(c.id));
+  $('#party-list').innerHTML = partyChars.length ? partyChars.map(partyCardHTML).join('') : '<p class="hint">แตะชื่อด้านบนเพื่อส่งตัวละครลงสนาม</p>';
+  $('#enemy-list').innerHTML = encounter.enemies.length ? encounter.enemies.map(enemyCardHTML).join('') : '<p class="hint">ยังไม่มีศัตรูในฉากนี้</p>';
+  $('#enc-notes').value = encounter.notes;
+}
+function bestiaryRowHTML(m){
+  const [name,max,tohit,note]=m;
+  return `<button class="brow" data-name="${esc(name)}" data-max="${max}" data-tohit="${tohit}" data-note="${esc(note)}">
+    <span class="bname">${esc(name)}</span><span class="bstat">${max} แต้ม · โดนที่ ${tohit}+</span></button>`;
+}
+function bestiaryHTML(){
+  return '<div class="bcat-h">หมู่ทหารกระจอก (มินเนียน)</div>' + BESTIARY.minion.map(bestiaryRowHTML).join('')
+    + '<div class="bcat-h">มอนสเตอร์คลาสสิก</div>' + BESTIARY.classic.map(bestiaryRowHTML).join('')
+    + '<div class="bcat-h">มอนสเตอร์ EZD6</div>' + BESTIARY.ezd6.map(bestiaryRowHTML).join('');
+}
+function buildBestiaryLists(){
+  $('#bestiary-list-combat').innerHTML = bestiaryHTML();
+}
+function addEnemyFromRow(b){
+  encounter.enemies.push(newEnemy(b.dataset.name, b.dataset.max, b.dataset.tohit, b.dataset.note));
+  saveKeyNow('encounter', encounter);
+  renderCombat();
+  flashNav('combat'); flashEl(b);
+}
+function wireCombatTab(){
+  $('#enc-round-minus').addEventListener('click', ()=>{ encounter.round=Math.max(1,encounter.round-1); saveKeyNow('encounter',encounter); renderCombat(); });
+  $('#enc-round-plus').addEventListener('click', ()=>{ encounter.round++; saveKeyNow('encounter',encounter); renderCombat(); });
+  $('#btn-clear-enemies').addEventListener('click', ()=>{ encounter.enemies=[]; saveKeyNow('encounter',encounter); renderCombat(); });
+  $('#btn-reset-encounter').addEventListener('click', ()=>{
+    if(!confirm('ล้างการต่อสู้ทั้งหมด (ศัตรู, รอบ, กลุ่มลงสนาม)?')) return;
+    encounter={round:1, enemies:[], partyIds:[], notes:''}; saveKeyNow('encounter',encounter); renderCombat();
+  });
+  $('#party-chips').addEventListener('click', e=>{
+    const b=e.target.closest('[data-pid]'); if(!b) return;
+    const pid=Number(b.dataset.pid); const idx=encounter.partyIds.indexOf(pid);
+    if(idx>-1) encounter.partyIds.splice(idx,1); else encounter.partyIds.push(pid);
+    saveKeyNow('encounter',encounter); renderCombat();
+  });
+  $('#btn-toggle-addform').addEventListener('click', ()=>{ $('#add-enemy-form').classList.toggle('hide'); $('#bestiary-wrap').classList.add('hide'); });
+  $('#btn-toggle-bestiary').addEventListener('click', ()=>{ $('#bestiary-wrap').classList.toggle('hide'); $('#add-enemy-form').classList.add('hide'); });
+  $('#btn-add-enemy').addEventListener('click', ()=>{
+    const name=$('#ne-name').value.trim();
+    encounter.enemies.push(newEnemy(name, $('#ne-max').value, $('#ne-tohit').value, $('#ne-note').value.trim()));
+    saveKeyNow('encounter',encounter);
+    $('#ne-name').value='';$('#ne-max').value='';$('#ne-tohit').value='';$('#ne-note').value='';
+    renderCombat();
+  });
+  $('#bestiary-list-combat').addEventListener('click', e=>{ const b=e.target.closest('.brow'); if(b) addEnemyFromRow(b); });
+  $('#enc-notes').addEventListener('input', e=>{ encounter.notes=e.target.value; saveKeyDebounced('encounter', ()=>encounter); });
+  $('#btn-roll-enctwist').addEventListener('click', ()=>{ const i=d6()-1; $('#enctwist-result').textContent=(i+1)+'. '+ENC_TWISTS[i]; });
+  $('#btn-roll-battletwist').addEventListener('click', ()=>{ const i=d6()-1; $('#battletwist-result').textContent=(i+1)+'. '+BATTLE_TWISTS[i]; });
+}
+
+/* =========================================================================
+   แท็บทอยเต๋า — EZD6
+   ========================================================================= */
+function renderEzCharOptions(){
+  const sel=$('#ez-char'); const prev=ez.charId;
+  sel.innerHTML='<option value="">— ไม่ระบุ —</option>' + chars.map(c=>`<option value="${c.id}">${esc(c.name||'ตัวละครไม่มีชื่อ')}</option>`).join('');
+  if(prev && chars.some(c=>c.id===prev)) sel.value=prev; else { sel.value=''; ez.charId=null; }
+}
+function paintEZ(){
+  const d=ez.dice;
+  if(!d.length){ $('#ez-dice').innerHTML=''; $('#ez-result').innerHTML=''; $('#ez-karma-row').innerHTML=''; $('#ez-crit-box').innerHTML=''; return; }
+  $('#ez-dice').innerHTML = d.map((n,i)=>dieHTML(n, i===ez.pick?'pick':'')).join('');
+  const val=d[ez.pick];
+  let verdict,cls;
+  if(val===1){ verdict='พลาดเสมอ (ทอยได้ 1)'; cls='odd'; }
+  else if(val===6){ verdict='สำเร็จ! (คริติคอล)'; cls='crit'; }
+  else if(val>=ez.target){ verdict='สำเร็จ'; cls='obv'; }
+  else { verdict='ไม่สำเร็จ'; cls='opt'; }
+  $('#ez-result').innerHTML = `<span class="stamp ${cls}">${esc(verdict)}<small>ต้องการ ${ez.target}+ · ได้ ${val}</small></span>`;
+  const c = chars.find(x=>x.id===ez.charId);
+  if(c){
+    $('#ez-karma-row').innerHTML = `<span class="hint" style="margin:0">คาร์มาของ ${esc(c.name||'ตัวละคร')}: <b>${c.karma}</b></span>
+      <button class="btn sm" id="btn-ez-karma" ${(val===1||c.karma<1)?'disabled':''}>ใช้ 1 คาร์มา (+1 พิพ)</button>
+      <button class="btn sm" id="btn-ez-herodie" ${!c.heroDie?'disabled':''}>ใช้เต๋าฮีโร่ (ทอยใหม่)</button>`;
+  } else {
+    $('#ez-karma-row').innerHTML = '<p class="hint">เลือกตัวละครด้านบนถ้าต้องการใช้คาร์มา/เต๋าฮีโร่</p>';
+  }
+  if(d[ez.pick]===6 && !ez.crit.done){
+    $('#ez-crit-box').innerHTML = `<div class="flag g"><span>คริติคอล! รวมแต้มเจ็บตอนนี้: <b>${ez.crit.total||1}</b></span>
+      <button class="btn sm" id="btn-ez-confirm">ทอยยืนยันคริติคอล (1D6)</button></div>`;
+  } else if(ez.crit.done){
+    $('#ez-crit-box').innerHTML = `<p class="hint">คอมโบคริติคอลจบแล้ว — รวมแต้มเจ็บทั้งหมด: <b>${ez.crit.total}</b></p>`;
+  } else { $('#ez-crit-box').innerHTML=''; }
+}
+function wireDiceTab(){
+  $('#seg-ez').addEventListener('click', ()=>{ $('#seg-ez').setAttribute('aria-selected','true'); $('#seg-check').setAttribute('aria-selected','false'); $('#pane-ez').classList.remove('hide'); $('#pane-check').classList.add('hide'); });
+  $('#seg-check').addEventListener('click', ()=>{ $('#seg-check').setAttribute('aria-selected','true'); $('#seg-ez').setAttribute('aria-selected','false'); $('#pane-check').classList.remove('hide'); $('#pane-ez').classList.add('hide'); });
+
+  $('#ez-char').addEventListener('change', e=>{ ez.charId = e.target.value? Number(e.target.value): null; paintEZ(); });
+  $('#ez-target-quick').addEventListener('click', e=>{
+    const b=e.target.closest('[data-t]'); if(!b) return;
+    ez.target=+b.dataset.t;
+    $$('#ez-target-quick button').forEach(x=>x.classList.toggle('sel', x===b));
+  });
+  $('#ez-target-quick button[data-t="3"]').classList.add('sel');
+  $('#ez-mode').addEventListener('click', e=>{
+    const b=e.target.closest('[data-m]'); if(!b) return;
+    ez.mode=b.dataset.m;
+    $$('#ez-mode button').forEach(x=>x.setAttribute('aria-selected', x===b));
+  });
+  $('#ez-extra-minus').addEventListener('click', ()=>{ ez.extra=Math.max(0,ez.extra-1); $('#ez-extra-val').textContent=ez.extra; });
+  $('#ez-extra-plus').addEventListener('click', ()=>{ ez.extra=Math.min(2,ez.extra+1); $('#ez-extra-val').textContent=ez.extra; });
+
+  $('#btn-ez-roll').addEventListener('click', ()=>{
+    const base = ez.mode==='normal'?1:2;
+    const n = base+ez.extra;
+    ez.dice = Array.from({length:n}, ()=>d6());
+    ez.pick = ez.mode==='bane' ? idxMin(ez.dice) : idxMax(ez.dice);
+    ez.crit = {total: ez.dice[ez.pick]===6?1:0, done:false};
+    paintEZ();
+  });
+  $('#ez-dice').addEventListener('click', e=>{
+    const d=e.target.closest('.die'); if(!d || ez.dice.length<2) return;
+    ez.pick = [...$('#ez-dice').children].indexOf(d);
+    ez.crit = {total: ez.dice[ez.pick]===6?1:0, done:false};
+    paintEZ();
+  });
+  $('#ez-karma-row').addEventListener('click', e=>{
+    const c = chars.find(x=>x.id===ez.charId); if(!c) return;
+    if(e.target.id==='btn-ez-karma'){
+      if(c.karma<1 || ez.dice[ez.pick]===1) return;
+      ez.dice[ez.pick]=Math.min(6, ez.dice[ez.pick]+1);
+      c.karma--; saveCharsNow();
+      if(ez.dice[ez.pick]===6 && !ez.crit.total) ez.crit.total=1;
+      paintEZ();
+    }
+    if(e.target.id==='btn-ez-herodie'){
+      if(!c.heroDie) return;
+      ez.dice[ez.pick]=d6(); c.heroDie=false; saveCharsNow();
+      ez.crit = {total: ez.dice[ez.pick]===6?1:0, done:false};
+      paintEZ();
+    }
+  });
+  $('#ez-crit-box').addEventListener('click', e=>{
+    if(e.target.id!=='btn-ez-confirm') return;
+    const roll=d6();
+    if(roll===6) ez.crit.total=(ez.crit.total||1)+1; else ez.crit.done=true;
+    paintEZ();
+    $('#ez-crit-box').insertAdjacentHTML('beforeend', `<p class="hint">ทอยยืนยันได้ ${roll}${roll===6?' — ต่อคอมโบ!':' — จบคอมโบ'}</p>`);
+  });
+
+  $('#dice-drawer').addEventListener('click', e=>{
+    const pl=e.target.closest('[data-pl]'); if(pl){ cast.pl=Math.max(1,Math.min(3,cast.pl+(+pl.dataset.pl))); $('#pl-val').textContent=cast.pl; }
+    const rs=e.target.closest('[data-rs]'); if(rs){ cast.rs=Math.max(1,Math.min(6,cast.rs+(+rs.dataset.rs))); $('#rs-val').textContent=cast.rs; }
+  });
+  $('#btn-cast-roll').addEventListener('click', ()=>{
+    const plDice=Array.from({length:cast.pl},()=>d6());
+    const rsDice=Array.from({length:cast.rs},()=>d6());
+    const plMax=Math.max(...plDice), rsMax=Math.max(...rsDice);
+    const ones=plDice.filter(v=>v===1).length;
+    const success = plMax>=rsMax;
+    $('#cast-result').innerHTML = `<div class="stamp-wrap"><span class="stamp ${success?'crit':'odd'}">${success?'ร่ายสำเร็จ':'ร่ายไม่สำเร็จ'}<small>พลังเวท [${plDice.join(', ')}] vs ต้าน [${rsDice.join(', ')}]</small></span></div>`
+      + (ones>0 ? `<p class="hint">มีลูกพลังเวทออก 1 จำนวน ${ones} ลูก — เสี่ยงจุดไฟเวท (รับดาเมจ 1 แต้ม/ลูก เพื่อฝืนร่ายต่อได้ถ้าต้องการ)</p>` : '');
+  });
+
+  buildEzCharOptionsRefresh();
+}
+function buildEzCharOptionsRefresh(){ /* placeholder so renderEzCharOptions can be called after chars mutate elsewhere */ }
+
+/* =========================================================================
+   แท็บทอยเต๋า — เช็ก Triple-O (ย้ายมาจากแอปเดิม)
+   ========================================================================= */
+const OUT={1:{k:'odd',th:'ประหลาด',en:'THE ODD'},2:{k:'opt',th:'เป็นไปได้',en:'THE OPTION'},
+           3:{k:'opt',th:'เป็นไปได้',en:'THE OPTION'},4:{k:'obv',th:'ปกติ',en:'THE OBVIOUS'},
+           5:{k:'obv',th:'ปกติ',en:'THE OBVIOUS'},6:{k:'obv',th:'ปกติ',en:'THE OBVIOUS'}};
+function wireCheckTab(){
+  const fields={obv:$('#f-obv'),opt:$('#f-opt'),odd:$('#f-odd')};
+  Object.keys(fields).forEach(k=>{
+    fields[k].value=notesState[k]||'';
+    fields[k].addEventListener('input', ()=>{
+      notesState[k]=fields[k].value;
+      saveKeyDebounced('notes', ()=>notesState);
+      if(check.dice.length) paintCheck();
+    });
+  });
+  $('#btn-check-roll').addEventListener('click', ()=>{ check={dice:[d6()],pick:0,dbl:false}; paintCheck(); });
+  $('#btn-check-dd').addEventListener('click', ()=>{ const a=d6(),b=d6(); check={dice:[a,b],pick:0,dbl:a===b}; paintCheck(); });
+  $('#check-dice').addEventListener('click', e=>{
+    const d=e.target.closest('.die'); if(!d||check.dice.length<2) return;
+    check.pick=[...$('#check-dice').children].indexOf(d); paintCheck();
+  });
+  function paintCheck(){
+    const dice=check.dice;
+    if(!dice.length){ $('#check-dice').innerHTML=''; $('#check-stamp-wrap').innerHTML=''; $('#check-stamp-note').textContent=''; $('#check-dd-flag').innerHTML=''; return; }
+    $('#check-dice').innerHTML = dice.map((n,i)=>dieHTML(n, dice.length>1&&i===check.pick?'pick':'')).join('');
+    const n=dice[check.pick], o=OUT[n];
+    [...$('#check-band').children].forEach((c,i)=>c.classList.toggle('on', i===n-1));
+    $('#check-stamp-wrap').innerHTML = '<span class="stamp '+o.k+'">'+o.th+'<small>'+o.en+'</small></span>';
+    const txt=fields[o.k].value.trim();
+    $('#check-stamp-note').textContent = txt || '— ยังไม่ได้เขียนทางนี้ไว้ คิดตอนนี้ได้เลย —';
+    $('#check-dd-flag').innerHTML = (dice.length>1 && check.dbl)
+      ? '<div class="flag"><span><b>ออกเลขคู่!</b> พฤติกรรมนี้เด่นขึ้นสำหรับตัวละคร</span><button class="btn sm" id="btn-mk-trait">＋ ใส่เป็นคุณลักษณะ</button></div>'
+      : (dice.length>1 ? '<p class="hint">แตะลูกเต๋าเพื่อเลือกผลที่ต้องการใช้</p>' : '');
+    const mk=$('#btn-mk-trait');
+    if(mk) mk.addEventListener('click', ()=>{
+      const c=chars[active];
+      c.traits.push({t:txt||o.th, c:'PR', s:2});
+      saveCharsNow(); renderTraits();
+      $('#check-dd-flag').innerHTML='<div class="flag"><span>เพิ่มลงแผ่นของ <b>'+esc(c.name||'ตัวละครนี้')+'</b> แล้ว</span></div>';
+    });
+  }
+  $('#btn-save-check').addEventListener('click', ()=>{
+    if(!check.dice.length) return;
+    const n=check.dice[check.pick], o=OUT[n], txt=fields[o.k].value.trim();
+    addPad('เช็ก '+(check.dice.length>1 ? '2d6 ('+check.dice.join('/')+') → '+n : '1d6 → '+n)+' · '+o.th+(txt?': '+txt:'')+(check.dbl?' [ออกคู่]':''));
+  });
+  $('#btn-clear-check').addEventListener('click', ()=>{
+    Object.keys(fields).forEach(k=>fields[k].value='');
+    notesState.obv=''; notesState.opt=''; notesState.odd=''; saveKeyNow('notes',notesState);
+    check={dice:[],pick:0,dbl:false};
+    [...$('#check-band').children].forEach(c=>c.classList.remove('on'));
+    paintCheck();
+  });
+}
+
+/* =========================================================================
+   แท็บตาราง
+   ========================================================================= */
+function rowHTML(t,kind){
+  return '<div class="tbl" data-kind="'+kind+'" data-key="'+t.key+'">'
+    +'<div class="nm">'+t.th+'<em>'+t.en+'</em></div>'
+    +'<button class="res" data-act="roll"><span class="code">–</span>'
+    +'<span class="txt"><span class="th empty">แตะเพื่อทอย</span><span class="en"></span></span></button>'
+    +'<button class="add" data-act="save" aria-label="เก็บ '+t.th+' ลงบันทึก">＋</button></div>';
+}
+function buildSparkSpecTables(){
+  $('#spark-list').innerHTML = SPARK.map(t=>rowHTML(t,'spark')).join('');
+  $('#spec-list').innerHTML = SPEC.map(t=>rowHTML(t,'spec')).join('');
+}
+const findT=(kind,key)=>(kind==='spark'?SPARK:SPEC).find(t=>t.key===key);
+function rollOneTable(kind,key){
+  const t=findT(kind,key), i=(d6()-1)*6+(d6()-1);
+  rollsState[kind][key]=i; paintTableRow(kind,key); return t.rows[i];
+}
+function paintTableRow(kind,key){
+  const box=document.querySelector('.tbl[data-kind="'+kind+'"][data-key="'+key+'"]');
+  const i=rollsState[kind][key]; if(!box||i==null) return;
+  const t=findT(kind,key), r=t.rows[i];
+  box.querySelector('.code').textContent=codeOf(i);
+  const th=box.querySelector('.txt .th'); th.textContent=r[0]; th.classList.remove('empty');
+  box.querySelector('.txt .en').textContent=r[1];
+}
+function saveTableRow(kind,key){
+  const i=rollsState[kind][key]; if(i==null) return;
+  const t=findT(kind,key); addPad(t.th+' '+codeOf(i)+' · '+t.rows[i][0]);
+}
+function buildEzRefTab(){
+  let html = '<details class="ref" open><summary>ตัวเลือกมอนสเตอร์ (1D20) — แตะเพื่อเพิ่มเข้าฉากต่อสู้</summary><div class="rc-body">' + bestiaryHTML() + '</div></details>';
+  html += '<details class="ref"><summary>ทวิสต์เหตุการณ์ (1D6)</summary><div class="rc-body">'
+    + ENC_TWISTS.map((t,i)=>`<p class="refline">${i+1}. ${esc(t)}</p>`).join('') + '</div></details>';
+  html += '<details class="ref"><summary>ทวิสต์การต่อสู้ (1D6)</summary><div class="rc-body">'
+    + BATTLE_TWISTS.map((t,i)=>`<p class="refline">${i+1}. ${esc(t)}</p>`).join('') + '</div></details>';
+  html += '<details class="ref"><summary>บัฟมอนสเตอร์บอส</summary><div class="rc-body">'
+    + POWERUPS.map(t=>`<p class="refline">${esc(t)}</p>`).join('') + '</div></details>';
+  html += '<details class="ref"><summary>ระดับความยาก & ระดับทรัพย์สิน</summary><div class="rc-body">'
+    + '<p><b>ระดับความยาก (เลขเป้า)</b></p>' + DIFF_SCALE.map(d=>`<p class="refline">${d.n} — ${esc(d.th)} (${esc(d.en)})</p>`).join('')
+    + '<p style="margin-top:8px"><b>ระดับทรัพย์สิน</b></p>' + WEALTH.map(w=>`<p class="refline">${esc(w.th)}</p>`).join('')
+    + '</div></details>';
+  $('#ezref-pane').innerHTML = html;
+}
+function buildRulesRef(){
+  $('#rules-ref').innerHTML = RULES_REF_LINES.map(l=>`<p class="refline">${l}</p>`).join('');
+}
+function wireTablesTab(){
+  function setSeg(which){
+    $('#seg-spark').setAttribute('aria-selected', which==='spark');
+    $('#seg-spec').setAttribute('aria-selected', which==='spec');
+    $('#seg-ezref').setAttribute('aria-selected', which==='ezref');
+    $('#spark-list').classList.toggle('hide', which!=='spark');
+    $('#spec-list').classList.toggle('hide', which!=='spec');
+    $('#ezref-pane').classList.toggle('hide', which!=='ezref');
+    $('#tables-roll-all-row').classList.toggle('hide', which==='ezref');
+    $('#tables-hint').classList.toggle('hide', which==='ezref');
+  }
+  $('#seg-spark').addEventListener('click', ()=>setSeg('spark'));
+  $('#seg-spec').addEventListener('click', ()=>setSeg('spec'));
+  $('#seg-ezref').addEventListener('click', ()=>setSeg('ezref'));
+  const isSpark=()=>$('#seg-spark').getAttribute('aria-selected')==='true';
+  [['#spark-list','spark'],['#spec-list','spec']].forEach(([sel,kind])=>{
+    $(sel).addEventListener('click', e=>{
+      const b=e.target.closest('[data-act]'); if(!b) return;
+      const key=b.closest('.tbl').dataset.key;
+      if(b.dataset.act==='roll') rollOneTable(kind,key); else saveTableRow(kind,key);
+    });
+  });
+  $('#btn-roll-all').addEventListener('click', ()=>{ const kind=isSpark()?'spark':'spec'; (kind==='spark'?SPARK:SPEC).forEach(t=>rollOneTable(kind,t.key)); });
+  $('#btn-save-all').addEventListener('click', ()=>{ const kind=isSpark()?'spark':'spec'; (kind==='spark'?SPARK:SPEC).forEach(t=>saveTableRow(kind,t.key)); });
+  $('#ezref-pane').addEventListener('click', e=>{ const b=e.target.closest('.brow'); if(b) addEnemyFromRow(b); });
+}
+
+/* =========================================================================
+   แท็บบันทึก
+   ========================================================================= */
+function addPad(line){
+  padStack.push(notesState.pad); if(padStack.length>30) padStack.shift();
+  notesState.pad = (notesState.pad ? notesState.pad.replace(/\s+$/,'')+'\n' : '') + line;
+  $('#pad').value = notesState.pad;
+  saveKeyNow('notes', notesState);
+  flashNav('pad');
+}
+function wirePadTab(){
+  $('#pad').value = notesState.pad;
+  $('#pad').addEventListener('input', ()=>{ notesState.pad=$('#pad').value; saveKeyDebounced('notes', ()=>notesState); });
+  $('#btn-copy').addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText($('#pad').value); }catch(e){ $('#pad').select(); document.execCommand('copy'); } });
+  $('#btn-undo').addEventListener('click', ()=>{ if(!padStack.length) return; notesState.pad=padStack.pop(); $('#pad').value=notesState.pad; saveKeyNow('notes',notesState); });
+  $('#btn-clear-pad').addEventListener('click', ()=>{
+    if(!$('#pad').value || !confirm('ล้างบันทึกทั้งหมด?')) return;
+    padStack.push(notesState.pad); notesState.pad=''; $('#pad').value=''; saveKeyNow('notes',notesState);
+  });
+  wireCheckTab();
+}
+</script>
+</body>
+</html>
