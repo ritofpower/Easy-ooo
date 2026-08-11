@@ -80,6 +80,8 @@ button{cursor:pointer}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .grow{flex:1 1 auto;min-width:0}
 .hint{font-size:13px;color:var(--soft);margin:6px 0 0}
+.inc-count{font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--paper2);border:2px solid var(--ink);padding:1px 6px;margin-left:6px}
+.inc-count.over{background:var(--pink);color:#fff;border-color:var(--pink)}
 .fld-label{font-family:'Mitr',sans-serif;font-weight:500;font-size:13px}
 
 label.fld{display:block;margin-bottom:10px}
@@ -300,12 +302,13 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
     <label class="fld"><span>โบนัส (Boon)</span><textarea id="c-boon" class="autosize" rows="1" placeholder="เติมอัตโนมัติเมื่อเลือกเส้นทางฮีโร่"></textarea></label>
     <label class="fld"><span>ความสามารถประจำเส้นทาง</span><textarea id="c-features" class="autosize" rows="2" placeholder="เติมอัตโนมัติ แก้ไข/เพิ่มเองได้"></textarea></label>
 
-    <label class="fld" style="margin-top:14px"><span>แนวถนัด (Inclinations)</span></label>
+    <label class="fld" style="margin-top:14px"><span>แนวถนัด (Inclinations) <span id="inc-count" class="inc-count"></span></span></label>
     <div id="inc-list"></div>
     <div class="row"><button class="btn sm grow" id="btn-add-inc">＋ เพิ่มบรรทัดว่าง</button></div>
     <label class="fld" style="margin-top:10px"><span>หยิบจากรายการแนวถนัด (30 แบบ)</span>
       <div class="row"><select class="grow" id="c-inc-picker"></select><button class="btn sm" id="btn-inc-add-picker">＋ ใส่</button></div>
     </label>
+    <p class="hint" id="inc-hint"></p>
 
     <label class="fld" style="margin-top:14px"><span>ตระกูลเวท (ถ้าเป็นคอนจัวเรอร์)</span><select id="c-circle"></select></label>
     <label class="fld"><span>รายละเอียดตระกูลเวท</span><textarea id="c-circlenote" class="autosize" rows="1" placeholder="เติมอัตโนมัติเมื่อเลือก"></textarea></label>
@@ -1089,8 +1092,21 @@ function newChar(){
     karma:3, heroDie:true, wealth:'moderate', details:'',
     traits:[{t:'',c:'',s:1},{t:'',c:'',s:1},{t:'',c:'',s:1}]};
 }
-function newEnemy(name,max,tohit,note){
-  max=Math.max(1,parseInt(max)||1);
+/* ย้ายข้อมูลจากเวอร์ชันเก่า: ช่อง "ลักษณะเฉพาะ (Aspects)" ถูกยุบไปแล้ว
+   ถ้าไฟล์บันทึกเก่ามีข้อมูลค้างอยู่ ให้ย้ายไปต่อท้ายช่องปูมหลัง จะได้ไม่หายไปเฉยๆ */
+function migrateChar(c){
+  if(Array.isArray(c.aspects)){
+    const keep=c.aspects.map(a=>String(a||'').trim()).filter(Boolean);
+    if(keep.length){
+      const tag='ลักษณะเฉพาะ (จากเวอร์ชันก่อน): ';
+      if((c.details||'').indexOf(tag)===-1)
+        c.details=(c.details? c.details.replace(/\s+$/,'')+'\n' : '')+tag+keep.join(' · ');
+    }
+    delete c.aspects;
+  }
+  return c;
+}
+function newEnemy(name,max,tohit,note){  max=Math.max(1,parseInt(max)||1);
   return {id:uid(), name:name||'ศัตรูไม่มีชื่อ', max:max, cur:max, tohit:parseInt(tohit)||3, note:note||''};
 }
 let chars=[newChar()];
@@ -1124,7 +1140,7 @@ async function init(){
   try{
     const store = await loadKey('characters', null);
     if(store && Array.isArray(store.list) && store.list.length){
-      chars = store.list.map(c=>Object.assign(newChar(), c));
+      chars = store.list.map(c=>migrateChar(Object.assign(newChar(), c)));
       active = store.active||0; if(active>=chars.length) active=0;
     }
     encounter = Object.assign({round:1,enemies:[],partyIds:[],notes:''}, await loadKey('encounter', {}));
@@ -1351,16 +1367,19 @@ $('#c-circle').addEventListener('change', e=>{
   renderChar(); saveCharsNow();
 });
 $('#btn-inc-add-picker').addEventListener('click', ()=>{
+  const c=chars[active];
+  if((c.inclinations||[]).length >= incLimit(c)) return;
   const inc=INCLINATIONS[+$('#c-inc-picker').value]; if(!inc) return;
-  chars[active].inclinations.push(inc.th+' — '+inc.desc);
+  c.inclinations.push(inc.th+' — '+inc.desc);
   renderInclinations(); saveCharsNow();
 });
 
-function makeListEditor(field, containerSel, addBtnSel, placeholder){
+function makeListEditor(field, containerSel, addBtnSel, placeholder, capFn){
   function render(){
     const arr = chars[active][field] || (chars[active][field]=[]);
     $(containerSel).innerHTML = arr.map((v,i)=>`<div class="lrow" data-i="${i}"><textarea class="lval" rows="1" placeholder="${esc(placeholder)}"></textarea><button class="ldel" data-act="ldel" aria-label="ลบ">×</button></div>`).join('');
     $$(containerSel+' textarea').forEach((ta,i)=>{ ta.value=arr[i]; grow(ta); });
+    if(capFn) capFn();
   }
   $(containerSel).addEventListener('input', e=>{
     const ta=e.target.closest('textarea'); if(!ta) return;
@@ -1373,14 +1392,35 @@ function makeListEditor(field, containerSel, addBtnSel, placeholder){
     chars[active][field].splice(i,1); render(); saveCharsNow();
   });
   $(addBtnSel).addEventListener('click', ()=>{
+    if(capFn && chars[active][field].length >= incLimit(chars[active]) && field==='inclinations') return;
     chars[active][field].push(''); render(); saveCharsNow();
     const tas=$$(containerSel+' textarea'); tas.length && tas[tas.length-1].focus();
   });
   return render;
 }
+/* จำนวนแนวถนัดที่เลือกได้: พื้นฐาน 2 · มนุษย์ 3 · เดลเวอร์ได้เพิ่มอีก 1 (ความสามารถ "เก่งรอบด้าน") */
+function incLimit(c){
+  return 2 + (c.species==='human' ? 1 : 0) + (c.path==='delver' ? 1 : 0);
+}
+function renderIncCap(){
+  const c=chars[active], lim=incLimit(c), n=(c.inclinations||[]).length, full=n>=lim;
+  const cnt=$('#inc-count'); if(cnt){ cnt.textContent=n+'/'+lim; cnt.classList.toggle('over', n>lim); }
+  const addBtn=$('#btn-add-inc'), pickBtn=$('#btn-inc-add-picker');
+  if(addBtn) addBtn.disabled=full;
+  if(pickBtn) pickBtn.disabled=full;
+  const hint=$('#inc-hint');
+  if(hint){
+    let why='พื้นฐาน 2';
+    if(c.species==='human') why+=' · มนุษย์ +1';
+    if(c.path==='delver') why+=' · เดลเวอร์ +1 (เก่งรอบด้าน)';
+    const base='เลือกได้ '+lim+' อย่าง ('+why+')';
+    hint.textContent = n>lim ? ('เกินโควตา! กรุณาลบออก '+(n-lim)+' อัน — '+base)
+                     : (full ? ('ครบโควตาแล้ว — '+base) : base);
+  }
+}
 let renderInclinations, renderEquipment, renderWeapons, renderPotions, renderScrolls;
 function wireCharTab(){
-  renderInclinations = makeListEditor('inclinations','#inc-list','#btn-add-inc','แนวถนัด เช่น มือแม่นปืน');
+  renderInclinations = makeListEditor('inclinations','#inc-list','#btn-add-inc','แนวถนัด เช่น มือแม่นปืน', renderIncCap);
   renderEquipment = makeListEditor('equipment','#equip-list','#btn-add-equip','อุปกรณ์');
   renderWeapons = makeListEditor('weapons','#weap-list','#btn-add-weap','อาวุธ');
   renderPotions = makeListEditor('potions','#pot-list','#btn-add-pot','ยาน้ำ');
@@ -1528,7 +1568,7 @@ function paintEZ(){
   const c = chars.find(x=>x.id===ez.charId);
   if(c){
     $('#ez-karma-row').innerHTML = `<span class="hint" style="margin:0">คาร์มาของ ${esc(c.name||'ตัวละคร')}: <b>${c.karma}</b></span>
-      <button class="btn sm" id="btn-ez-karma" ${(val===1||c.karma<1)?'disabled':''}>ใช้ 1 คาร์มา (+1 พิพ)</button>
+      <button class="btn sm" id="btn-ez-karma" ${(val===1||val===6||c.karma<1)?'disabled':''}>ใช้ 1 คาร์มา (+1 พิพ)</button>
       <button class="btn sm" id="btn-ez-herodie" ${!c.heroDie?'disabled':''}>ใช้เต๋าฮีโร่ (ทอยใหม่)</button>`;
   } else {
     $('#ez-karma-row').innerHTML = '<p class="hint">เลือกตัวละครด้านบนถ้าต้องการใช้คาร์มา/เต๋าฮีโร่</p>';
@@ -1576,8 +1616,9 @@ function wireDiceTab(){
   $('#ez-karma-row').addEventListener('click', e=>{
     const c = chars.find(x=>x.id===ez.charId); if(!c) return;
     if(e.target.id==='btn-ez-karma'){
-      if(c.karma<1 || ez.dice[ez.pick]===1) return;
-      ez.dice[ez.pick]=Math.min(6, ez.dice[ez.pick]+1);
+      // ห้ามเสียคาร์มาฟรี: ทอยได้ 1 ปรับไม่ได้ตามกฎ และ 6 เต็มอยู่แล้วปรับขึ้นไม่ได้
+      if(c.karma<1 || ez.dice[ez.pick]===1 || ez.dice[ez.pick]>=6) return;
+      ez.dice[ez.pick]=ez.dice[ez.pick]+1;
       c.karma--; saveCharsNow();
       if(ez.dice[ez.pick]===6 && !ez.crit.total) ez.crit.total=1;
       paintEZ();
