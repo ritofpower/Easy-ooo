@@ -143,6 +143,23 @@ select{-webkit-appearance:none;appearance:none;background-image:linear-gradient(
 .tag.pink{border-color:var(--pink);color:var(--pink)}
 .csummary{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .csummary .tag{font-size:11px;padding:4px 7px}
+/* แถบคุณลักษณะย่อ ใต้ชื่อตัวละคร + ในการ์ดเช็ก Triple-O */
+.trait-strip{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.tchip{display:inline-flex;align-items:center;gap:5px;font-size:12px;line-height:1.3;
+  background:var(--paper2);border:2px solid var(--ink);padding:3px 7px}
+.tchip .sw{width:11px;height:11px;border-width:1px;flex:none}
+.tchip .cat{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--soft)}
+.tchip.tmp-t{border-style:dashed}
+.tchip.prom-t{background:var(--ink);color:var(--paper)}
+.tchip.prom-t .cat{color:#9EA396}
+.trait-strip .none{font-size:12px;color:#9AA093}
+/* การ์ดคุณลักษณะทุกตัวละคร ในหน้าเช็ก Triple-O */
+.tcards{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+@media (min-width:520px){.tcards{grid-template-columns:1fr 1fr}}
+.tcard{border:2px solid var(--ink);background:var(--paper);padding:7px 9px}
+.tcard h4{margin:0 0 5px;font-family:'Mitr',sans-serif;font-weight:500;font-size:13px;
+  display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.tcard h4 em{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:10px;color:var(--soft)}
 .ecard .del{background:none;border:2px solid var(--ink);width:26px;height:26px;font-size:15px;line-height:1}
 .ecard .del:active{background:var(--pink);color:#fff;border-color:var(--pink)}
 .enote{font-size:13px;color:var(--soft);margin:2px 0 6px}
@@ -278,6 +295,7 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
   <div class="card ez"><h2>ตัวละคร <span class="en">HERO</span></h2><div class="card-body">
     <label class="fld"><span>ชื่อ</span><input type="text" id="c-name" placeholder="เช่น ไบรอัน นักรบ"></label>
     <div class="csummary" id="c-summary"></div>
+    <div class="trait-strip" id="c-trait-strip"></div>
   </div></div>
 
   <div class="card ez"><h2>สถานะ <span class="en">STATUS</span></h2><div class="card-body" id="c-status-wrap"></div></div>
@@ -304,10 +322,8 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
 
     <label class="fld" style="margin-top:14px"><span>แนวถนัด (Inclinations) <span id="inc-count" class="inc-count"></span></span></label>
     <div id="inc-list"></div>
-    <div class="row"><button class="btn sm grow" id="btn-add-inc">＋ เพิ่มบรรทัดว่าง</button></div>
-    <label class="fld" style="margin-top:10px"><span>หยิบจากรายการแนวถนัด (30 แบบ)</span>
-      <div class="row"><select class="grow" id="c-inc-picker"></select><button class="btn sm" id="btn-inc-add-picker">＋ ใส่</button></div>
-    </label>
+    <div class="row"><select class="grow" id="c-inc-picker"></select><button class="btn sm" id="btn-inc-add-picker">＋ ใส่</button></div>
+    <input type="text" id="c-inc-custom" class="hide" style="margin-top:8px" placeholder="พิมพ์แนวถนัดเอง แล้วกด ＋ ใส่">
     <p class="hint" id="inc-hint"></p>
 
     <label class="fld" style="margin-top:14px"><span>ตระกูลเวท (ถ้าเป็นคอนจัวเรอร์)</span><select id="c-circle"></select></label>
@@ -324,7 +340,8 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
     <button class="btn sm wide" id="btn-add-pot" style="margin-bottom:14px">＋ เพิ่มยาน้ำ</button>
     <label class="fld"><span>ม้วนคาถา (Scrolls)</span></label>
     <div id="scr-list"></div>
-    <button class="btn sm wide" id="btn-add-scr">＋ เพิ่มม้วนคาถา</button>
+    <div class="row"><select class="grow" id="c-scr-picker"></select><button class="btn sm" id="btn-scr-add">＋ ใส่</button></div>
+    <input type="text" id="c-scr-custom" class="hide" style="margin-top:8px" placeholder="พิมพ์ชื่อม้วนคาถาเอง แล้วกด ＋ ใส่">
 
     <label class="fld" style="margin-top:14px"><span>ระดับทรัพย์สิน</span>
       <div id="c-wealth-wrap"></div>
@@ -465,24 +482,26 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
       <div id="ez-crit-box"></div>
     </div></div>
 
-    <details class="ref"><summary>อ้างอิงกฎเร็ว EZD6</summary><div class="rc-body" id="rules-ref"></div></details>
-
-    <div class="card"><h2>ร่ายเวท / ปาฏิหาริย์ (ย่อ) <span class="en">CASTING</span></h2><div class="card-body">
+    <div class="card"><h2>การร่ายเวท vs ต้านทานเวท <span class="en">CASTING</span></h2><div class="card-body">
       <div class="row" style="justify-content:space-between">
         <span class="fld-label">พลังเวท (Power Level)</span>
-        <div class="stepper"><button class="btn xs" data-pl="-1">−</button><b id="pl-val">1</b><button class="btn xs" data-pl="1">+</button>D6</div>
+        <div class="stepper"><button class="btn xs" data-pl="-1">−</button><b id="pl-val">1</b><button class="btn xs" data-pl="1">+</button></div>
       </div>
       <div class="row" style="justify-content:space-between;margin-top:6px">
-        <span class="fld-label">แต้มต้านของเป้าหมาย (Resistance)</span>
-        <div class="stepper"><button class="btn xs" data-rs="-1">−</button><b id="rs-val">1</b><button class="btn xs" data-rs="1">+</button>D6</div>
+        <span class="fld-label">แต้มต้านของเป้าหมาย</span>
+        <div class="stepper"><button class="btn xs" data-rs="-1">−</button><b id="rs-val">1</b><button class="btn xs" data-rs="1">+</button>
+          <button class="btn xs" id="btn-rs-random" title="สุ่มแต้มต้าน 1D6">🎲 สุ่ม</button></div>
       </div>
       <button class="btn sm wide" id="btn-cast-roll" style="margin-top:10px">ทอยร่ายเวท</button>
       <div id="cast-result"></div>
       <p class="hint">คาร์มาใช้กับการร่ายเวท/ปาฏิหาริย์ไม่ได้ · ลูกที่ออก 1 ในกองพลังเวท = เสี่ยงจุดไฟเวท (รับดาเมจ 1/ลูกเพื่อฝืนร่ายต่อ)</p>
     </div></div>
+
+    <details class="ref"><summary>อ้างอิงกฎเร็ว EZD6</summary><div class="rc-body" id="rules-ref"></div></details>
   </div>
 
   <div id="pane-check" class="hide">
+    <div class="tcards" id="check-traits"></div>
     <div class="card"><h2>เช็ก Triple-O <span class="en">1D6</span></h2><div class="card-body">
       <label class="fld"><span>ปกติ · The Obvious</span><input type="text" id="f-obv" placeholder="สิ่งที่ตัวละครนี้ทำแน่ๆ"></label>
       <label class="fld"><span>เป็นไปได้ · The Option</span><input type="text" id="f-opt" placeholder="ทางเลือกที่ไม่ค่อยคาดคิด แต่ยังสมเหตุสมผล"></label>
@@ -651,8 +670,46 @@ const INCLINATIONS=[
  {th:'สัมผัสขุมทรัพย์', desc:'รับรู้ขุมทรัพย์ที่ซ่อนอยู่ใกล้ๆ เสมอ'},
  {th:'พ่ายแพ้คือชัยชนะ', desc:'ได้คาร์มา 2 แต้มทุกครั้งที่ทอยพลาด'}
 ];
-const WEALTH=[
- {k:'pauper',th:'ยาจก'},{k:'cashpoor',th:'จนเงินสด'},{k:'moderate',th:'พอมีพอกิน'},
+/* ม้วนคาถา 36 แบบ (6 กลุ่ม × 6) — ร่ายที่พลังเวท 2D6 ทอย 1 ใหม่ได้ ใช้แล้วม้วนไหม้หมด */
+const SCROLLS=[
+ ['เครื่องรางนำโชคของควินตัน','ผู้รับได้โบว์นกับทุกการเช็กตลอดหนึ่งฉาก'],
+ ['เรียกธาตุน้ำของสลาสลูช','อัญเชิญธาตุน้ำมาช่วยรบและปกป้องหนึ่งฉาก (คอนจัวเรอร์ยึดเวทไว้ได้ถึงหนึ่งวัน)'],
+ ['ผูกมิตรของโบพิเนอร์โร','ศัตรูระดับมินเนียน 1 ตัวกลายเป็นมิตร ตราบที่ยังปฏิบัติต่อมันดี'],
+ ['ลอยน้ำของฟลิวินเดีย','ตัวไม่จมของเหลวใดๆ ตลอดหนึ่งฉาก'],
+ ['ม่านล่องหนของวินเดลลา','ล่องหนหนึ่งฉากตราบที่ทำแค่เคลื่อนที่ ถ้าลงมือทำอย่างอื่นจะปรากฏตัว แล้วล่องหนใหม่ได้ถ้ารอบต่อไปแค่เคลื่อนที่'],
+ ['เดินกระจกของอบราซ','คุณและผู้อื่นได้ถึง 12 คน วาร์ประหว่างผิวกระจกสองบาน'],
+ ['ฟีโรโมนของเฟนเดร็กซ์','สิ่งมีชีวิตชนิดหนึ่งจะไม่ทำร้ายคุณตลอดหนึ่งวัน ตราบที่คุณไม่ทำร้ายมันก่อน'],
+ ['ฟองเวทของมินสตาร์','คุณและอีกไม่เกิน 12 คนถูกห่อในลูกกลมน้ำ กันไฟทั้งหมด กลิ้งได้ตามใจผู้ร่าย คนข้างในหายใจได้ปกติ หนึ่งฉาก'],
+ ['คุณกระดูกของกอยล์','ปลุกโครงกระดูกที่พบ (ไม่เกินขนาดม้า) ให้รับใช้หนึ่งวัน ทำตามคำสั่งง่ายๆ รับได้ 1 แต้มเจ็บ'],
+ ['เรียกของของกัลบราซ','วัตถุที่คุณมองเห็นหรือรู้ตำแหน่ง วาร์ปมาอยู่ในมือ'],
+ ['สะกดจิตของอโบเซียม','สิ่งมีชีวิตที่เข้าใจภาษาคุณจะตอบคำถามง่ายๆ 3 ข้อตามจริง แล้วลืมเรื่องที่เกิดขึ้น'],
+ ['หูทิพย์ของสแน็กทูธ','การได้ยินไวเป็นพิเศษตลอดหนึ่งวัน'],
+ ['เปิดความลับของอีวัค','ผู้ร่ายขอให้เปิดเผยความลับเรื่องใดก็ได้ 1 เรื่อง'],
+ ['ตาแท้จริงของมิสเทรล','มองทะลุภาพลวง การปลอมตัว การล่องหน และการแปลงร่างที่อยู่ใกล้ ตลอดหนึ่งวัน'],
+ ['ใยของแซบแบท','ยิงใยเหนียวใส่เป้าหมายใกล้ตัวได้ถึง 6 เป้า ต้องทอยได้ 6 จึงหลุด'],
+ ['สะท้อนกระสุนของราซดุค','กระสุนทั้งเวทและกายภาพสะท้อนออกจากตัวคุณตลอดหนึ่งฉาก ยกเว้นทอยได้ 6'],
+ ['ตุ๊กตาของดรูเซลลา','ย่อตัวเท่าตุ๊กตาเล็กตลอดหนึ่งวัน โดน 1 แต้มเจ็บจะกลับสู่ขนาดปกติ'],
+ ['อ่านใจของมาร์ดรัค','รับรู้ความคิดชั้นผิวของสิ่งมีชีวิตใกล้ตัวตลอดหนึ่งวัน'],
+ ['ล็อกสุญญากาศของแวสปิน','สิ่งมีชีวิตหรือวัตถุถูกแช่นิ่งในกาลอวกาศ แตะต้องไม่ได้ นานหนึ่งฉาก (ราว 10 นาที)'],
+ ['หลุมพกพาของป๊อปปิน','เจาะหลุมกลมในวัสดุตันที่ไม่ใช่ของวิเศษ กว้าง 5 ฟุต ลึก 10 ฟุต อยู่ได้หนึ่งฉาก ปิดเมื่อคุณต้องการ'],
+ ['คำอธิษฐานมรณะของซาร์','สิ่งมีชีวิตที่เลือกคลุ้มคลั่ง เข้าโจมตีทุกอย่างรอบตัวตลอดหนึ่งฉาก'],
+ ['เรียกธาตุลมของวูรินวัล','อัญเชิญธาตุลมมาช่วยรบและปกป้องหนึ่งฉาก (คอนจัวเรอร์ยึดเวทไว้ได้ถึงหนึ่งวัน)'],
+ ['ตาแห่งจิตของมัลดาเมน','มองผ่านตาสิ่งมีชีวิตอื่นได้ถึงหนึ่งวัน ต้องเคยเห็นตัวมันตอนเริ่มร่าย'],
+ ['พันธนาการวิญญาณของแม็กซ์ดราเซียส','สายใยแยกไม่ขาดผูกสองชีวิตเข้าด้วยกัน ห่างกันเกิน 10 ฟุตไม่ได้ นานหนึ่งวัน เว้นแต่ฝ่ายหนึ่งตาย'],
+ ['เวทวิปริตของมัลดรัค','เป้าหมายนับเป็นทอยป้องกันได้ 6 กับเวททุกอย่างที่ร่ายใส่ ตลอดหนึ่งวัน'],
+ ['ปลดพันธนาการของกิลมูน','ตลอดวันนี้ ไม่มีอะไรจับล็อก พันใย ติดกาว ทำให้ช้า หรือตรึงคุณได้'],
+ ['เมือกของซูลูน','พื้นที่ใกล้เคียงลื่นสุดขีดหนึ่งฉาก ต้องทอยได้ 6 จึงเคลื่อนออกได้ คนอื่นล้มหมด ใช้ทำทางลาดลื่นได้'],
+ ['ใยของนางอารัคนาเฮ','พื้นที่ใกล้เคียงเต็มไปด้วยใยเหนียวแน่นหนึ่งฉาก ต้องทอยได้ 6 จึงหลุด'],
+ ['ปริซึมของชาร์','ร่างคุณบิดเบือนตลอดเวลา มองยากเล็งยาก หนึ่งฉาก มีแต่ทอยได้ 6 เท่านั้นที่โดนคุณ'],
+ ['เรียกธาตุดินของกรูกัล','อัญเชิญธาตุดินมาช่วยรบและปกป้องหนึ่งฉาก (คอนจัวเรอร์ยึดเวทไว้ได้ถึงหนึ่งวัน)'],
+ ['สายสะดือของโลโซเมียส','สายอาถรรพ์เชื่อมสะดือคุณกับต้นธารเวทมนตร์ ตลอดหนึ่งวันทอยลูกที่ออก 1 ใหม่ได้ทั้งหมด'],
+ ['เลื่อนเวลาของซัลเดนซา','ผู้รับ 1 คนเลื่อนเวลาได้ ทำได้ 10 การเคลื่อนที่ 10 แอ็กชัน ทุกงานที่ทำกับเป้าที่ถูกหน่วงเวลาเป็นระดับง่าย (2)'],
+ ['เรียกวิญญาณของมาลินนา','ส่งวิญญาณกลับเข้าร่างที่ตายแล้ว ร่างฟื้นแต่เหลือ 1 แต้มเจ็บจนกว่าจะรักษา และผู้ฟื้นจะมีรอยประหลาดติดตัว'],
+ ['สัมผัสวัตถุของมาดามปาล์ม','ได้คำตอบ 3 ข้อเกี่ยวกับวัตถุที่ถืออยู่'],
+ ['เรียกธาตุไฟของฟรักวัต','อัญเชิญธาตุไฟมาช่วยรบและปกป้องหนึ่งฉาก (คอนจัวเรอร์ยึดเวทไว้ได้ถึงหนึ่งวัน)'],
+ ['คำสาปดำของแซนดรา','เป้าหมายถูกสาปให้ทอยทุกการทดสอบเป็นเบนตลอดหนึ่งฉาก']
+];
+const WEALTH=[ {k:'pauper',th:'ยาจก'},{k:'cashpoor',th:'จนเงินสด'},{k:'moderate',th:'พอมีพอกิน'},
  {k:'wealthy',th:'มั่งคั่ง'},{k:'lordly',th:'มั่งคั่งระดับขุนนาง'},{k:'kingly',th:'มั่งคั่งระดับกษัตริย์'}
 ];
 const DIFF_SCALE=[
@@ -1182,7 +1239,10 @@ function buildStaticSelectors(){
   $('#c-circle').innerHTML = '<option value="">— ไม่มี / ไม่ใช่นักเสก —</option>'
     + Object.entries(CIRCLES).map(([k,p])=>`<option value="${k}">${esc(p.th)}</option>`).join('')
     + '<option value="custom">กำหนดเอง</option>';
-  $('#c-inc-picker').innerHTML = INCLINATIONS.map((inc,i)=>`<option value="${i}">${esc(inc.th)}</option>`).join('');
+  $('#c-inc-picker').innerHTML = INCLINATIONS.map((inc,i)=>`<option value="${i}">${esc(inc.th)}</option>`).join('')
+    + '<option value="custom">✎ กำหนดเอง…</option>';
+  $('#c-scr-picker').innerHTML = SCROLLS.map((s,i)=>`<option value="${i}">${esc(s[0])}</option>`).join('')
+    + '<option value="custom">✎ กำหนดเอง…</option>';
 }
 
 /* =========================================================================
@@ -1199,6 +1259,7 @@ function wireNav(){
 function openDiceDrawer(){
   $('#dice-overlay').classList.remove('hide');
   renderEzCharOptions();
+  renderCheckTraitCards();
 }
 function closeDiceDrawer(){ $('#dice-overlay').classList.add('hide'); }
 function wireDiceFab(){
@@ -1298,8 +1359,28 @@ function charStatusHTML(c){
 function wealthHTML(c){
   return `<div data-kind="char" data-id="${c.id}" class="wealth-row">${WEALTH.map(w=>`<label class="radio"><input type="radio" name="wealth-${c.id}" value="${w.k}" ${c.wealth===w.k?'checked':''}> ${w.th}</label>`).join('')}</div>`;
 }
-function charSummaryHTML(c){
-  const pathTh = PATHS[c.path] ? PATHS[c.path].th : (c.path==='custom' ? 'กำหนดเอง' : '— ยังไม่เลือกเส้นทาง —');
+/* แถบคุณลักษณะย่อ — เอาไว้ดูเร็วๆ ตอนสวมบทบาทหรือคิด Triple-O */
+function traitChipsHTML(c){
+  const list=(c.traits||[]).filter(t=>String(t.t||'').trim());
+  if(!list.length) return '<span class="none">ยังไม่มีคุณลักษณะ</span>';
+  return list.map(t=>{
+    const cls = t.s===2 ? 'prom-t' : (t.s===3 ? 'tmp-t' : '');
+    return `<span class="tchip ${cls}"><i class="sw ${STAT[t.s].c}"></i>${esc(t.t)}${t.c?`<span class="cat">${esc(t.c)}</span>`:''}</span>`;
+  }).join('');
+}
+function renderTraitStrip(){
+  const el=$('#c-trait-strip'); if(el) el.innerHTML=traitChipsHTML(chars[active]);
+}
+/* การ์ดคุณลักษณะของทุกตัวละคร — ใช้ประกอบการคิด Obvious/Option/Odd */
+function renderCheckTraitCards(){
+  const box=$('#check-traits'); if(!box) return;
+  box.innerHTML = chars.map(c=>{
+    const pathTh = PATHS[c.path] ? PATHS[c.path].th : '';
+    return `<div class="tcard"><h4>${esc(c.name||'ไม่มีชื่อ')}${pathTh?`<em>${esc(pathTh)}</em>`:''}</h4>
+      <div class="trait-strip" style="margin:0">${traitChipsHTML(c)}</div></div>`;
+  }).join('');
+}
+function charSummaryHTML(c){  const pathTh = PATHS[c.path] ? PATHS[c.path].th : (c.path==='custom' ? 'กำหนดเอง' : '— ยังไม่เลือกเส้นทาง —');
   const spTh = SPECIES[c.species] ? SPECIES[c.species].th : (c.species==='custom' ? 'กำหนดเอง' : '— ยังไม่เลือกเผ่าพันธุ์ —');
   const wTh = (WEALTH.find(w=>w.k===c.wealth)||{}).th || '—';
   return `<span class="tag">${esc(pathTh)}</span><span class="tag">${esc(spTh)}</span><span class="tag">${esc(wTh)}</span>`;
@@ -1366,13 +1447,29 @@ $('#c-circle').addEventListener('change', e=>{
   const ci=CIRCLES[c.circle]; c.circleNote = ci? ci.note : '';
   renderChar(); saveCharsNow();
 });
-$('#btn-inc-add-picker').addEventListener('click', ()=>{
-  const c=chars[active];
-  if((c.inclinations||[]).length >= incLimit(c)) return;
-  const inc=INCLINATIONS[+$('#c-inc-picker').value]; if(!inc) return;
-  c.inclinations.push(inc.th+' — '+inc.desc);
-  renderInclinations(); saveCharsNow();
-});
+/* ดรอปดาวน์เลือกจากฐานข้อมูล + ตัวเลือก "กำหนดเอง" ที่เปิดช่องพิมพ์ให้กรอกเอง */
+function wirePicker(pickerSel, customSel, addBtnSel, resolveText, addEntry){
+  const pick=$(pickerSel), custom=$(customSel);
+  pick.addEventListener('change', ()=>{
+    const isCustom = pick.value==='custom';
+    custom.classList.toggle('hide', !isCustom);
+    if(isCustom) custom.focus();
+  });
+  custom.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $(addBtnSel).click(); } });
+  $(addBtnSel).addEventListener('click', ()=>{
+    let text;
+    if(pick.value==='custom'){
+      text=custom.value.trim();
+      if(!text){ custom.focus(); return; }
+    } else {
+      text=resolveText(pick.value);
+    }
+    if(!text) return;
+    addEntry(text);
+    custom.value='';
+  });
+}
+
 
 function makeListEditor(field, containerSel, addBtnSel, placeholder, capFn){
   function render(){
@@ -1391,7 +1488,7 @@ function makeListEditor(field, containerSel, addBtnSel, placeholder, capFn){
     const i=+b.closest('.lrow').dataset.i;
     chars[active][field].splice(i,1); render(); saveCharsNow();
   });
-  $(addBtnSel).addEventListener('click', ()=>{
+  $(addBtnSel) && $(addBtnSel).addEventListener('click', ()=>{
     if(capFn && chars[active][field].length >= incLimit(chars[active]) && field==='inclinations') return;
     chars[active][field].push(''); render(); saveCharsNow();
     const tas=$$(containerSel+' textarea'); tas.length && tas[tas.length-1].focus();
@@ -1405,8 +1502,7 @@ function incLimit(c){
 function renderIncCap(){
   const c=chars[active], lim=incLimit(c), n=(c.inclinations||[]).length, full=n>=lim;
   const cnt=$('#inc-count'); if(cnt){ cnt.textContent=n+'/'+lim; cnt.classList.toggle('over', n>lim); }
-  const addBtn=$('#btn-add-inc'), pickBtn=$('#btn-inc-add-picker');
-  if(addBtn) addBtn.disabled=full;
+  const pickBtn=$('#btn-inc-add-picker');
   if(pickBtn) pickBtn.disabled=full;
   const hint=$('#inc-hint');
   if(hint){
@@ -1420,11 +1516,25 @@ function renderIncCap(){
 }
 let renderInclinations, renderEquipment, renderWeapons, renderPotions, renderScrolls;
 function wireCharTab(){
-  renderInclinations = makeListEditor('inclinations','#inc-list','#btn-add-inc','แนวถนัด เช่น มือแม่นปืน', renderIncCap);
+  renderInclinations = makeListEditor('inclinations','#inc-list',null,'แนวถนัด เช่น มือแม่นปืน', renderIncCap);
   renderEquipment = makeListEditor('equipment','#equip-list','#btn-add-equip','อุปกรณ์');
   renderWeapons = makeListEditor('weapons','#weap-list','#btn-add-weap','อาวุธ');
   renderPotions = makeListEditor('potions','#pot-list','#btn-add-pot','ยาน้ำ');
-  renderScrolls = makeListEditor('scrolls','#scr-list','#btn-add-scr','ม้วนคาถา');
+  renderScrolls = makeListEditor('scrolls','#scr-list',null,'ม้วนคาถา');
+
+  // แนวถนัด: เลือกจากรายการ 30 แบบ หรือกำหนดเอง (ติดเพดานโควตาตามเผ่า/เส้นทาง)
+  wirePicker('#c-inc-picker','#c-inc-custom','#btn-inc-add-picker',
+    v=>{ const inc=INCLINATIONS[+v]; return inc ? inc.th+' — '+inc.desc : ''; },
+    text=>{
+      const c=chars[active];
+      if((c.inclinations||[]).length >= incLimit(c)) return;
+      c.inclinations.push(text); renderInclinations(); saveCharsNow();
+    });
+
+  // ม้วนคาถา: เลือกจากฐานข้อมูล 36 ม้วน หรือกำหนดเอง
+  wirePicker('#c-scr-picker','#c-scr-custom','#btn-scr-add',
+    v=>{ const s=SCROLLS[+v]; return s ? s[0]+' — '+s[1] : ''; },
+    text=>{ chars[active].scrolls.push(text); renderScrolls(); saveCharsNow(); });
 
   $('#btn-add-trait').addEventListener('click', ()=>{ chars[active].traits.push({t:'',c:'',s:1}); saveCharsNow(); renderTraits(); });
   $('#trait-list').addEventListener('click', e=>{
@@ -1437,6 +1547,7 @@ function wireCharTab(){
     const inp=e.target.closest('[data-act="tx"],[data-act="cat"]'); if(!inp) return;
     const i=+inp.closest('.trait').dataset.i;
     if(inp.dataset.act==='tx'){ chars[active].traits[i].t=inp.value; grow(inp); } else chars[active].traits[i].c=inp.value;
+    renderTraitStrip();
     saveCharsDebounced();
   });
   $('#btn-del-char').addEventListener('click', ()=>{
@@ -1457,6 +1568,7 @@ function renderTraits(){
     +'<input class="cat" data-act="cat" value="'+esc(t.c)+'" placeholder="—" maxlength="2" size="2">'
     +'<button class="del" data-act="del" aria-label="ลบแถวนี้">×</button></div>').join('');
   $$('#trait-list textarea.tx').forEach((ta,i)=>{ ta.value=chars[active].traits[i].t; grow(ta); });
+  renderTraitStrip();
 }
 
 /* =========================================================================
@@ -1582,7 +1694,7 @@ function paintEZ(){
 }
 function wireDiceTab(){
   $('#seg-ez').addEventListener('click', ()=>{ $('#seg-ez').setAttribute('aria-selected','true'); $('#seg-check').setAttribute('aria-selected','false'); $('#pane-ez').classList.remove('hide'); $('#pane-check').classList.add('hide'); });
-  $('#seg-check').addEventListener('click', ()=>{ $('#seg-check').setAttribute('aria-selected','true'); $('#seg-ez').setAttribute('aria-selected','false'); $('#pane-check').classList.remove('hide'); $('#pane-ez').classList.add('hide'); });
+  $('#seg-check').addEventListener('click', ()=>{ $('#seg-check').setAttribute('aria-selected','true'); $('#seg-ez').setAttribute('aria-selected','false'); $('#pane-check').classList.remove('hide'); $('#pane-ez').classList.add('hide'); renderCheckTraitCards(); });
 
   $('#ez-char').addEventListener('change', e=>{ ez.charId = e.target.value? Number(e.target.value): null; paintEZ(); });
   $('#ez-target-quick').addEventListener('click', e=>{
@@ -1642,6 +1754,7 @@ function wireDiceTab(){
     const pl=e.target.closest('[data-pl]'); if(pl){ cast.pl=Math.max(1,Math.min(3,cast.pl+(+pl.dataset.pl))); $('#pl-val').textContent=cast.pl; }
     const rs=e.target.closest('[data-rs]'); if(rs){ cast.rs=Math.max(1,Math.min(6,cast.rs+(+rs.dataset.rs))); $('#rs-val').textContent=cast.rs; }
   });
+  $('#btn-rs-random').addEventListener('click', ()=>{ cast.rs=d6(); $('#rs-val').textContent=cast.rs; flashEl($('#rs-val')); });
   $('#btn-cast-roll').addEventListener('click', ()=>{
     const plDice=Array.from({length:cast.pl},()=>d6());
     const rsDice=Array.from({length:cast.rs},()=>d6());
