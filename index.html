@@ -45,7 +45,7 @@ input,textarea,select{font-size:16px !important}
 
 .top{
   position:sticky;top:0;z-index:5;background:var(--ink);color:var(--paper);
-  padding:9px 14px;padding-right:80px;   /* เว้นที่ให้ปุ่มลูกเต๋าลอย ไม่ให้ทับกัน */
+  padding:9px 14px;padding-right:68px;min-height:58px;   /* เว้นที่ให้ปุ่มลูกเต๋าในแถบหัว */
   display:flex;align-items:center;gap:10px;flex-wrap:wrap;
 }
 .iconbtn{flex:none;width:34px;height:34px;padding:0;background:var(--paper);color:var(--ink);
@@ -74,7 +74,7 @@ input,textarea,select{font-size:16px !important}
 .card>h2 .en{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9EA396;letter-spacing:.08em}
 .card-body{padding:12px}
 
-.btn{font-family:'Mitr',sans-serif;font-weight:500;font-size:15px;background:var(--paper);
+.btn{font-family:'Mitr',sans-serif;font-weight:500;font-size:15px;background:var(--paper);color:var(--ink);
   border:var(--line) solid var(--ink);box-shadow:3px 3px 0 var(--ink);
   padding:9px 14px;transition:transform .06s ease,box-shadow .06s ease;}
 .btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
@@ -225,7 +225,7 @@ details.info .info-body{font-size:13px;line-height:1.6;color:var(--soft);padding
 .gsec:last-child{border-bottom:0}
 .gsec>h3{margin:0 0 5px;font-family:'Mitr',sans-serif;font-weight:500;font-size:11px;letter-spacing:.06em;
   text-transform:uppercase;color:var(--soft);display:flex;justify-content:space-between;align-items:center;gap:6px}
-.gsec>h3 .btn{padding:2px 9px;font-size:12px;box-shadow:2px 2px 0 var(--ink)}
+.gsec>h3 .btn{padding:4px 11px;font-size:13px;box-shadow:2px 2px 0 var(--ink);color:var(--ink)}
 .gsec ul{margin:0;padding-left:17px}
 .gsec li{font-size:14px;line-height:1.5;margin-bottom:2px;overflow-wrap:anywhere}
 .gsec .muted{color:#9AA093;font-size:14px}
@@ -290,7 +290,7 @@ details.foot .foot-body{padding:9px 11px;font-size:14px;line-height:1.6;white-sp
 .picker{border:var(--line) solid var(--ink);margin-top:10px;background:var(--paper)}
 .picker-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;
   background:var(--ink);color:var(--paper);font-family:'Mitr',sans-serif;font-weight:500;font-size:14px}
-.picker-head .btn{padding:4px 10px;font-size:13px;box-shadow:2px 2px 0 var(--pink)}
+.picker-head .btn{padding:5px 12px;font-size:14px;box-shadow:2px 2px 0 var(--pink);color:var(--ink)}
 .picker-body{max-height:min(58vh,430px);overflow-y:auto;-webkit-overflow-scrolling:touch}
 .pgroup{border-bottom:2px solid var(--ink)}
 .pgroup:last-child{border-bottom:0}
@@ -351,13 +351,14 @@ details.foot .foot-body{padding:9px 11px;font-size:14px;line-height:1.6;white-sp
 .stepper b{font-family:'IBM Plex Mono',monospace;font-size:16px;min-width:16px;text-align:center}
 
 /* ---------- ปุ่มลอย + drawer ---------- */
-.dice-fab{position:fixed;top:12px;right:12px;z-index:20;width:58px;height:58px;padding:0;border:0;background:none}
+.dice-fab{position:absolute;right:11px;top:50%;transform:translateY(-50%);z-index:20;
+  width:46px;height:46px;padding:0;border:0;background:none}
 .d20-shape{display:flex;align-items:center;justify-content:center;width:100%;height:100%;
   background:var(--green);color:#fff;border:3px solid var(--ink);
   clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
   box-shadow:4px 4px 0 var(--ink);transition:transform .06s ease,box-shadow .06s ease}
-.dice-fab:active .d20-shape{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
-.d20-num{font-family:'Mitr',sans-serif;font-weight:600;font-size:20px;transform:translateY(-1px)}
+.dice-fab:active .d20-shape{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.d20-num{font-family:'Mitr',sans-serif;font-weight:600;font-size:16px;transform:translateY(-1px)}
 .dice-overlay{position:fixed;inset:0;z-index:18;background:rgba(20,22,15,.6);display:flex;align-items:flex-end;justify-content:center}
 .dice-drawer{position:relative;z-index:1;width:100%;max-width:820px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
   background:var(--paper);border-top:var(--line) solid var(--ink);box-shadow:0 -6px 0 var(--ink);
@@ -389,6 +390,9 @@ details.ref .rc-body{padding:12px;font-size:14px}
 details.ref .rc-body p{margin:4px 0}
 .refline{margin:5px 0;padding-left:15px;position:relative;line-height:1.55}
 .refline::before{content:'•';position:absolute;left:0}
+.gm-sec{font-family:'Mitr',sans-serif;font-weight:500;font-size:13px;letter-spacing:.05em;
+  margin:18px 0 8px;padding-bottom:4px;border-bottom:var(--line) solid var(--ink);color:var(--soft);text-transform:uppercase}
+.gm-sec:first-child{margin-top:0}
 .gm-out{border:2px dashed var(--soft);padding:9px 11px;margin-top:9px;font-size:14px;line-height:1.6;white-space:pre-wrap;min-height:40px}
 .gm-out .muted{color:#9AA093}
 
@@ -430,6 +434,9 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
   <button class="iconbtn" id="btn-switch-party" aria-label="กลับไปหน้าเลือกปาร์ตี้" title="กลับไปเลือกปาร์ตี้">←</button>
   <div class="brand">EZD6 × TRIPLE-O</div>
   <div class="brand-sub" id="top-party">—</div>
+  <button id="dice-fab" class="dice-fab" aria-label="เปิดช่องทอยเต๋า" aria-haspopup="dialog">
+    <span class="d20-shape"><span class="d20-num">20</span></span>
+  </button>
 </header>
 
 <main class="wrap">
@@ -601,10 +608,6 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
   <button role="tab" data-tab="tables" aria-selected="false">ตารางสุ่ม</button>
   <button role="tab" data-tab="pad" aria-selected="false">บันทึก</button>
 </nav>
-
-<button id="dice-fab" class="dice-fab" aria-label="เปิดช่องทอยเต๋า" aria-haspopup="dialog">
-  <span class="d20-shape"><span class="d20-num">20</span></span>
-</button>
 
 <div id="dice-overlay" class="dice-overlay hide">
   <div id="dice-drawer" class="dice-drawer" role="dialog" aria-label="ทอยเต๋า">
@@ -1384,26 +1387,6 @@ const BATTLE_TWISTS=['กำลังเสริม! — ศัตรูตั�
  'ถูกหลอก — NPC ไกด์ หรือแผนที่ให้ข้อมูลผิด นำไปสู่ทางตัน กับดัก หรือหลงทาง',
  'มาร่วมกับข้า — ศัตรูยื่นข้อเสนอทางศีลธรรม โดยรู้ความลับของฮีโร่คนนั้น',
  'เพื่อเกียรติยศ! — สถานการณ์เรียกร้องหน้าที่ของฮีโร่คนหนึ่งอย่างต้านทานไม่ได้'];
-/* ของวิเศษ */
-const MAGIC_TYPE=['มีดสั้น','ดาบ','กระบอง','กระบองโซ่','ขวาน','ไม้กระบอง','หน้าไม้','หอก','หอกซัด','ธนู','ขวานขว้าง',
- 'มีดขว้าง','ดาบใหญ่','ง้าว','ขวานรบ','ไม้เท้ายาว','ทวน','ค้อนสงคราม','แส้','สามง่าม','ค้อนยักษ์','อีเต้อสงคราม',
- 'ขวานมือ','เคียว','จี้ห้อยคอ','เข็มกลัด','สร้อยคอ','เครื่องราง','สร้อยรัดคอ','ปลอกคอทองคำ','แหวน','กำไลข้อมือ',
- 'ปลอกแขน','มงกุฎเล็ก','หวีปักผม','ต่างหู','เข็มขัด','รองเท้าบูท','หมวก','เสื้อคลุมยาว','ผ้าคลุม','ปลอกแขนเหล็ก',
- 'เกราะหนัง','เกราะหมุด','เกราะโซ่','เกราะแผ่นซ้อน','เกราะเพลท','โล่'];
-const MAGIC_PROP=[['Allspeech','เข้าใจและพูดได้ทุกภาษา'],['Booming','เสียงดังกึกก้องข่มขวัญ'],['Boost','เสริมพลังผู้ใช้'],
- ['Darksight','มองเห็นในความมืด'],['Divine Shard','เศษพลังศักดิ์สิทธิ์ ทำร้ายอันเดด/ปีศาจหนักขึ้น'],
- ['Divine Weapon','อาวุธศักดิ์สิทธิ์'],['Doomforged Weapon','อาวุธหลอมคำสาป'],['Enchanted Melee Weapon','อาวุธประชิดต้องมนตร์'],
- ['Enchanted Ranged Weapon','อาวุธระยะไกลต้องมนตร์'],['Enchanted Armor','เกราะต้องมนตร์'],['Farsight','มองไกลเกินปกติ'],
- ['Fireward','ป้องกันไฟ'],['Freebreath','หายใจได้ทุกที่ แม้ใต้น้ำ'],['Font','เป็นแหล่งพลังเวท'],['Gleaming','เปล่งประกายให้แสงสว่าง'],
- ['Glide','ร่อนกลางอากาศได้'],['Grappling','ยิงเชือก/ตะขอเกี่ยว'],['Jaunting','วาร์ประยะสั้น'],['Keen Weapon','อาวุธคมกริบ คริติคอลง่ายขึ้น'],
- ['Lifegiving','รักษาแต้มเจ็บได้'],['Lifelock','ตรึงชีวิตไว้ไม่ให้ตาย'],['Luck','เพิ่มโชค'],['Magickal Conduit','เป็นสื่อนำพลังเวท'],
- ['Magickal Focus','เพิ่มสมาธิในการร่ายเวท'],['Mindgrip','ควบคุมจิตผู้อื่น'],['Mindlock','ป้องกันการควบคุมจิต'],
- ['Orbus','ลูกแก้วพลังลอยตาม'],['Pocketed Armor','เกราะที่มีช่องเก็บของมิติพิเศษ'],['Pocket Dimension','มิติกระเป๋าเก็บของ'],
- ['Portable','พับเก็บพกพาได้'],['Relic','วัตถุมงคลโบราณ'],['Safelanding','ลงพื้นอย่างปลอดภัยเสมอ'],['Slick Armor','เกราะลื่นหลุดจากการจับ'],
- ['Spider Climb','ไต่ผนังได้'],['Spirit Locked','ผูกวิญญาณไว้ในวัตถุ'],['Talking','พูดได้ มีความคิดเป็นของตัวเอง'],
- ['Thorns','หนามทิ่มผู้โจมตี'],['Truetread','เดินบนพื้นผิวใดก็ไม่ลื่นไม่จม'],['Vampiric','ดูดชีวิตจากเป้าหมาย'],['Warding','สร้างเกราะป้องกัน']];
-const MAGIC_N1=['Chaos','Nightmare','Mind','Terror','Dark','Soul','Fate','Fear','Death','Wrath','Hate','Blood','Unicorn','Justice'];
-const MAGIC_N2=['Drinker','Slayer','Bringer','Crusher','Spawn','Ward','Scream','Writhe','Breath'];
 /* NPC */
 const NPC_PURPOSE=['ขัดขวางเหล่าฮีโร่ให้ได้ไม่ว่าจะต้องแลกด้วยอะไร','ยื่นทางเลือกทางศีลธรรมที่ยากลำบากให้ฮีโร่',
  'เป็นพี่เลี้ยงชี้แนะเหล่าฮีโร่','ฉวยใช้สำนึกหน้าที่ของฮีโร่เพื่อผลประโยชน์ตัวเอง',
@@ -1412,37 +1395,142 @@ const NPC_WANTS=['ขอความช่วยเหลือในเรื�
  'มีความสุขที่ได้อยู่ร่วมกับกลุ่ม','อยากแก้แค้นเรื่องที่ถูกกระทำ','อยากเผยแพร่ความเชื่อของตน','อยากทำงานให้น้อยที่สุด'];
 const NPC_ACTIONS=['วางอำนาจเหนือผู้อื่น','ไล่ล่าอำนาจให้ได้มากที่สุด','เที่ยงธรรมและยุติธรรม',
  'สนใจแต่ความต้องการของตัวเองโดยไม่แคร์ใคร','เย็นชาไร้ความรู้สึก หรือโหดร้าย','เทิดทูนความมั่งคั่งเหนือสิ่งอื่นใด'];
-/* สมบัติ */
+/* =========================================================================
+   สมบัติทั่วไป (Treasure) — ของที่เจอบ่อย ไม่ใช่ของวิเศษมีชื่อ
+   ========================================================================= */
 const TREASURE=[
- {t:'potion'},{t:'scroll'},{t:'txt',v:'ความมั่งคั่ง +1 ระดับ ให้ฮีโร่ทุกคน'},{t:'txt',v:'ความมั่งคั่ง +2 ระดับ ให้ฮีโร่ทุกคน'},
- {t:'potion'},{t:'scroll'},{t:'txt',v:'ความมั่งคั่ง +1 ระดับ ให้ฮีโร่ทุกคน'},{t:'txt',v:'ความมั่งคั่ง +2 ระดับ ให้ฮีโร่ทุกคน'},
- {t:'txt',v:'Bracelet of Purging — โบว์นในการต้านพิษ'},{t:'txt',v:'Magick Sink Bracelet — โบว์นในการต้านเวท'},
- {t:'txt',v:'Rings of Talking — แหวนชุด 1D4+1 วง ผู้สวมคุยกันได้ทุกระยะ'},
- {t:'txt',v:'Signet Ring of You — หน้าแหวนเปลี่ยนเป็นรูปผู้สวมเป๊ะ ใช้ประทับตราครั่งได้'},
- {t:'txt',v:'Ring of Grip — ของในมือไม่มีวันหลุด เว้นแต่ตั้งใจปล่อย'},{t:'txt',v:'Ring of Warmth — ไม่มีวันหนาว'},
- {t:'txt',v:'Amulet of Lifegiving — รักษาได้รวม 3 แต้มเจ็บต่อวัน'},{t:'txt',v:'Magickal Conduit Amulet — สื่อนำพลังเวท'},
- {t:'txt',v:'Amulet of the Divine Shard — เศษพลังศักดิ์สิทธิ์'},{t:'txt',v:'Amulet of the Orbus — ลูกแก้วพลังลอยตาม'},
- {t:'txt',v:'Bracelet of Freebreath — หายใจได้ทุกสภาพแวดล้อม'},{t:'txt',v:'Bracelet of Grappling — ยิงเชือกเกี่ยวได้'},
- {t:'txt',v:'Mace of Divinity — กระบองศักดิ์สิทธิ์'},{t:'txt',v:'Greyblade the Doomforged — ดาบหลอมคำสาป'},
- {t:'txt',v:'Dagger of the Blooddrinker — มีดสั้นดูดเลือด'},{t:'txt',v:'Mirror Edge — ดาบคมกระจก'},
- {t:'txt',v:'Storval the Imprisoned — อาวุธที่ผนึกวิญญาณไว้'},{t:'txt',v:"Aturia's Spear — หอกต้องมนตร์"},
- {t:'txt',v:"Roggeros' Repeating Crossbow — หน้าไม้ยิงรัว"},{t:'txt',v:'Death Seeker Bow — ธนูตามล่าชีวิต'},
- {t:'txt',v:'Bow of the Beacon — ธนูส่องสว่าง'},{t:'txt',v:'The Pulverizer — ค้อนบดขยี้'},
- {t:'txt',v:'Grace Given Bow — ธนูแห่งพร'},{t:'txt',v:'Whistling Bow — ธนูผิวปาก'},
- {t:'txt',v:"Faedra's Box — กล่องปริศนา"},{t:'txt',v:'Mystic Map of Thalooz — แผนที่ต้องมนตร์'},
- {t:'txt',v:'Mantle of Avion — ผ้าคลุมนกอินทรี'},{t:'txt',v:'Skull of Maldrusus — กะโหลกต้องสาป'},
- {t:'txt',v:'Golden Tadpole — ลูกอ๊อดทองคำ'},{t:'txt',v:'Horn of the Bravado — แตรปลุกใจ'},
- {t:'txt',v:'Enchanted Armor — เกราะต้องมนตร์'},{t:'txt',v:'Thorn Armor — เกราะหนามทิ่มผู้โจมตี'},
- {t:'txt',v:'Slick Armor — เกราะลื่น หลุดจากการจับ'},{t:'txt',v:'Pocketed Armor — เกราะมีช่องมิติเก็บของ'},
- {t:'txt',v:'Elemental Armor — เกราะธาตุ'},{t:'txt',v:'Enchanted Alloy Armor — เกราะโลหะผสมต้องมนตร์'},
- {t:'txt',v:'Dragon Scale Armor — เกราะเกล็ดมังกร'},{t:'txt',v:'Unbreakable Armor — เกราะไม่มีวันแตก'},
- {t:'txt',v:'Shardling Armor — เกราะเศษคริสตัล'},{t:'txt',v:'Bulwark Armor — เกราะปราการ'},
- {t:'txt',v:'Sarlakarn Armor — เกราะหนังซาร์ลาคาร์น'},{t:'txt',v:'Appearance Changing Armor — เกราะเปลี่ยนรูปลักษณ์'},
- {t:'txt',v:'Holy Avenger Platemail — เกราะเพลทผู้ล้างแค้นศักดิ์สิทธิ์'},{t:'txt',v:"Thieves' Chain — เกราะโซ่ของโจร"},
- {t:'txt',v:'Helmet of Champions — หมวกเกราะแห่งแชมเปียน'},{t:'txt',v:'Infernal Armor — เกราะนรก'},
- {t:'txt',v:'Shield of Surtur — โล่แห่งเปลวเพลิง'},{t:'txt',v:'Shield of Suns — โล่สุริยะ'},
- {t:'txt',v:'Arrowbane — ของกันลูกธนู'},{t:'txt',v:'Horned Helmet of Might — หมวกเขาแห่งพลัง'}
+ {t:'potion'},{t:'scroll'},{t:'potion'},{t:'scroll'},
+ {t:'txt',v:'เหรียญและของมีค่าเล็กน้อย — ความมั่งคั่งของฮีโร่ทุกคน +1 ระดับ'},
+ {t:'txt',v:'กองสมบัติใหญ่ — ความมั่งคั่งของฮีโร่ทุกคน +2 ระดับ'},
+ {t:'txt',v:'อัญมณีดิบยังไม่เจียระไน ต้องหาคนรับซื้อในเมืองใหญ่'},
+ {t:'txt',v:'งานศิลป์/รูปสลักมีค่า ขนย้ายลำบาก (นับเป็นของชิ้นใหญ่)'},
+ {t:'txt',v:'แผนที่ขุมทรัพย์เก่า นำไปสู่ภารกิจถัดไป'},
+ {t:'txt',v:'เอกสาร/สัญญาที่ใช้ต่อรองกับกลุ่มอำนาจได้'},
+ {t:'txt',v:'เสบียงและของใช้จำเป็น เติมของที่ใช้หมดไปได้ทั้งกลุ่ม'},
+ {t:'txt',v:'ไม่มีอะไรมีค่าเลย — แต่มีร่องรอยบอกว่ามีคนมาก่อนแล้ว'}
 ];
+/* =========================================================================
+   ของวิเศษมีชื่อ (Magick Treasures) — แยกเป็นประเภทตามคู่มือ
+   ชื่อคงภาษาอังกฤษทับศัพท์ · คำอธิบายแปลไทย
+   ========================================================================= */
+const MT_TRINKETS=[
+ ['Amulet of Lifegiving','ใช้เป็นแอ็กชัน รักษาพวกในระยะใกล้ได้รวมวันละ 3 แต้มเจ็บ'],
+ ['Magickal Conduit Amulet','คอนจัวเรอร์ทอยเต๋าพลังเวทได้สูงสุด 4 ลูก'],
+ ['Amulet of the Divine Shard','ผู้ศรัทธาทอยเต๋าปาฏิหาริย์ได้สูงสุด 4 ลูก'],
+ ['Amulet of the Orbus','เรียกดวงตาลอยที่มองผ่านได้ สั่งด้วยใจ เคลื่อนที่ได้ถึงระยะไกล อยู่ได้ 1 ฉาก · วันละครั้ง'],
+ ['Bracelet of Freebreath','หายใจได้ในทุกสภาพแวดล้อม ทั้งใต้น้ำ แก๊สพิษ หรืออากาศเบาบาง'],
+ ['Bracelet of Grappling','ยิงสายเวทเกาะพื้นผิวใดก็ได้ถึงระยะไกล วันละครั้ง อยู่ได้ 1 ฉาก']
+];
+const MT_MELEE=[
+ ['Mace of Divinity','ได้โบว์นการประชิด และคริติคอลใส่อันเดด/ปีศาจที่ 5+ (เว้นแต่ต้องใช้ 6 ถึงจะโดน) · เมื่อคริติคอล อันเดดที่อยู่ใกล้จะตะลึงงันเสียเทิร์นถัดไป'],
+ ['Greyblade the Doomforged','ได้โบว์นการประชิด · ถ้าผู้ถือโดนตีแล้วเซฟเกราะไม่ผ่าน ศัตรูที่ทำแผลจะเสียแต้มเจ็บทันที 1 แต้ม'],
+ ['Dagger of the Blooddrinker','ได้โบว์นการประชิด · หลังยืนยันคริติคอล ดูดชีวิต 1 แต้มจากเป้าหมายมารักษาตัวเอง (รอบละ 1 แต้ม และเกินแต้มที่มีไม่ได้)'],
+ ['Mirror Edge','ได้โบว์นการประชิด · วันละครั้ง ทำให้ศัตรูตาบอดจนเสียเทิร์นถัดไป'],
+ ['Storval the Imprisoned','ได้โบว์นการประชิด · ในดาบมีวิญญาณราชาโบราณถูกขังอยู่ พูดได้ และทรมานอยู่ในนั้น'],
+ ["Aturia's Spear",'ได้โบว์นการประชิด · เมื่อขว้างหรือทำหล่น เรียกกลับมาอยู่ในมือได้ทันที ศัตรูที่ขวางทางบินกลับอาจโดนด้วย']
+];
+const MT_RANGED=[
+ ["Roggeros' Repeating Crossbow",'ได้โบว์นการยิง · ตอนทอยยืนยันคริติคอล ทอย 2 ลูกแทน 1 ลูก'],
+ ['Death Seeker Bow','ได้โบว์นการยิง · วันละครั้ง เปิดใช้ให้ยิงโดนที่ 2+ ตลอดทั้งฉาก'],
+ ['Bow of the Beacon','ได้โบว์นการยิง · เป้าหมายที่โดนยิงจะซ่อนตัวไม่ได้ เพราะมีประกายเวทพุ่งออกมา อยู่ได้ 1 ฉาก'],
+ ['The Pulverizer','ได้โบว์นการยิง · ลูกดอกอัดพลังหยุดยั้ง ถ้ายืนยันคริติคอล เป้าหมายขนาดไม่เกินโอเกอร์จะเสียการเคลื่อนที่ครั้งถัดไป ศัตรูที่ยืนอยู่ในที่ล่อแหลมจะร่วงลงไป'],
+ ['Grace Given Bow','ได้โบว์นการยิง และได้โบว์นการเข้าสังคมด้วย'],
+ ['Whistling Bow','ได้โบว์นการยิง · ลูกธนูส่งเสียงหวีดแหลม ใช้ส่งสัญญาณหรือดึงความสนใจศัตรูได้']
+];
+const MT_UNUSUAL=[
+ ["Faedra's Box",'กล่องดนตรีเวทเล็กๆ เปิดแล้วมีเพลงกล่อมและนางรำจิ๋วเต้นสะกดใจ · ถ้าทั้งกลุ่มได้พักดูการแสดง จะฟื้น 1 แต้มเจ็บ (วันละครั้ง) · แต่ถ้าคนนอกกลุ่มเห็นนางรำ จะหมกมุ่นและหาทางขโมยกล่องทันทีที่มีโอกาส'],
+ ['Mystic Map of Thalooz','แผนที่จะ "ประทับ" ตัวกับผู้ถือ แล้วค่อยๆ นำทางผ่านการผจญภัยหลายครั้งไปสู่ของวิเศษที่เขาตามหา'],
+ ['Mantle of Avion','ผู้สวมงอกปีกบินได้ 1 ฉาก วันละครั้ง · แลกกับการเสีย 1 แต้มเจ็บทุกครั้งที่ใช้'],
+ ['Skull of Maldrusus','กะโหลกสลักอักขระ รอบรู้ตำนานมากมาย แต่ผู้ใช้เวทตรวจจับมันได้ และจะตามล่าหาคำตอบจากมัน — จึงมักไม่อยู่กับเจ้าของคนเดิมนาน'],
+ ['Golden Tadpole','ลูกอ๊อดทองลอยอยู่ในขวดของเหลวเวท ใช้ชุบชีวิตฮีโร่ที่เพิ่งตายในการต่อสู้ · ปล่อยลงบนใบหน้าศพแล้วมันจะไต่เข้าจมูก ปลุกให้ฟื้นด้วยแรงกระตุก · ผู้ฟื้นกลับมาพร้อม 1 แต้มเจ็บ และมักฝันหรือมีความทรงจำของฮีโร่คนอื่นที่ตายในละแวกนั้น'],
+ ['Horn of the Bravado','เขาสัตว์ที่เติมเบียร์เข้มข้นเอง ดื่มแล้วฟื้น 1 แต้มเจ็บ กี่คนดื่มก็ได้ วันละครั้ง · แต่วันนั้นเขาต้องได้เห็นวีรกรรมกล้าหาญก่อนจึงจะใช้ได้ (ปราบศัตรู ช่วยผู้บริสุทธิ์ ฯลฯ) · ถ้าผู้ถือถอยหนีหรือแพ้ในการต่อสู้ จะใช้และดื่มไม่ได้อีก']
+];
+const MT_ARMOR=[
+ ['Enchanted Armor','เมื่อฝีมือช่างยังไม่พอ ต้องพึ่งเวท · ทอยเซฟเกราะใหม่ได้ 1 ครั้งต่อฉาก'],
+ ['Thorn Armor','ถ้าถูกจับหรือปล้ำ หนามจะทิ่มออกมาทำ 1 แต้มเจ็บใส่คนจับที่ 3+'],
+ ['Slick Armor','ไม่มีอะไรเหนียวติดเกราะได้ หลุดออกเอง · หนีจากการปล้ำได้ฟรีที่ 3+'],
+ ['Pocketed Armor','มีกระเป๋าล่องหนเล็กๆ นับสิบช่อง เก็บของได้โดยไม่มีใครค้นเจอ เว้นแต่คุณยอม'],
+ ['Elemental Armor','ได้โบว์นในการต้านผลกระทบจากธาตุทุกชนิด'],
+ ['Enchanted Alloy Armor','ใส่แบบเกราะ "เบา" ได้ แต่ให้เซฟ 5+'],
+ ['Dragon Scale Armor','ศัตรูตีโดนคุณได้ที่ 4+ เท่านั้น (ต้องใส่เกราะกลางหรือหนักได้)'],
+ ['Unbreakable Armor','คุณโดนคริติคอลไม่ได้'],
+ ['Shardling Armor','ถ้าเซฟเกราะไม่ผ่าน ได้เซฟรอบสองที่ 6 · ถ้าเซฟผ่านด้วย 6 เกราะต้องใช้เวลา 1 วัน "งอกใหม่" ระหว่างนั้นกลับไปใช้เซฟปกติ'],
+ ['Bulwark Armor','ระหว่างสวมเกราะนี้ คุณถูกผลักหรือทำให้ล้มไม่ได้'],
+ ['Sarlakarn Armor','ได้โบว์นในการต้านกรด'],
+ ['Appearance Changing Armor','เปลี่ยนรูปลักษณ์เกราะให้ดูเหมือนเกราะแบบใดก็ได้ที่คุณเคยเห็น'],
+ ['Holy Avenger Platemail','เกราะเพลทเงินวาววับอาบพลังศักดิ์สิทธิ์ · ได้คาร์มา 1 แต้มทุกครั้งที่คริติคอล'],
+ ["Thieves' Chain",'เกราะเกล็ดดูดแสงบุด้วยผ้าเก็บเสียง · ได้โบว์นในการลอบเร้น ซ่อนตัว และซุ่มโจมตี'],
+ ['Helmet of Champions','หมวกเกราะมียอด · ลดเลขเป้าที่ต้องทอยเซฟเกราะลง 1'],
+ ['Infernal Armor','เหล็กผสมกำมะถัน · กลมกลืนไปกับปีศาจ ภูตนรก หรือแม้แต่อันเดด'],
+ ['Shield of Surtur','โล่เพลิง · ถ้าผู้โจมตีทอยได้ 1 มันจะเสีย 1 แต้มเจ็บ'],
+ ['Shield of Suns','โล่ที่เปล่งแสงอาทิตย์ได้ตามสั่ง'],
+ ['Arrowbane','เมื่อสวมใส่ ลูกธนูจะยิงโดนคุณได้ด้วย 6 เท่านั้น'],
+ ['Horned Helmet of Might','คุณทอยพลังกำลังพลาดเฉพาะเมื่อออก 1 เท่านั้น']
+];
+/* =========================================================================
+   ของเสก (An Enchanted…) — ทอย 1D4 เลือกกลุ่ม แล้ว 1D6 เลือกชิ้น
+   จากนั้นใส่คุณสมบัติจากตาราง 1D20 สองตาราง
+   ========================================================================= */
+const ENCH_WEAPON=[
+ ['มีดสั้น (Dagger)','ดาบ (Sword)','กระบอง (Mace)','กระบองโซ่ (Flail)','ขวาน (Axe)','ไม้กระบอง (Club)'],
+ ['หน้าไม้ (Crossbow)','หอก (Spear)','ธนู (Bow)','หอกซัด (Javelin)','ขวานขว้าง (Throwing Axe)','มีดขว้าง (Throwing Knife)'],
+ ['ดาบใหญ่ (Great Sword)','ง้าว (Halberd)','ขวานรบ (Battleaxe)','ไม้เท้ายาว (Quarterstaff)','ง้าวใบมีด (Glaive)','ค้อนสงคราม (Warhammer)'],
+ ['แส้ (Whip)','สามง่าม (Trident)','ค้อนยักษ์ (Maul)','อีเต้อสงคราม (War Pick)','ขวานมือ (Handaxe)','เคียว (Sickle)']
+];
+const ENCH_WEARABLE=[
+ ['จี้ห้อยคอ (Amulet)','เข็มกลัด (Broach)','สร้อยคอ (Necklace)','เครื่องราง (Charm)','สร้อยรัดคอ (Choker)','ปลอกคอทองคำ (Torque)'],
+ ['แหวน (Ring)','กำไลข้อมือ (Bracelet)','ปลอกแขน (Armband)','มงกุฎเล็ก (Tiara)','หวีปักผม (Hair Comb)','ต่างหู (Earrings)'],
+ ['เข็มขัด (Belt)','รองเท้าบูท (Boots)','หมวก (Hat)','เสื้อคลุมยาว (Robe)','ผ้าคลุม (Cloak)','ปลอกแขนเหล็ก (Bracers)'],
+ ['เกราะหนัง (Hide · เบา)','เกราะหมุด (Studded · เบา)','เกราะโซ่ (Chain · กลาง)','เกราะแผ่นซ้อน (Splint · กลาง)','เกราะเพลท (Plate · หนัก)','โล่ (Shield)']
+];
+/* คุณสมบัติของเสก — 2 ตาราง ตารางละ 1D20 ตามคู่มือ */
+const ENCH_PROP_A=[
+ ['Allspeech','เข้าใจได้ทุกภาษา'],
+ ['Booming','ฉายเสียงให้ดังไปไกลได้เป็นไมล์'],
+ ['Boost','วันละครั้ง ได้โบว์นกับการทอยอะไรก็ได้'],
+ ['Darksight','มองเห็นในความมืด แม้ไม่มีแสงเลย'],
+ ['Divine Shard','ผู้ศรัทธาทอยเต๋าปาฏิหาริย์ได้ถึง 4 ลูก'],
+ ['Divine Weapon','ได้โบว์นการประชิด และคริติคอลใส่อันเดด/ปีศาจที่ 5-6 (เว้นแต่ต้องใช้ 6 ถึงจะโดน ก็ต้องเป็น 6)'],
+ ['Doomforged Weapon','ได้โบว์นการประชิด · ถ้าผู้ถือโดนตีแล้วเซฟเกราะไม่ผ่าน ศัตรูที่ทำแผลจะเสียแต้มเจ็บด้วยที่ 3+'],
+ ['Enchanted Melee Weapon','ได้โบว์นเมื่อโจมตีด้วยอาวุธนี้'],
+ ['Enchanted Ranged Weapon','ได้โบว์นเมื่อยิงด้วยอาวุธนี้'],
+ ['Enchanted Armor','ทอยเซฟเกราะใหม่ได้ 1 ครั้งต่อฉาก'],
+ ['Farsight','มองเห็นสิ่งไกลๆ ได้ชัดเจน'],
+ ['Fireward','ได้โบว์นในการต้านไฟ'],
+ ['Freebreath','หายใจได้ทุกสภาพแวดล้อม ทั้งใต้น้ำ แก๊สพิษ หรืออากาศเบาบาง'],
+ ['Font','วันละครั้ง ให้น้ำเย็นสะอาดหลายแกลลอน'],
+ ['Gleaming','วันละครั้ง ทำให้ศัตรูตาบอดจนเสียเทิร์นถัดไป'],
+ ['Glide','งอกปีกวิญญาณ ร่อนลงอย่างควบคุมได้'],
+ ['Grappling','ยิงสายเวทเกาะพื้นผิวใดก็ได้ในระยะใกล้ วันละครั้ง อยู่ได้ 1 ฉาก'],
+ ['Jaunting','วันละครั้ง วาร์ปไปยังจุดที่มองเห็นในระยะใกล้'],
+ ['Keen Weapon','ได้โบว์นการประชิด · คริติคอลทำ 2 แต้มเจ็บ'],
+ ['Lifegiving','ใช้เป็นแอ็กชัน รักษาพวกในระยะใกล้ได้รวมวันละ 3 แต้มเจ็บ']
+];
+const ENCH_PROP_B=[
+ ['Lifelock','ได้แต้มเจ็บเพิ่ม 1 แต้ม'],
+ ['Luck','วันละครั้ง เปลี่ยนผลทอยให้เป็น 6'],
+ ['Magickal Conduit','คอนจัวเรอร์ทอยเต๋าพลังเวทได้ถึง 4 ลูก'],
+ ['Magickal Focus','ไม่นับลูกที่ออก 1 ในกองพลังเวท 1 ลูก'],
+ ['Mindgrip','วันละครั้ง งอกหนวดเรืองแสงจากหน้าผาก หยิบจับของใกล้ตัวได้ 1 ฉาก · ของหนักไม่เกิน 10 ปอนด์ และใช้ในการต่อสู้ไม่ได้'],
+ ['Mindlock','ได้โบว์นในการต้านเวทหรือพลังที่ครอบงำจิตใจ'],
+ ['Orbus','ดวงตาลอยที่สั่งด้วยใจ อยู่ได้ 1 ฉาก เคลื่อนที่ได้ถึงระยะไกล เรียกได้วันละครั้ง'],
+ ['Pocketed Armor','มีกระเป๋าล่องหนนับสิบช่อง เก็บของได้โดยไม่มีใครค้นเจอ เว้นแต่คุณยอม'],
+ ['Pocket Dimension','มีพื้นที่เก็บของชิ้นเล็กเกือบไม่จำกัด'],
+ ['Portable','สั่งให้ของหดเหลือขนาดของเล่นได้'],
+ ['Relic','ไม่นับลูกที่ออก 1 ในเต๋าปาฏิหาริย์ 1 ลูก'],
+ ['Safelanding','ถ้าตกจากที่สูงเกิน 10 ฟุต จะค่อยๆ ร่วงลงช้าๆ'],
+ ['Slick Armor','ไม่มีอะไรเหนียวติดเกราะได้ · หนีจากการปล้ำได้ฟรีที่ 3+'],
+ ['Spider Climb','ไต่พื้นผิวแนวตั้งและแนวนอนได้โดยไม่ตก'],
+ ['Spirit Locked','ของชิ้นนี้มีบุคลิกของตัวเอง และพูดกับเจ้าของได้'],
+ ['Talking','มักมาเป็นคู่หรือแยกออกเป็นสองชิ้น · ฮีโร่ที่ถือคนละครึ่งคุยกันได้ทุกระยะ'],
+ ['Thorn Armor','ถ้าถูกจับหรือปล้ำ หนามจะทิ่มทำ 1 แต้มเจ็บใส่คนจับที่ 3+'],
+ ['Truetread','ไม่ถูกพื้นที่ขรุขระถ่วงการเคลื่อนที่'],
+ ['Vampiric Weapon','หลังยืนยันคริติคอล ดูดชีวิต 1 แต้มจากเป้าหมาย (รอบละ 1 แต้ม และเกินแต้มที่มีไม่ได้)'],
+ ['Warding','วันละครั้ง ร่ายกำแพงเวทใส่ตัวเองแบบคอนจัวเรอร์']
+];
+/* ตั้งชื่อของเสกให้ฟังดูมีตำนาน (ไม่ได้อยู่ในคู่มือ แต่เข้ากันดี) */
+const MAGIC_N1=['Chaos','Nightmare','Mind','Terror','Dark','Soul','Fate','Fear','Death','Wrath','Hate','Blood','Unicorn','Justice'];
+const MAGIC_N2=['Drinker','Slayer','Bringer','Crusher','Spawn','Ward','Scream','Writhe','Breath'];
 /* =========================================================================
    ระบบเก็บข้อมูล — เลือกที่เก็บอัตโนมัติตามสภาพแวดล้อม
      1) window.storage  — มีเฉพาะตอนรันในตัวอย่างของ Claude
@@ -1737,6 +1825,7 @@ function renderChars(){
 }
 const openInfo=new Set();   // จำว่ารายการไหนถูกกางไว้ ระหว่างวาดใหม่
 let editBox=null;           // ช่องของที่กำลังแก้ไขอยู่ระหว่างเล่น
+function allOpen(prefix,keys){ return keys.length>0 && keys.every(k=>openInfo.has(k)); }
 function infoItem(key,titleHTML,body){
   return `<details class="info" data-ik="${esc(key)}"${openInfo.has(key)?' open':''}>`
     +`<summary>${titleHTML}</summary><div class="info-body">${esc(body)}</div></details>`;
@@ -1772,6 +1861,8 @@ function sheetHTML(c){
   const pct=c.healthMax>0?Math.max(0,Math.min(100,Math.round(c.healthCur/c.healthMax*100))):0;
 
   /* แนวถนัด — โชว์แต่ชื่อ กดแล้วกางรายละเอียด */
+  const inclKeys=(c.incl||[]).map(en=>'incl:'+en);
+  const featKeys=p?p.features.map(f=>'feat:'+f[0]):[];
   const inclHTML=(c.incl||[]).length
     ? c.incl.map(en=>{const i=INCLINATIONS.find(x=>x.en===en);
         return infoItem('incl:'+en,`<b>${esc(en)}</b> <span style="color:var(--soft);font-size:12px">${esc(i?i.th:'')}</span>`, i?i.desc:'');
@@ -1795,8 +1886,10 @@ function sheetHTML(c){
         ${sp?' &nbsp;·&nbsp; '+esc(sp.th)+' <span class="tag">'+esc(sp.en)+'</span>':''}</div>
         ${sp?`<div class="val" style="font-size:13px;color:var(--soft);margin-top:3px">${esc(sp.note)}</div>`:''}
         <div style="margin-top:5px">${boonHTML}</div></div>
-      <div class="sbox"><h3>ความสามารถประจำเส้นทาง · Features <span class="tag">แตะเพื่อดู</span></h3>${featHTML}</div>
-      <div class="sbox"><h3>แนวถนัด · Inclinations <span class="tag">แตะเพื่อดู</span></h3>${inclHTML}</div>
+      <div class="sbox"><h3>ความสามารถประจำเส้นทาง · Features
+        <button class="btn xs" data-expand="feat">${allOpen('feat',featKeys)?'ปิด':'กางทั้งหมด'}</button></h3>${featHTML}</div>
+      <div class="sbox"><h3>แนวถนัด · Inclinations
+        <button class="btn xs" data-expand="incl">${allOpen('incl',inclKeys)?'ปิด':'กางทั้งหมด'}</button></h3>${inclHTML}</div>
       <div class="sbox"><h3>คุณลักษณะ · Traits</h3>
         <div id="sheet-traits"></div>
         <button class="btn xs" id="btn-add-trait" style="margin-top:6px">＋ เพิ่มคุณลักษณะ</button>
@@ -2023,6 +2116,15 @@ function wireSheetExtras(){
   /* แก้ไขของในช่องต่างๆ ระหว่างเล่น */
   $('#sheet-wrap').addEventListener('click',e=>{
     const c=CHARS()[active]; if(!c) return;
+    const ex=e.target.closest('[data-expand]');
+    if(ex){
+      const pre=ex.dataset.expand+':';
+      const keys = pre==='incl:' ? (c.incl||[]).map(en=>'incl:'+en)
+                 : (PATHS[c.path]?PATHS[c.path].features.map(f=>'feat:'+f[0]):[]);
+      const open = keys.length>0 && keys.every(k=>openInfo.has(k));
+      keys.forEach(k=>{ if(open) openInfo.delete(k); else openInfo.add(k); });
+      renderChars(); renderSheetTraits(); return;
+    }
     const ed=e.target.closest('[data-gedit]');
     if(ed){ const k=ed.dataset.gedit; editBox = (editBox===k?null:k); renderChars(); renderSheetTraits(); return; }
     const del=e.target.closest('[data-gdel]');
@@ -2066,6 +2168,36 @@ function wireSheetExtras(){
   });
 }
 
+/* ปุ่ม +/- ค่าสถานะ และปุ่มลบศัตรู — ใช้ร่วมกันทั้งแผ่นตัวละครและหน้าต่อสู้ */
+document.addEventListener('click',e=>{
+  const wrap=e.target.closest('[data-kind]'); if(!wrap) return;
+  const kind=wrap.dataset.kind, id=Number(wrap.dataset.id);
+  const ent = kind==='char' ? CHARS().find(c=>c.id===id) : ENC().enemies.find(x=>x.id===id);
+  if(!ent) return;
+  const hp=e.target.closest('[data-hp]'), act=e.target.closest('[data-act]');
+  if(hp){
+    const d=hp.dataset.hp;
+    const mk=kind==='char'?'healthMax':'max', ck=kind==='char'?'healthCur':'cur';
+    if(d==='full') ent[ck]=ent[mk];
+    else ent[ck]=Math.max(0,Math.min(ent[mk],ent[ck]+(+d)));
+  } else if(act){
+    const a=act.dataset.act;
+    if(kind==='char'){
+      if(a==='karma-1') ent.karma=Math.max(0,ent.karma-1);
+      else if(a==='karma+1') ent.karma++;
+      else if(a==='hd-1') ent.heroDie=Math.max(0,ent.heroDie-1);
+      else if(a==='hd+1') ent.heroDie=Math.min(ent.heroDieMax,ent.heroDie+1);
+      else if(a==='session-reset'){ ent.karma=startKarma(ent); ent.heroDie=ent.heroDieMax; ent.healthCur=ent.healthMax; }
+      else return;
+    } else {
+      if(a==='del-enemy'){ ENC().enemies=ENC().enemies.filter(x=>x.id!==id); saveParties(); renderCombat(); return; }
+      return;
+    }
+  } else return;
+  saveParties();
+  if(!$('#tab-chars').classList.contains('hide')){ renderChars(); renderSheetTraits(); }
+  if(!$('#tab-combat').classList.contains('hide')) renderCombat();
+});
 
 /* =========================================================================
    ตัวสร้างตัวละคร — เหตุการณ์
@@ -2230,7 +2362,47 @@ function wireCombat(){
    ========================================================================= */
 const rollOneScroll=()=>{const s=pick(SCROLLS);return s[0]+' — '+s[1];};
 const rollOnePotion=()=>{const p=pick(POTIONS);return p[0]+' — '+p[1];};
+const named=(pair)=>pair[0]+' — '+pair[1];
+const rollProp=()=>{                       // คุณสมบัติของเสก: ทอยเลือกตารางก่อน (2 ตาราง) แล้ว 1D20
+  const useA=dN(2)===1, tbl=useA?ENCH_PROP_A:ENCH_PROP_B, n=dN(20), p=tbl[n-1];
+  return {txt:p[0]+' — '+p[1], src:'ตาราง '+(useA?'1':'2')+' ช่อง '+n};
+};
 const GM_TABLES=[
+ {sec:'สมบัติ & ของวิเศษ'},
+ {key:'treasure', th:'สมบัติทั่วไป', en:'Treasure', roll(){
+    const t=pick(TREASURE);
+    if(t.t==='potion') return 'ยาฟื้นพลัง '+dN(3)+' ขวด (ขวดละ 2 แต้มเจ็บ)';
+    if(t.t==='scroll') return 'ม้วนคาถา: '+named(pick(SCROLLS));
+    return t.v; }},
+ {key:'mt_any', th:'ของวิเศษ (สุ่มประเภท)', en:'Magick Treasure', roll(){
+    const cats=[['เครื่องราง',MT_TRINKETS],['อาวุธประชิด',MT_MELEE],['อาวุธระยะไกล',MT_RANGED],
+                ['ของแปลกประหลาด',MT_UNUSUAL],['เกราะ',MT_ARMOR]];
+    const c=pick(cats), n=dN(c[1].length);
+    return '['+c[0]+' · ทอยได้ '+n+']\n'+named(c[1][n-1]); }},
+ {key:'mt_trinket', th:'ของวิเศษ: เครื่องราง', en:'Trinkets 1D6', roll(){
+    const n=d6(); return '[ทอยได้ '+n+'] '+named(MT_TRINKETS[n-1]); }},
+ {key:'mt_melee', th:'ของวิเศษ: อาวุธประชิด', en:'Melee 1D6', roll(){
+    const n=d6(); return '[ทอยได้ '+n+'] '+named(MT_MELEE[n-1]); }},
+ {key:'mt_ranged', th:'ของวิเศษ: อาวุธระยะไกล', en:'Ranged 1D6', roll(){
+    const n=d6(); return '[ทอยได้ '+n+'] '+named(MT_RANGED[n-1]); }},
+ {key:'mt_armor', th:'ของวิเศษ: เกราะ', en:'Armor 1D20', roll(){
+    const n=dN(20); return '[ทอยได้ '+n+'] '+named(MT_ARMOR[n-1]); }},
+ {key:'mt_unusual', th:'ของวิเศษ: ของแปลก', en:'Unusual 1D6', roll(){
+    const n=d6();
+    return '[ทอยได้ '+n+'] '+named(MT_UNUSUAL[n-1])
+      +'\nของกลุ่มนี้ไม่ได้เพิ่มพลังต่อสู้ แต่เปิดทางเล่นใหม่ๆ ให้เนื้อเรื่อง'; }},
+ {key:'ench_weapon', th:'ของเสก: อาวุธ', en:'Enchanted Weapon', roll(){
+    const g=dN(4), n=d6(), item=ENCH_WEAPON[g-1][n-1], p=rollProp();
+    return `${pick(MAGIC_N1)}${pick(MAGIC_N2)} — ${item}\nคุณสมบัติ: ${p.txt}\n(กลุ่ม ${g} ช่อง ${n} · ${p.src})`; }},
+ {key:'ench_wear', th:'ของเสก: เครื่องแต่งกาย/เกราะ', en:'Enchanted Wearable', roll(){
+    const g=dN(4), n=d6(), item=ENCH_WEARABLE[g-1][n-1], p=rollProp();
+    return `${pick(MAGIC_N1)}${pick(MAGIC_N2)} — ${item}\nคุณสมบัติ: ${p.txt}\n(กลุ่ม ${g} ช่อง ${n} · ${p.src})`; }},
+ {key:'ench_prop', th:'คุณสมบัติของเสก', en:'Item Property', roll(){
+    const p=rollProp(); return p.txt+'\n('+p.src+')'; }},
+ {key:'scroll', th:'ม้วนคาถา', en:'Scroll', roll(){ return named(pick(SCROLLS)); }},
+ {key:'potion', th:'ยา', en:'Potion', roll(){ return named(pick(POTIONS)); }},
+
+ {sec:'โลก & ศัตรู'},
  {key:'monster', th:'มอนสเตอร์', en:'Monster', roll(){
     const g=pick(BESTIARY), m=pick(g.list);
     return `${m[1]} (${m[0]}) · ${m[2]} แต้มเจ็บ · โดนที่ ${m[3]}+\n${m[4]}`; }},
@@ -2238,20 +2410,12 @@ const GM_TABLES=[
     return `ทำเล: ${pick(LAIR_LOC)}\nลักษณะ: ${pick(LAIR_ASPECT)}\nบัฟบอส: ${pick(LAIR_BOSS)}`; }},
  {key:'twist', th:'ทวิสต์', en:'Twists', roll(){
     return `ทวิสต์เหตุการณ์: ${pick(ENC_TWISTS)}\nทวิสต์การต่อสู้: ${pick(BATTLE_TWISTS)}`; }},
+
+ {sec:'ตัวละคร & NPC'},
  {key:'npc', th:'NPC', en:'NPC', roll(){
     const sp=pick(['มนุษย์','มนุษย์','เอลฟ์','ดวอร์ฟ','แฮฟลิง','กอบลิน']);
     const wk=rollWealthKey(); const w=WEALTH.find(x=>x.k===wk);
     return `${rollName()} เป็น${sp}\n${rollAppearance()}\nบทบาทของเขาคือ${pick(NPC_PURPOSE)}\nถ้าเป็น NPC ทั่วไป: ${pick(NPC_WANTS)}\nถ้าเป็น NPC ทรงอิทธิพล: ${pick(NPC_ACTIONS)}\nระดับความมั่งคั่ง: ${w.th}`; }},
- {key:'treasure', th:'สมบัติ', en:'Treasure', roll(){
-    const t=pick(TREASURE);
-    if(t.t==='potion') return `ยาฟื้นพลัง ${dN(3)} ขวด (รักษา 2 แต้มเจ็บต่อขวด)`;
-    if(t.t==='scroll') return 'ม้วนคาถา: '+rollOneScroll();
-    return t.v; }},
- {key:'magicitem', th:'ของวิเศษ', en:'Magic Item', roll(){
-    const prop=pick(MAGIC_PROP);
-    return `${pick(MAGIC_N1)}${pick(MAGIC_N2)} — ${pick(MAGIC_TYPE)}\nคุณสมบัติ ${prop[0]}: ${prop[1]}`; }},
- {key:'scroll', th:'ม้วนคาถา', en:'Scroll', roll(){ return rollOneScroll(); }},
- {key:'potion', th:'ยา', en:'Potion', roll(){ return rollOnePotion(); }},
  {key:'gear', th:'อุปกรณ์', en:'Gear', roll(){
     const cg=GEAR_COMMON[dN(4)-1][d6()-1], sg=GEAR_SPECIAL[dN(4)-1][d6()-1];
     return `ของทั่วไป: ${cg}\nของพิเศษ: ${sg}`; }},
@@ -2263,11 +2427,12 @@ const GM_TABLES=[
 ];
 function buildGmTables(){
   $('#gm-list').innerHTML=GM_TABLES.map(t=>
-    '<div class="tbl" data-gm="'+t.key+'">'
-    +'<div class="nm">'+esc(t.th)+'<em>'+esc(t.en)+'</em></div>'
-    +'<button class="res" data-gmroll="'+t.key+'"><span class="txt">'
-    +'<span class="th empty">แตะเพื่อทอย</span></span></button>'
-    +'<button class="add" data-gmsave="'+t.key+'" aria-label="เก็บ '+esc(t.th)+'">＋</button></div>').join('');
+    t.sec ? '<h3 class="gm-sec">'+esc(t.sec)+'</h3>'
+    : '<div class="tbl" data-gm="'+t.key+'">'
+      +'<div class="nm">'+esc(t.th)+'<em>'+esc(t.en)+'</em></div>'
+      +'<button class="res" data-gmroll="'+t.key+'"><span class="txt">'
+      +'<span class="th empty">แตะเพื่อทอย</span></span></button>'
+      +'<button class="add" data-gmsave="'+t.key+'" aria-label="เก็บ '+esc(t.th)+'">＋</button></div>').join('');
 }
 const gmResults={};
 /* ---- ตารางจุดประกาย / เฉพาะทาง (Triple-O) ---- */
