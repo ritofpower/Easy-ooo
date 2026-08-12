@@ -45,8 +45,12 @@ input,textarea,select{font-size:16px !important}
 
 .top{
   position:sticky;top:0;z-index:5;background:var(--ink);color:var(--paper);
-  padding:9px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 14px;padding-right:80px;   /* เว้นที่ให้ปุ่มลูกเต๋าลอย ไม่ให้ทับกัน */
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
 }
+.iconbtn{flex:none;width:34px;height:34px;padding:0;background:var(--paper);color:var(--ink);
+  border:2px solid var(--paper);box-shadow:2px 2px 0 var(--pink);font-size:19px;line-height:1}
+.iconbtn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--pink)}
 .brand{font-family:'Mitr',sans-serif;font-weight:600;font-size:19px;line-height:1.1;letter-spacing:.01em;
   text-shadow:2px 0 0 var(--pink),-2px 0 0 var(--blue);}
 .brand-sub{font-size:11px;color:#9EA396;letter-spacing:.02em;flex:1 1 auto}
@@ -189,6 +193,60 @@ select{-webkit-appearance:none;appearance:none;background-image:linear-gradient(
 .wdot{font-size:11px;border:2px solid var(--ink);padding:3px 6px;background:var(--paper);font-family:'Mitr',sans-serif}
 .wdot.on{background:var(--ink);color:var(--paper)}
 
+/* ---------- ช่องสถานะแบบ 2 คอลัมน์ ---------- */
+.duo{display:grid;grid-template-columns:1fr 1fr;border-bottom:2px solid var(--ink)}
+.duo>div{padding:8px 10px;min-width:0}
+.duo>div+div{border-left:2px solid var(--ink)}
+.duo h3{margin:0 0 4px;font-family:'Mitr',sans-serif;font-weight:500;font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--soft)}
+.hp-line{display:flex;align-items:center;justify-content:center;gap:7px;margin:2px 0 6px;flex-wrap:nowrap}
+.hp-line .num{font-family:'Mitr',sans-serif;font-weight:600;font-size:19px;line-height:1;white-space:nowrap}
+.hp-line .num small{font-family:'IBM Plex Sans Thai';font-weight:400;font-size:10px;color:var(--soft)}
+.bar-mini{border:2px solid var(--ink);height:9px;background:var(--paper2);margin-bottom:6px}
+.bar-mini>i{display:block;height:100%;background:var(--green)}
+.armor-lines{font-size:13px;line-height:1.65}
+.armor-lines b{font-family:'Mitr',sans-serif;font-weight:500}
+.stat-line{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+.stat-line b{font-family:'IBM Plex Mono',monospace;font-size:17px;min-width:26px;text-align:center}
+
+/* ---------- รายการที่กดชื่อแล้วกางรายละเอียด ---------- */
+details.info{border-top:1px dashed var(--soft)}
+details.info:first-child{border-top:0}
+details.info>summary{cursor:pointer;list-style:none;padding:6px 0;font-size:14px;line-height:1.45;
+  display:flex;align-items:baseline;gap:6px}
+details.info>summary::-webkit-details-marker{display:none}
+details.info>summary::after{content:'＋';margin-left:auto;flex:none;font-size:12px;color:var(--soft)}
+details.info[open]>summary::after{content:'−'}
+details.info>summary b{font-family:'Mitr',sans-serif;font-weight:500}
+details.info .info-body{font-size:13px;line-height:1.6;color:var(--soft);padding:0 0 8px 2px}
+
+/* ---------- ช่องของ/อุปกรณ์ ที่แก้ไขได้ระหว่างเล่น ---------- */
+.gsec{border-bottom:2px solid var(--ink);padding:8px 10px}
+.gsec:last-child{border-bottom:0}
+.gsec>h3{margin:0 0 5px;font-family:'Mitr',sans-serif;font-weight:500;font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--soft);display:flex;justify-content:space-between;align-items:center;gap:6px}
+.gsec>h3 .btn{padding:2px 9px;font-size:12px;box-shadow:2px 2px 0 var(--ink)}
+.gsec ul{margin:0;padding-left:17px}
+.gsec li{font-size:14px;line-height:1.5;margin-bottom:2px;overflow-wrap:anywhere}
+.gsec .muted{color:#9AA093;font-size:14px}
+.gedit{margin-top:6px}
+.gedit .lrow{margin-bottom:6px}
+.gedit .addrow{display:flex;gap:6px;margin-top:6px}
+.gedit .addrow input{flex:1 1 auto;min-width:0;padding:7px 9px}
+.gedit .addrow .btn{flex:none}
+.gedit .pickrow{display:flex;gap:6px;margin-top:6px}
+.gedit .pickrow select{flex:1 1 auto;min-width:0;padding:7px 9px}
+
+/* ---------- ปูมหลัง/รูปลักษณ์ ท้ายแผ่น ---------- */
+details.foot{border-top:2px solid var(--ink)}
+details.foot>summary{cursor:pointer;list-style:none;padding:9px 11px;background:var(--paper2);
+  font-family:'Mitr',sans-serif;font-weight:500;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--soft);display:flex;justify-content:space-between;align-items:center}
+details.foot>summary::-webkit-details-marker{display:none}
+details.foot>summary::after{content:'▾';font-size:11px}
+details.foot[open]>summary::after{content:'▴'}
+details.foot .foot-body{padding:9px 11px;font-size:14px;line-height:1.6;white-space:pre-wrap}
+
 /* ---------- ตัวสร้างตัวละคร ---------- */
 .step{border:var(--line) solid var(--ink);box-shadow:4px 4px 0 var(--ink);margin-bottom:14px;background:var(--paper)}
 .step>h3{margin:0;padding:8px 11px;background:var(--paper2);border-bottom:var(--line) solid var(--ink);
@@ -316,7 +374,7 @@ select{-webkit-appearance:none;appearance:none;background-image:linear-gradient(
 .tbl .res{flex:1 1 auto;min-width:0;background:none;border:0;text-align:left;padding:8px 10px;display:flex;gap:10px;align-items:center}
 .tbl .res .code{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--blue);flex:none}
 .tbl .res .txt{min-width:0}
-.tbl .res .th{display:block;font-weight:500;line-height:1.35;overflow-wrap:anywhere}
+.tbl .res .th{display:block;font-weight:500;line-height:1.4;overflow-wrap:anywhere;white-space:pre-line}
 .tbl .res .en{display:block;font-size:11px;color:var(--soft)}
 .tbl .res .empty{color:#9AA093;font-weight:400}
 .tbl .add{flex:0 0 48px;background:var(--paper);border:0;border-left:var(--line) solid var(--ink);font-family:'Mitr',sans-serif;font-size:20px}
@@ -369,9 +427,9 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
 <!-- ==================== หน้าหลัก ==================== -->
 <div id="screen-main" class="hide">
 <header class="top">
+  <button class="iconbtn" id="btn-switch-party" aria-label="กลับไปหน้าเลือกปาร์ตี้" title="กลับไปเลือกปาร์ตี้">←</button>
   <div class="brand">EZD6 × TRIPLE-O</div>
   <div class="brand-sub" id="top-party">—</div>
-  <button class="btn" id="btn-switch-party">เปลี่ยนปาร์ตี้</button>
 </header>
 
 <main class="wrap">
@@ -513,10 +571,6 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
   <div id="gm-list"></div>
   <div id="spark-list" class="hide"></div>
   <div id="spec-list" class="hide"></div>
-  <div class="row hide" id="tables-roll-all-row" style="margin-bottom:18px">
-    <button class="btn grow" id="btn-roll-all">ทอยทั้งหมด</button>
-    <button class="btn grow" id="btn-save-all">＋ เก็บทั้งหมด</button>
-  </div>
   <p class="hint" id="tables-hint">แตะที่ผลลัพธ์เพื่อทอยใหม่ · ปุ่ม ＋ เก็บผลนั้นลงบันทึก</p>
 </section>
 
@@ -1681,25 +1735,55 @@ function renderChars(){
   if(active>=cs.length) active=0;
   $('#sheet-wrap').innerHTML=sheetHTML(cs[active]);
 }
+const openInfo=new Set();   // จำว่ารายการไหนถูกกางไว้ ระหว่างวาดใหม่
+let editBox=null;           // ช่องของที่กำลังแก้ไขอยู่ระหว่างเล่น
+function infoItem(key,titleHTML,body){
+  return `<details class="info" data-ik="${esc(key)}"${openInfo.has(key)?' open':''}>`
+    +`<summary>${titleHTML}</summary><div class="info-body">${esc(body)}</div></details>`;
+}
+/* ช่องของที่แก้ไขได้ระหว่างเล่น (อาวุธ/ม้วนคาถา/ยา/อุปกรณ์) */
+function gearSec(c,key,title,arr,pickList,fixedArr){
+  const editing=editBox===key;
+  const fx=fixedArr||[];
+  const fxHTML = fx.length ? '<ul>'+fx.map(x=>`<li>${esc(x)} <span class="tag green">ติดตัว</span></li>`).join('')+'</ul>' : '';
+  let body;
+  if(editing){
+    body=fxHTML+'<div class="gedit">'
+      + arr.map((v,i)=>`<div class="lrow" data-gi="${i}"><textarea class="lval" rows="1"></textarea>`
+          +`<button class="ldel" data-gdel="${esc(key)}" aria-label="ลบ">×</button></div>`).join('')
+      + (pickList?`<div class="pickrow"><select data-gpick="${esc(key)}">
+           <option value="">— เลือกจากรายการ —</option>
+           ${pickList.map((x,i)=>`<option value="${i}">${esc(x.label)}</option>`).join('')}
+         </select><button class="btn sm" data-gpickadd="${esc(key)}">＋</button></div>`:'')
+      + `<div class="addrow"><input type="text" data-gnew="${esc(key)}" placeholder="พิมพ์เพิ่มเอง">
+           <button class="btn sm" data-gadd="${esc(key)}">＋</button></div>`
+      + '</div>';
+  } else {
+    body = (fx.length||arr.length)
+      ? fxHTML + (arr.length?'<ul>'+arr.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul>':'')
+      : '<span class="muted">—</span>';
+  }
+  return `<div class="gsec"><h3>${esc(title)}
+    <button class="btn" data-gedit="${esc(key)}">${editing?'เสร็จ':'แก้ไข'}</button></h3>${body}</div>`;
+}
 function sheetHTML(c){
   const p=PATHS[c.path], sp=SPECIES[c.species], ar=armorOf(c);
   const w=WEALTH.find(x=>x.k===c.wealth)||WEALTH[2];
-  const inclHTML=(c.incl||[]).length
-    ? '<ul>'+c.incl.map(en=>{const i=INCLINATIONS.find(x=>x.en===en);
-        return `<li><b>${esc(en)}</b>${i?' — '+esc(i.th):''}</li>`;}).join('')+'</ul>'
-    : '<div class="val"><span class="muted">—</span></div>';
-  const featHTML=p
-    ? '<ul class="feat-list">'+p.features.map(f=>`<li><b>${esc(f[0])}</b><br>${esc(f[1])}</li>`).join('')+'</ul>'
-    : '<div class="val"><span class="muted">—</span></div>';
-  const fixed=fixedGear(c);
-  const gearHTML=(fixed.length||(c.equipment||[]).length)
-    ? '<ul>'+fixed.map(g=>`<li><b>${esc(g.txt)}</b> <span class="tag green">${esc(g.src)}</span></li>`).join('')
-      +(c.equipment||[]).map(g=>`<li>${esc(g)}</li>`).join('')+'</ul>'
-    : '<div class="val"><span class="muted">—</span></div>';
-  const listBox=(arr,empty)=> (arr&&arr.length)
-    ? '<ul>'+arr.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul>'
-    : `<div class="val"><span class="muted">${empty}</span></div>`;
   const pct=c.healthMax>0?Math.max(0,Math.min(100,Math.round(c.healthCur/c.healthMax*100))):0;
+
+  /* แนวถนัด — โชว์แต่ชื่อ กดแล้วกางรายละเอียด */
+  const inclHTML=(c.incl||[]).length
+    ? c.incl.map(en=>{const i=INCLINATIONS.find(x=>x.en===en);
+        return infoItem('incl:'+en,`<b>${esc(en)}</b> <span style="color:var(--soft);font-size:12px">${esc(i?i.th:'')}</span>`, i?i.desc:'');
+      }).join('')
+    : '<div class="val"><span class="muted">—</span></div>';
+  /* ความสามารถเส้นทาง — โชว์แต่ชื่อ กดแล้วกาง */
+  const featHTML=p ? p.features.map(f=>infoItem('feat:'+f[0],`<b>${esc(f[0])}</b>`,f[1])).join('')
+                   : '<div class="val"><span class="muted">—</span></div>';
+  /* โบนัส — โชว์แต่ชื่อ กดแล้วกาง */
+  const boonHTML=p ? infoItem('boon',`<b>โบนัส (Boon)</b>`,p.boon) : '<span class="muted">—</span>';
+
+  const fixedTxt=fixedGear(c).map(g=>g.txt+' ('+g.src+')');
 
   return `<div class="sheet" data-kind="char" data-id="${c.id}"><div class="sheet-grid">
     <div class="sheet-main">
@@ -1708,12 +1792,11 @@ function sheetHTML(c){
         <div class="trait-strip">${traitChipsHTML(c)}</div></div>
       <div class="sbox"><h3>เส้นทางฮีโร่ · Hero Path</h3>
         <div class="val">${p?esc(p.th)+' <span class="tag">'+esc(p.en)+'</span>':'<span class="muted">—</span>'}
-        ${sp?' &nbsp;·&nbsp; เผ่าพันธุ์: '+esc(sp.th)+' <span class="tag">'+esc(sp.en)+'</span>':''}</div>
-        ${sp?`<div class="val" style="font-size:13px;color:var(--soft);margin-top:3px">${esc(sp.note)}</div>`:''}</div>
-      <div class="sbox"><h3>โบนัส · Hero Path Boons</h3>
-        <div class="val">${p?esc(p.boon):'<span class="muted">—</span>'}</div></div>
-      <div class="sbox"><h3>ความสามารถประจำเส้นทาง · Hero Path Features</h3>${featHTML}</div>
-      <div class="sbox"><h3>แนวถนัด · Inclinations <span class="tag">${(c.incl||[]).length}/${incLimit(c)}</span></h3>${inclHTML}</div>
+        ${sp?' &nbsp;·&nbsp; '+esc(sp.th)+' <span class="tag">'+esc(sp.en)+'</span>':''}</div>
+        ${sp?`<div class="val" style="font-size:13px;color:var(--soft);margin-top:3px">${esc(sp.note)}</div>`:''}
+        <div style="margin-top:5px">${boonHTML}</div></div>
+      <div class="sbox"><h3>ความสามารถประจำเส้นทาง · Features <span class="tag">แตะเพื่อดู</span></h3>${featHTML}</div>
+      <div class="sbox"><h3>แนวถนัด · Inclinations <span class="tag">แตะเพื่อดู</span></h3>${inclHTML}</div>
       <div class="sbox"><h3>คุณลักษณะ · Traits</h3>
         <div id="sheet-traits"></div>
         <button class="btn xs" id="btn-add-trait" style="margin-top:6px">＋ เพิ่มคุณลักษณะ</button>
@@ -1722,44 +1805,49 @@ function sheetHTML(c){
       ${c.path==='conjurer'?`<div class="sbox"><h3>ตระกูลเวท · Circle of Sorcery</h3>
         <div class="val">${c.circle?esc(CIRCLES[c.circle].th)+' <span class="tag">'+esc(CIRCLES[c.circle].en)+'</span>':'<span class="muted">—</span>'}</div>
         ${c.circle?`<div class="val" style="font-size:13px;color:var(--soft);margin-top:3px">${esc(CIRCLES[c.circle].note)}</div>`:''}</div>`:''}
-      <div class="sbox"><h3>อุปกรณ์ · Equipment</h3>${gearHTML}</div>
-      <div class="sbox"><h3>ปูมหลัง · Background / Beliefs · Flaws · Oaths</h3>
-        <div class="val">${c.background?esc(c.background):'<span class="muted">—</span>'}</div></div>
-      <div class="sbox"><h3>รูปลักษณ์ · Appearance</h3>
-        <div class="val">${c.appearance?esc(c.appearance):'<span class="muted">—</span>'}</div></div>
-      <div class="sbox"><h3>ความมั่งคั่ง · Wealth</h3>
-        <div class="wealth-dots">${WEALTH.map(x=>`<span class="wdot ${x.k===c.wealth?'on':''}">${esc(x.th)}</span>`).join('')}</div>
-        <div class="val" style="font-size:13px;color:var(--soft);margin-top:5px">${esc(w.desc)}</div></div>
     </div>
 
     <div class="sheet-side">
-      <div class="sbox"><h3>♥ พลังชีวิต · Health</h3>
-        <div class="hp-big">${c.healthCur}<small>เต็ม ${c.healthMax} แต้มเจ็บ (Strikes)</small></div>
-        <div class="hpbar"><div class="hpbar-track"><div class="hpbar-fill green" style="width:${pct}%"></div></div></div>
-        <div class="ctr"><button class="btn xs" data-hp="-1">−1</button>
-          <button class="btn xs" data-hp="1">+1</button>
-          <button class="btn xs" data-hp="full">ฟื้นเต็ม</button></div></div>
-      <div class="sbox"><h3>เกราะ · Armor</h3>
-        <div class="val big" style="font-size:17px">${esc(ar.th)}</div>
-        <div class="val" style="font-size:14px">เซฟเกราะ: <b>${esc(ar.save)}</b><br>เซฟปาฏิหาริย์: <b>${esc(ar.msave)}</b></div>
-        <div class="val" style="font-size:12px;color:var(--soft);margin-top:4px">ทอยเซฟ 1 ครั้งต่อ 1 แต้มเจ็บ ถ้าผ่านไม่เสียแต้ม</div></div>
-      <div class="sbox"><h3>คาร์มา · Karma</h3>
-        <div class="ctr"><button class="btn xs" data-act="karma-1">−1</button>
-          <b class="knum">${c.karma}</b>
-          <button class="btn xs" data-act="karma+1">+1</button></div>
-        ${hasIncl(c,'Born Blessed')?'<div class="val" style="font-size:12px;color:var(--green);text-align:center">Born Blessed — เริ่มที่ 6</div>':''}</div>
-      <div class="sbox"><h3>เต๋าฮีโร่ · Hero Die</h3>
-        <div class="ctr"><button class="btn xs" data-act="hd-1">−1</button>
-          <b class="knum">${c.heroDie}/${c.heroDieMax}</b>
-          <button class="btn xs" data-act="hd+1">+1</button></div>
-        ${c.heroDieMax>1?'<div class="val" style="font-size:12px;color:var(--green);text-align:center">Fate Touched — เริ่ม 2 ลูก</div>':''}</div>
-      <div class="sbox"><h3>เริ่มเซสชันใหม่</h3>
-        <button class="btn xs" data-act="session-reset" style="width:100%">คืนคาร์มา + เต๋าฮีโร่ + ฟื้นเต็ม</button></div>
-      <div class="sbox"><h3>⚗ ยา · Potions</h3>${listBox(c.potions,'—')}</div>
-      <div class="sbox"><h3>🗡 อาวุธ · Weapons</h3>${listBox(c.weapons,'—')}</div>
-      <div class="sbox"><h3>📜 ม้วนคาถา · Scrolls</h3>${listBox(c.scrolls,'—')}</div>
+      <div class="duo">
+        <div><h3>♥ พลังชีวิต</h3>
+          <div class="bar-mini"><i style="width:${pct}%"></i></div>
+          <div class="hp-line"><button class="btn xs" data-hp="-1">−</button>
+            <span class="num">${c.healthCur}<small>/${c.healthMax} strike</small></span>
+            <button class="btn xs" data-hp="1">+</button></div>
+          <button class="btn xs" data-hp="full" style="width:100%">ฟื้นฟู</button></div>
+        <div><h3>เกราะ</h3>
+          <div class="armor-lines">
+            <b>${esc(ar.th)}</b><br>
+            เซฟเกราะ <b>${esc(ar.save)}</b><br>
+            ปาฏิหาริย์ <b>${esc(ar.msave)}</b></div></div>
+      </div>
+      <div class="duo">
+        <div><h3>คาร์มา</h3>
+          <div class="stat-line"><button class="btn xs" data-act="karma-1">−</button>
+            <b>${c.karma}</b><button class="btn xs" data-act="karma+1">+</button></div></div>
+        <div><h3>เต๋าฮีโร่</h3>
+          <div class="stat-line"><button class="btn xs" data-act="hd-1">−</button>
+            <b>${c.heroDie}/${c.heroDieMax}</b><button class="btn xs" data-act="hd+1">+</button></div></div>
+      </div>
+      <div class="gsec"><button class="btn xs" data-act="session-reset" style="width:100%">เริ่มเซสชันใหม่ (คืนคาร์มา/เต๋า/เลือด)</button></div>
+      ${gearSec(c,'weapons','🗡 อาวุธ · Weapons',c.weapons||[],null)}
+      ${gearSec(c,'scrolls','📜 ม้วนคาถา · Scrolls',c.scrolls||[],SCROLLS.map(s=>({label:s[0],value:s[0]+' — '+s[1]})))}
+      ${gearSec(c,'potions','⚗ ยา · Potions',c.potions||[],POTIONS.map(s=>({label:s[0],value:s[0]+' — '+s[1]})).concat([{label:HEAL_POTION[0],value:HEAL_POTION[0]}]))}
+      ${gearSec(c,'equipment','🎒 อุปกรณ์ · Equipment',c.equipment||[],null,fixedTxt)}
+      <div class="gsec"><h3>💰 ความมั่งคั่ง · Wealth
+        <button class="btn" data-gedit="wealth">${editBox==='wealth'?'เสร็จ':'แก้ไข'}</button></h3>
+        ${editBox==='wealth'
+          ? '<div class="wealth-dots">'+WEALTH.map(x=>`<button class="wdot ${x.k===c.wealth?'on':''}" data-setwealth="${x.k}">${esc(x.th)}</button>`).join('')+'</div>'
+          : `<div class="val" style="font-size:15px"><b>${esc(w.th)}</b> <span class="tag">${esc(w.en)}</span></div>
+             <div class="val" style="font-size:12px;color:var(--soft);margin-top:3px">${esc(w.desc)}</div>`}
+      </div>
     </div>
-  </div></div>`;
+  </div>
+  <details class="foot" data-ik="bg"${openInfo.has('bg')?' open':''}><summary>ปูมหลัง · Background / Beliefs · Flaws · Oaths</summary>
+    <div class="foot-body">${c.background?esc(c.background):'<span class="muted">—</span>'}</div></details>
+  <details class="foot" data-ik="ap"${openInfo.has('ap')?' open':''}><summary>รูปลักษณ์ · Appearance</summary>
+    <div class="foot-body">${c.appearance?esc(c.appearance):'<span class="muted">—</span>'}</div></details>
+  </div>`;
 }
 function renderSheetTraits(){
   const box=$('#sheet-traits'); if(!box) return;
@@ -1771,6 +1859,11 @@ function renderSheetTraits(){
     +'<input class="cat" data-act="cat" value="'+esc(t.c)+'" placeholder="—" maxlength="2">'
     +'<button class="del" data-act="del" aria-label="ลบแถวนี้">×</button></div>').join('');
   $$('#sheet-traits textarea.tx').forEach((ta,i)=>{ ta.value=c.traits[i].t; grow(ta); });
+  // เติมค่าลงช่องแก้ไขของ (ถ้ากำลังเปิดโหมดแก้ไขอยู่)
+  if(editBox && editBox!=='wealth'){
+    const arr=c[editBox]||[];
+    $$('#sheet-wrap .gedit .lrow textarea').forEach((ta,i)=>{ ta.value=arr[i]!=null?arr[i]:''; grow(ta); });
+  }
 }
 
 /* =========================================================================
@@ -1920,36 +2013,59 @@ function wireChars(){
 function refreshTraitStrip(){
   const el=$('#sheet-wrap .trait-strip'); if(el) el.innerHTML=traitChipsHTML(CHARS()[active]);
 }
-/* ปุ่ม +/- ค่าสถานะ ใช้ร่วมกันทั้งแผ่นตัวละครและหน้าต่อสู้ */
-document.addEventListener('click',e=>{
-  const wrap=e.target.closest('[data-kind]'); if(!wrap) return;
-  const kind=wrap.dataset.kind, id=Number(wrap.dataset.id);
-  const ent = kind==='char' ? CHARS().find(c=>c.id===id) : ENC().enemies.find(x=>x.id===id);
-  if(!ent) return;
-  const hp=e.target.closest('[data-hp]'), act=e.target.closest('[data-act]');
-  if(hp){
-    const d=hp.dataset.hp;
-    const mk=kind==='char'?'healthMax':'max', ck=kind==='char'?'healthCur':'cur';
-    if(d==='full') ent[ck]=ent[mk];
-    else ent[ck]=Math.max(0,Math.min(ent[mk],ent[ck]+(+d)));
-  } else if(act){
-    const a=act.dataset.act;
-    if(kind==='char'){
-      if(a==='karma-1') ent.karma=Math.max(0,ent.karma-1);
-      else if(a==='karma+1') ent.karma++;
-      else if(a==='hd-1') ent.heroDie=Math.max(0,ent.heroDie-1);
-      else if(a==='hd+1') ent.heroDie=Math.min(ent.heroDieMax,ent.heroDie+1);
-      else if(a==='session-reset'){ ent.karma=startKarma(ent); ent.heroDie=ent.heroDieMax; ent.healthCur=ent.healthMax; }
-      else return;
-    } else {
-      if(a==='del-enemy'){ ENC().enemies=ENC().enemies.filter(x=>x.id!==id); saveParties(); renderCombat(); return; }
-      return;
+/* จำสถานะกาง/หุบ ของรายการที่กดดูรายละเอียด และของช่องปูมหลัง/รูปลักษณ์ */
+function wireSheetExtras(){
+  $('#sheet-wrap').addEventListener('toggle',e=>{
+    const d=e.target.closest('details[data-ik]'); if(!d) return;
+    const k=d.dataset.ik;
+    if(d.open) openInfo.add(k); else openInfo.delete(k);
+  },true);
+  /* แก้ไขของในช่องต่างๆ ระหว่างเล่น */
+  $('#sheet-wrap').addEventListener('click',e=>{
+    const c=CHARS()[active]; if(!c) return;
+    const ed=e.target.closest('[data-gedit]');
+    if(ed){ const k=ed.dataset.gedit; editBox = (editBox===k?null:k); renderChars(); renderSheetTraits(); return; }
+    const del=e.target.closest('[data-gdel]');
+    if(del){
+      const k=del.dataset.gdel, i=+del.closest('[data-gi]').dataset.gi;
+      c[k].splice(i,1);
+      saveParties(); renderChars(); renderSheetTraits(); return;
     }
-  } else return;
-  saveParties();
-  if(!$('#tab-chars').classList.contains('hide')){ renderChars(); renderSheetTraits(); }
-  if(!$('#tab-combat').classList.contains('hide')) renderCombat();
-});
+    const add=e.target.closest('[data-gadd]');
+    if(add){
+      const k=add.dataset.gadd, inp=$(`[data-gnew="${k}"]`), v=inp.value.trim();
+      if(!v) { inp.focus(); return; }
+      c[k].push(v);
+      saveParties(); renderChars(); renderSheetTraits(); return;
+    }
+    const pa=e.target.closest('[data-gpickadd]');
+    if(pa){
+      const k=pa.dataset.gpickadd, sel=$(`[data-gpick="${k}"]`);
+      if(sel.value==='') return;
+      const list = k==='scrolls' ? SCROLLS.map(s=>s[0]+' — '+s[1])
+                 : POTIONS.map(s=>s[0]+' — '+s[1]).concat([HEAL_POTION[0]]);
+      c[k].push(list[+sel.value]);
+      saveParties(); renderChars(); renderSheetTraits(); return;
+    }
+    const sw=e.target.closest('[data-setwealth]');
+    if(sw){ c.wealth=sw.dataset.setwealth; saveParties(); renderChars(); renderSheetTraits(); return; }
+  });
+  $('#sheet-wrap').addEventListener('input',e=>{
+    const c=CHARS()[active]; if(!c) return;
+    const ta=e.target.closest('.gedit .lrow textarea'); if(!ta) return;
+    const row=ta.closest('[data-gi]'), i=+row.dataset.gi;
+    const k=row.querySelector('[data-gdel]').dataset.gdel;
+    c[k][i]=ta.value;
+    grow(ta); savePartiesDebounced();
+  });
+  $('#sheet-wrap').addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return;
+    const inp=e.target.closest('[data-gnew]'); if(!inp) return;
+    e.preventDefault();
+    const k=inp.dataset.gnew; $(`[data-gadd="${k}"]`).click();
+  });
+}
+
 
 /* =========================================================================
    ตัวสร้างตัวละคร — เหตุการณ์
@@ -2124,7 +2240,7 @@ const GM_TABLES=[
     return `ทวิสต์เหตุการณ์: ${pick(ENC_TWISTS)}\nทวิสต์การต่อสู้: ${pick(BATTLE_TWISTS)}`; }},
  {key:'npc', th:'NPC', en:'NPC', roll(){
     const sp=pick(['มนุษย์','มนุษย์','เอลฟ์','ดวอร์ฟ','แฮฟลิง','กอบลิน']);
-    const w=WEALTH.find(x=>x.k===rollWealthKey());
+    const wk=rollWealthKey(); const w=WEALTH.find(x=>x.k===wk);
     return `${rollName()} เป็น${sp}\n${rollAppearance()}\nบทบาทของเขาคือ${pick(NPC_PURPOSE)}\nถ้าเป็น NPC ทั่วไป: ${pick(NPC_WANTS)}\nถ้าเป็น NPC ทรงอิทธิพล: ${pick(NPC_ACTIONS)}\nระดับความมั่งคั่ง: ${w.th}`; }},
  {key:'treasure', th:'สมบัติ', en:'Treasure', roll(){
     const t=pick(TREASURE);
@@ -2140,19 +2256,20 @@ const GM_TABLES=[
     const cg=GEAR_COMMON[dN(4)-1][d6()-1], sg=GEAR_SPECIAL[dN(4)-1][d6()-1];
     return `ของทั่วไป: ${cg}\nของพิเศษ: ${sg}`; }},
  {key:'wealth', th:'ความมั่งคั่ง', en:'Wealth', roll(){
-    const w=WEALTH.find(x=>x.k===rollWealthKey()); return `${w.th} (${w.en}) — ${w.desc}`; }},
+    const wk=rollWealthKey(); const w=WEALTH.find(x=>x.k===wk);
+    return `${w.th} (${w.en}) — ${w.desc}`; }},
  {key:'name', th:'ชื่อ', en:'Name', roll(){ return rollName(); }},
  {key:'story', th:'ปูมหลัง', en:'Background', roll(){ return rollBackground(); }}
 ];
 function buildGmTables(){
   $('#gm-list').innerHTML=GM_TABLES.map(t=>
-    `<details class="ref" data-gm="${t.key}"><summary><span>${esc(t.th)} <span class="tag">${esc(t.en)}</span></span></summary>
-      <div class="rc-body">
-        <div class="row"><button class="btn sm grow" data-gmroll="${t.key}">🎲 สุ่ม${esc(t.th)}</button>
-          <button class="btn sm" data-gmsave="${t.key}">＋ เก็บ</button></div>
-        <div class="gm-out" id="gm-out-${t.key}"><span class="muted">ยังไม่ได้สุ่ม</span></div>
-      </div></details>`).join('');
+    '<div class="tbl" data-gm="'+t.key+'">'
+    +'<div class="nm">'+esc(t.th)+'<em>'+esc(t.en)+'</em></div>'
+    +'<button class="res" data-gmroll="'+t.key+'"><span class="txt">'
+    +'<span class="th empty">แตะเพื่อทอย</span></span></button>'
+    +'<button class="add" data-gmsave="'+t.key+'" aria-label="เก็บ '+esc(t.th)+'">＋</button></div>').join('');
 }
+const gmResults={};
 /* ---- ตารางจุดประกาย / เฉพาะทาง (Triple-O) ---- */
 function rowHTML(t,kind){
   return '<div class="tbl" data-kind="'+kind+'" data-key="'+t.key+'">'
@@ -2187,20 +2304,23 @@ function wireTables(){
     $('#gm-list').classList.toggle('hide',w!=='gm');
     $('#spark-list').classList.toggle('hide',w!=='spark');
     $('#spec-list').classList.toggle('hide',w!=='spec');
-    $('#tables-roll-all-row').classList.toggle('hide',w==='gm');
-    $('#tables-hint').classList.toggle('hide',w==='gm');
   }
   $('#seg-gm').addEventListener('click',()=>setSeg('gm'));
   $('#seg-spark').addEventListener('click',()=>setSeg('spark'));
   $('#seg-spec').addEventListener('click',()=>setSeg('spec'));
   $('#gm-list').addEventListener('click',e=>{
     const r=e.target.closest('[data-gmroll]');
-    if(r){ const t=GM_TABLES.find(x=>x.key===r.dataset.gmroll);
-      $('#gm-out-'+t.key).textContent=t.roll(); return; }
-    const s=e.target.closest('[data-gmsave]');
-    if(s){ const t=GM_TABLES.find(x=>x.key===s.dataset.gmsave);
-      const out=$('#gm-out-'+t.key).textContent;
-      if(out&&out!=='ยังไม่ได้สุ่ม') addPad('['+t.th+'] '+out); }
+    if(r){
+      const t=GM_TABLES.find(x=>x.key===r.dataset.gmroll);
+      const out=t.roll(); gmResults[t.key]=out;
+      const th=r.querySelector('.th'); th.textContent=out; th.classList.remove('empty');
+      return;
+    }
+    const sv=e.target.closest('[data-gmsave]');
+    if(sv){
+      const t=GM_TABLES.find(x=>x.key===sv.dataset.gmsave);
+      if(gmResults[t.key]) addPad('['+t.th+'] '+gmResults[t.key]);
+    }
   });
   [['#spark-list','spark'],['#spec-list','spec']].forEach(([sel,kind])=>{
     $(sel).addEventListener('click',e=>{
@@ -2209,9 +2329,6 @@ function wireTables(){
       if(b.dataset.act==='roll') rollOneTable(kind,key); else saveTableRow(kind,key);
     });
   });
-  const isSpark=()=>$('#seg-spark').getAttribute('aria-selected')==='true';
-  $('#btn-roll-all').addEventListener('click',()=>{const k=isSpark()?'spark':'spec';(k==='spark'?SPARK:SPEC).forEach(t=>rollOneTable(k,t.key));});
-  $('#btn-save-all').addEventListener('click',()=>{const k=isSpark()?'spark':'spec';(k==='spark'?SPARK:SPEC).forEach(t=>saveTableRow(k,t.key));});
 }
 
 /* =========================================================================
@@ -2421,7 +2538,7 @@ async function init(){
 
   $('#rules-ref').innerHTML=RULES_REF_LINES.map(l=>`<p class="refline">${l}</p>`).join('');
   buildMonsterPicker();
-  wireNav(); wireParty(); wireChars(); wireBuilder(); wireCombat(); wireTables(); wireDice(); wirePad();
+  wireNav(); wireParty(); wireChars(); wireSheetExtras(); wireBuilder(); wireCombat(); wireTables(); wireDice(); wirePad();
 
   $('#loading').classList.add('hide');
   if(pid&&parties.some(p=>p.id===pid)) showMain(); else showPartyScreen();
