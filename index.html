@@ -339,8 +339,10 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
 #loading{position:fixed;inset:0;background:var(--paper);z-index:99;display:flex;align-items:center;justify-content:center;
   font-family:'Mitr',sans-serif;font-size:16px}
 #savewarn{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));z-index:17;
-  background:var(--pink);color:#fff;font-size:13px;padding:8px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
-#savewarn button{background:#fff;color:var(--pink);border:0;padding:4px 10px;font-family:'Mitr',sans-serif;font-size:13px}
+  background:var(--pink);color:#fff;font-size:13px;line-height:1.45;padding:9px 12px;
+  display:flex;gap:10px;align-items:center;justify-content:space-between}
+#savewarn span{flex:1 1 auto;min-width:0}
+#savewarn button{flex:none;background:#fff;color:var(--pink);border:0;padding:5px 12px;font-family:'Mitr',sans-serif;font-size:13px}
 @media (min-width:620px){.tbl .nm{flex-basis:122px;font-size:15px}.brand{font-size:23px}.nav button{font-size:13px}}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
@@ -1388,29 +1390,65 @@ const TREASURE=[
  {t:'txt',v:'Arrowbane — ของกันลูกธนู'},{t:'txt',v:'Horned Helmet of Might — หมวกเขาแห่งพลัง'}
 ];
 /* =========================================================================
-   ระบบเก็บข้อมูล — ทนทาน รองรับ Safari iOS
-   window.storage อาจมาช้าหรือใช้ไม่ได้ จึงมีชั้นสำรองในหน่วยความจำ
-   และเขียนแบบต่อคิวต่อคีย์ กันการเขียนชนกัน
+   ระบบเก็บข้อมูล — เลือกที่เก็บอัตโนมัติตามสภาพแวดล้อม
+     1) window.storage  — มีเฉพาะตอนรันในตัวอย่างของ Claude
+     2) localStorage    — ใช้ตอนโฮสต์บนเว็บจริง (เช่น GitHub Pages) ← กรณีปกติ
+     3) หน่วยความจำ      — สำรองสุดท้าย เล่นต่อได้แต่ปิดแอปแล้วหาย
+   เขียนแบบต่อคิวต่อคีย์ กันการเขียนชนกัน (สาเหตุ error บน iOS ก่อนหน้านี้)
    ========================================================================= */
 let STORAGE_OK=true;
+let BACKEND='memory';
+const PREFIX='ezd6tripleo:';
 const _mem={};
-function waitForStorage(ms){
+
+/* ทดสอบว่า localStorage ใช้งานได้จริง (Safari โหมดส่วนตัวจะโยน error) */
+function localStorageWorks(){
+  try{
+    const k=PREFIX+'__test__';
+    window.localStorage.setItem(k,'1');
+    const ok=window.localStorage.getItem(k)==='1';
+    window.localStorage.removeItem(k);
+    return ok;
+  }catch(e){ return false; }
+}
+/* รอ window.storage สั้นๆ (ในตัวอย่างของ Claude มันถูกใส่เข้ามาทีหลังเล็กน้อย)
+   ถ้า localStorage ใช้ได้อยู่แล้ว ก็ไม่ต้องรอนาน เพราะมีที่เก็บสำรองพร้อมใช้ */
+function detectBackend(){
+  const hasLocal=localStorageWorks();
+  const maxWaitMs=hasLocal?400:1500;
   return new Promise(res=>{
     const t0=Date.now();
     (function poll(){
-      if(window.storage && typeof window.storage.get==='function') return res(true);
-      if(Date.now()-t0>ms) return res(false);
-      setTimeout(poll,50);
+      if(window.storage && typeof window.storage.get==='function'){ BACKEND='claude'; return res('claude'); }
+      if(Date.now()-t0>maxWaitMs){
+        BACKEND = hasLocal ? 'local' : 'memory';
+        return res(BACKEND);
+      }
+      setTimeout(poll,40);
     })();
   });
+}
+async function backendGet(key){
+  if(BACKEND==='claude'){
+    // ยังไม่เคยบันทึก = โยน error เป็นเรื่องปกติ ไม่ใช่ความผิดพลาด
+    try{ const r=await window.storage.get(key,false); return r&&r.value?r.value:null; }
+    catch(e){ return null; }
+  }
+  if(BACKEND==='local') return window.localStorage.getItem(PREFIX+key);
+  return null;
+}
+async function backendSet(key,payload){
+  if(BACKEND==='claude') return window.storage.set(key,payload,false);
+  if(BACKEND==='local'){ window.localStorage.setItem(PREFIX+key,payload); return true; }
+  throw new Error('no storage backend');
 }
 async function loadKey(key, fallback){
   if(key in _mem) return _mem[key];
   try{
-    const r=await window.storage.get(key,false);
-    const v=(r&&r.value)?JSON.parse(r.value):fallback;
+    const raw=await backendGet(key);
+    const v=raw?JSON.parse(raw):fallback;
     _mem[key]=v; return v;
-  }catch(e){ return fallback; }
+  }catch(e){ console.warn('อ่านข้อมูลไม่สำเร็จ:',key,e); return fallback; }
 }
 const _q={};
 function saveKeyNow(key,val){
@@ -1418,11 +1456,8 @@ function saveKeyNow(key,val){
   const payload=JSON.stringify(val);
   const prev=_q[key]||Promise.resolve();
   const next=prev.catch(()=>{})
-    .then(()=>{
-      if(!window.storage||typeof window.storage.set!=='function') throw new Error('no storage');
-      return window.storage.set(key,payload,false);
-    })
-    .then(()=>{ if(!STORAGE_OK){ STORAGE_OK=true; $('#savewarn')&&$('#savewarn').classList.add('hide'); } })
+    .then(()=>backendSet(key,payload))
+    .then(()=>{ if(!STORAGE_OK){ STORAGE_OK=true; const w=$('#savewarn'); if(w) w.remove(); } })
     .catch(err=>{ if(STORAGE_OK){ STORAGE_OK=false; showSaveWarn(); } console.warn('บันทึกไม่สำเร็จ:',key,err); });
   _q[key]=next; return next;
 }
@@ -1435,7 +1470,9 @@ function showSaveWarn(){
   if($('#savewarn')) return;
   const d=document.createElement('div');
   d.id='savewarn';
-  d.innerHTML='<span>บันทึกลงเครื่องไม่ได้ — ข้อมูลจะอยู่แค่ในหน้านี้ ถ้าปิดแอปจะหาย</span><button id="savewarn-x">ปิด</button>';
+  d.innerHTML='<span>บันทึกลงเครื่องไม่ได้ — ข้อมูลจะอยู่แค่ในหน้านี้ ถ้าปิดแอปจะหาย<br>'
+    +'<b style="font-weight:600">ถ้าเปิดในโหมดส่วนตัว (Private Browsing) ให้ลองเปิดแบบปกติแทน</b></span>'
+    +'<button id="savewarn-x">ปิด</button>';
   document.body.appendChild(d);
   d.querySelector('#savewarn-x').addEventListener('click',()=>d.remove());
 }
@@ -2368,8 +2405,8 @@ function wirePad(){
    เริ่มต้น
    ========================================================================= */
 async function init(){
-  const ok=await waitForStorage(4000);
-  if(!ok){ STORAGE_OK=false; showSaveWarn(); }
+  const be=await detectBackend();
+  if(be==='memory'){ STORAGE_OK=false; showSaveWarn(); }
   try{
     const st=await loadKey('parties',null);
     if(st&&Array.isArray(st.list)){
