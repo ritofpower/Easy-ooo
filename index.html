@@ -218,7 +218,9 @@ details.info>summary::-webkit-details-marker{display:none}
 details.info>summary::after{content:'＋';margin-left:auto;flex:none;font-size:12px;color:var(--soft)}
 details.info[open]>summary::after{content:'−'}
 details.info>summary b{font-family:'Mitr',sans-serif;font-weight:500}
-details.info .info-body{font-size:13px;line-height:1.6;color:var(--soft);padding:0 0 8px 2px}
+details.info .info-body{font-size:13px;line-height:1.65;color:var(--soft);padding:0 0 8px 2px;white-space:pre-line}
+.boon-open{font-size:14px;line-height:1.5}
+.boon-open b{font-family:'Mitr',sans-serif;font-weight:500}
 
 /* ---------- ช่องของ/อุปกรณ์ ที่แก้ไขได้ระหว่างเล่น ---------- */
 .gsec{border-bottom:2px solid var(--ink);padding:8px 10px}
@@ -659,7 +661,7 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
         </div>
         <button class="btn sm wide" id="btn-cast-roll" style="margin-top:10px">ทอยร่ายเวท</button>
         <div id="cast-result"></div>
-        <p class="hint">คาร์มาใช้กับการร่ายเวท/ปาฏิหาริย์ไม่ได้ · ลูกที่ออก 1 ในกองพลังเวท = เสี่ยงจุดไฟเวท (รับดาเมจ 1/ลูกเพื่อฝืนร่ายต่อ)</p>
+        <p class="hint">คาร์มาใช้กับการร่ายเวท/ปาฏิหาริย์ไม่ได้ · ลูกที่ออก 1 ในกองพลังเวท = เสี่ยง Spellburn (รับดาเมจ 1/ลูกเพื่อฝืนร่ายต่อ)</p>
       </div></div>
 
       <details class="ref"><summary>อ้างอิงกฎเร็ว EZD6</summary><div class="rc-body" id="rules-ref"></div></details>
@@ -809,16 +811,30 @@ const SPECIES={
   halfling:{th:'แฮฟลิง', en:'Halfling', note:'อาหารเช้ามื้อสอง — เริ่มเกมพร้อมยาฟื้นพลัง 1 ขวด (รักษา 2 แต้ม ดื่มเป็นฟรีแอ็กชัน) · ศัตรูตัวใหญ่ตีโดนคุณยาก (+1 เลขเป้าที่มันต้องทอย)'},
   goblin:{th:'กอบลิน', en:'Goblin', note:'ซอกหลืบ — ใช้การเคลื่อนที่กระโดดเข้าที่กำบังเพื่อเลี่ยงการถูกโจมตี 1 เทิร์นได้ถ้าไม่โจมตีตอบ (ต้องมีที่กำบังหรือพื้นขรุขระอยู่ใกล้) · ตากลางคืน มองได้ไกลเป็น 2 เท่าในที่แสงน้อย'}
 };
+/* ตระกูลเวท 9 สาย — เรียบเรียงเต็มตามคู่มือ (สำคัญต่อการเล่นจริง)
+   กติกากลางที่ใช้กับทุกสาย:
+   · ยึดเวท (Spell Anchoring) = ตรึงเวทที่ต้องคงอยู่ไว้ในใจ ทำอย่างอื่นได้ระหว่างยึด
+     แต่ถ้าเสียแต้มเจ็บ สลบ หรือร่ายเวทใหม่ สายยึดจะขาดและเวทสลายทันที
+   · Spellburn = ถ้าเต๋าพลังเวทออก 1 เวทล้มเหลวทันที เว้นแต่ยอมรับดาเมจ 1 แต้มต่อ 1 ลูกที่ออก 1 เพื่อฝืนร่ายต่อ */
 const CIRCLES={
-  arcane:{th:'สายพันธนาการ', en:'Arcane Bands', note:'เส้นพลังเวทใช้จับ/ย้ายวัตถุหรือรัดตรึงศัตรู ต้องคงสมาธิยึดเวทไว้'},
-  blastmaster:{th:'จอมระเบิด', en:'Blastmaster', note:'พลังทำลายล้างดิบ 2 แต้มดาเมจต่อครั้ง แต่เสี่ยงจุดไฟเวทหนักกว่าปกติ'},
-  botanicalist:{th:'นักพฤกษา', en:'Botanicalist', note:'บงการพืชให้เติบโตทันใจ เช่น กำแพงหนาม เถาวัลย์แทนเชือก'},
-  elementalist:{th:'นักธาตุ', en:'Elementalist', note:'เลือก 1 ธาตุ (ไฟ/ดิน/ลม/น้ำ) ยิงลำแสงธาตุพร้อมผลเสริมตามธาตุนั้น'},
-  illusionist:{th:'นักภาพลวง', en:'Illusionist', note:'สร้างภาพลวงตาในใจผู้อื่น ภาพจะสลายเมื่อถูกพิสูจน์ว่าไม่จริง'},
-  necromancer:{th:'จอมเนโครแมนซ์', en:'Necromancer', note:'ปลุกอันเดดไร้สติมารับใช้ และพูดกับวิญญาณได้จำกัด'},
-  seer:{th:'ผู้หยั่งรู้', en:'Seer', note:'ทำนายอนาคต สัมผัสวัตถุเพื่ออ่านอดีต มีวิญญาณคู่หู หลบดาเมจได้ที่ 3+'},
-  shadoweaver:{th:'นักถักเงา', en:'Shadoweaver', note:'บงการเงาและความมืด มองเห็นในที่มืดสนิทได้'},
-  shapeshifter:{th:'นักแปลงกาย', en:'Shapeshifter', note:'แปลงร่างเป็นสัตว์ที่เคยเห็น ขนาดขึ้นกับแต้มเจ็บที่มี'}
+  arcane:{th:'สายพันธนาการ', en:'Arcane Bands',
+    note:'เส้นพลังเวทสะบัดออกจากผู้ร่ายเหมือนหนวดยาว ใช้เคลื่อนย้ายวัตถุหรือรัดตรึงศัตรูได้\n· ขยับหรือรัดคนขนาดปกติถือว่าง่าย · เป้าหมายใหญ่เท่าช้างหรือรัดหลายเป้าพร้อมกันจะยากขึ้น\n· เอื้อมถึงทุกอย่างที่อยู่ใกล้ผู้ร่าย\n· ต้องยึดเวทไว้ตลอดเพื่อคงเส้นพันธนาการ\n· ผู้ที่ถูกรัดใช้แอ็กชันในเทิร์นของตนดิ้นหลุดได้ถ้าทอยได้ 6'},
+  blastmaster:{th:'จอมระเบิด', en:'Blastmaster',
+    note:'คุณเสพติดพลังเวทดิบ มันไหลเวียนในตัวจนเกิดประกายไฟฟ้าสถิตอยู่บ่อยๆ คุณไม่สนใจความละเมียดของเวทมนตร์ คุณแค่อยากระเบิดของ\n· ยิงส่วนโค้งพลังทำลายล้างสีม่วง-น้ำเงิน ทำ 2 แต้มเจ็บต่อครั้งที่โดน\n· ถ้าศัตรูโจมตีประชิดใส่คุณแล้วทอยได้ 1 มันจะเสีย 1 แต้มเจ็บจากพลังเวทที่แลบออกมา\n· ข้อเสีย: คุณเสี่ยง Spellburn หนักกว่าสายอื่น เมื่อเกิด Spellburn ให้ทอย 1D6\n  1 = แผลเป็นน่าเกลียด + 1 แต้มเจ็บ\n  2 = ดวงตาเปลี่ยนไปผิดธรรมชาติ + 1 แต้มเจ็บ (คุณเลือกเองว่าตาเป็นแบบไหน)\n  3 = สีผมเปลี่ยนผิดธรรมชาติ + 1 แต้มเจ็บ (คุณเลือกสีเอง)\n  4 = เสียคาร์มา 1 แต้ม + 1 แต้มเจ็บ\n  5 = เสียคาร์มาทั้งหมด + 1 แต้มเจ็บ\n  6 = ปล่อยพลังเวทดิบใส่ศัตรูที่อยู่ใกล้จนแหลกสลาย หรือเกิดผลเวทประหลาดบางอย่าง\n· ตัวจับเวท: คุณไวต่อพลังเวทมาก จึงตรวจจับแหล่งเวทหรือของที่อาบเวทซึ่งอยู่ใกล้ๆ ได้'},
+  botanicalist:{th:'นักพฤกษา', en:'Botanicalist',
+    note:'คุณบงการพืช เรียกให้พืชผุดขึ้นและเติบโตอย่างรวดเร็วได้\n· การเติบโตใช้เวลา 1 เทิร์น พืชยิ่งใหญ่ยิ่งใช้เวลานานขึ้น เช่น กำแพงหนาม หรือเถาวัลย์ที่งอกขึ้นมาแทนเชือก\n· ต้องยึดเวทไว้ ถ้าสายยึดขาด พืชจะเหี่ยวเน่าสลายไปอย่างรวดเร็ว\n· พืชจะไม่ทำร้ายหรือรัดตรึงคุณโดยตั้งใจ\n· ศัตรูที่ถูกรัดใช้แอ็กชันในเทิร์นของตนดิ้นหลุดได้ถ้าทอยได้ 6'},
+  elementalist:{th:'นักธาตุ', en:'Elementalist',
+    note:'คุณเชี่ยวชาญธาตุใดธาตุหนึ่ง ต้องเลือก 1 อย่าง: ไฟ ดิน ลม หรือน้ำ\n· ยิงลำแสงธาตุใส่เป้าหมาย ทำ 1 แต้มเจ็บ พร้อมผลเสริมตามธาตุ\n  ไฟ = เป้าหมายติดไฟ · น้ำ = เป้าหมายเปียกโชกจนเก้งก้าง\n  ลม = ผลักหรือทำให้ล้ม · ดิน = ทำให้เชื่องช้าลง\n· สร้างปรากฏการณ์ธาตุได้ด้วย แต่เปลืองแรงมาก คงอยู่ได้ 1 รอบ +1 รอบต่อคาร์มา 1 แต้มที่จ่าย และต้องยึดเวทด้วย\n  ตัวอย่าง: ไฟ = กำแพงเพลิง · น้ำ = พื้นที่ใกล้ๆ กลายเป็นลื่นหรือเป็นโคลน\n  ลม = ยกขึ้นช้าๆ หรือประคองพวกได้ถึง 12 คนให้ร่วงลงช้าๆ · ดิน = สะพานดินข้ามเหว\n· เล่นกลเล็กๆ ด้วยธาตุได้ เช่น จุดคบเพลิงทันที หรือค่อยๆ เติมน้ำใส่ถ้วย (เปิดโอกาสให้ผู้เล่นคิดสร้างสรรค์)\n· ดาเมจเพิ่ม: ทำแต้มเจ็บเพิ่มอีก 1 แต้มกับเป้าหมายที่อ่อนแอต่อธาตุของคุณ โดย RR อนุมัติ'},
+  illusionist:{th:'นักภาพลวง', en:'Illusionist',
+    note:'จิตใจของผู้อื่นคือผืนผ้าใบของคุณ — คุณฉายภาพเข้าไปในความคิดของเขา ภาพลวงเป็นอะไรก็ได้ที่คุณจินตนาการ และใหญ่เท่าที่คุณคิดออก\n· ภาพลวงที่ถูกทดสอบหรือถูกจับได้จะสลายทันที เช่น สัตว์ประหลาดลวงจะหายไปเมื่อถูกโจมตี\n· คนที่เคยถูกหลอกจะเกิดความระแวง และหลอกซ้ำได้ยากภายในฉากเดียวกัน\n· ภาพลวงที่ปิดบังภูมิประเทศอันตรายอาจทำให้เหยื่อบาดเจ็บหรือตายก่อนจะรู้ตัวว่ามีอันตรายซ่อนอยู่\n· ใครก็ตามที่เจ็บตัวจริงจะหลุดจากมนต์ทันที\n· ต้องยึดเวทไว้ตลอดเพื่อคงภาพลวง\n· เล็งใส่ศัตรูหลายตัวพร้อมกันได้ โดยฝ่ายป้องกันทอยต้าน:\n  เป้าหมายเดียว = ทอยต้าน 1D6 · กลุ่มเล็ก = 2D6 · กลุ่มใหญ่ = 3D6\n  ศัตรูบางชนิดอาจได้เต๋าโบนัสในการต้านทาน'},
+  necromancer:{th:'จอมเนโครแมนซ์', en:'Necromancer',
+    note:'พลังของคุณผูกกับความไม่ตาย ผู้คนจำนวนมากหวาดกลัวและรังเกียจเนโครแมนเซอร์ คนพวกนี้จึงมักปกปิดความสามารถของตน\n· ปลุกอันเดดไร้สติขึ้นมารับใช้คุณได้ หรือพูดกับคนตายได้ในระดับจำกัด\n· พยายามกันอันเดดที่มีสติปัญญาไม่ให้เข้าใกล้ได้ แต่ควบคุมมันไม่ได้\n· เนโครแมนเซอร์มักพกกะโหลกติดตัว มันขยับเองไม่ได้แต่พูดได้ ใช้เฝ้าพื้นที่ได้ไม่รู้จักเหนื่อย หรือส่งข้อความจากเจ้านายได้'},
+  seer:{th:'ผู้หยั่งรู้', en:'Seer',
+    note:'ความน่าจะเป็นของจักรวาลหมุนวนอยู่รอบตัวคุณ เมื่อเข้าภวังค์ คุณทำนายเหตุการณ์ในอนาคตหรือหยั่งรู้ทางเลือกที่ดีที่สุดได้\n· นิมิตที่มาถึงมักสับสนและคลุมเครือ คุณต้องตีความเอง\n· สัมผัสวัตถุ (Psychometry): อ่านวัตถุได้ มักมาในรูปนิมิต บอกประวัติของวัตถุ รวมถึงว่ามันเป็นของวิเศษหรือไม่และใช้งานอย่างไร\n· มีวิญญาณคู่หูติดตาม มักเป็นบุคคลจากอดีต มีแต่คุณเท่านั้นที่เห็นและโต้ตอบกับมันได้ (คนอื่นจึงมักมองว่าผู้หยั่งรู้เป็นคนประหลาด)\n· ญาณล่วงหน้า: หลบการโจมตีที่ทำดาเมจได้ที่ 3+ · ถ้าหลบสำเร็จจากการโจมตีประชิด ผู้โจมตีจะทำร้ายตัวเอง 1 แต้มเจ็บ'},
+  shadoweaver:{th:'นักถักเงา', en:'Shadoweaver',
+    note:'คุณมีสายสัมพันธ์กับเงาและความมืด บงการมันได้\n· ตัวอย่างพลัง: ผ้าคลุมความมืดที่ซ่อนพวกพ้อง หรือเงาบดบังที่ปิดแสงจากดวงตาศัตรู\n· ผลเหล่านี้ทำให้เป้าหมายที่โดนได้รับเบน (Bane)\n· เงาไม่มีมวล จึงเคลื่อนย้ายหรือรัดตรึงวัตถุจริงไม่ได้\n· ใช้เวทเงาในที่สว่างจ้าหรือกลางแดดจะเปลืองแรงมหาศาล คงผลได้เพียง 1 รอบ +1 รอบต่อคาร์มา 1 แต้มที่จ่าย\n· ต้องยึดเวทไว้ตลอดเพื่อคงเงา\n· ผลพลอยได้: นักถักเงามองเห็นในความมืดสนิทหรือในที่ไร้แสงธรรมชาติได้'},
+  shapeshifter:{th:'นักแปลงกาย', en:'Shapeshifter',
+    note:'คุณแปลงร่างเป็นสัตว์ธรรมชาติชนิดใดก็ได้ที่มีอยู่จริงในโลกและคุณเคยเห็นมาก่อน ตั้งแต่ตัวเล็กเท่าแมลงจนถึงใหญ่เท่าม้า\n· การยึดเวทของนักแปลงกายเหนียวแน่นเป็นพิเศษ ต้องโดนคริติคอลที่ยืนยันแล้วเท่านั้นจึงจะทำให้หลุดร่าง\n· สัตว์เล็ก: รับได้ 1 แต้มเจ็บ แล้วจะหลุดร่างกลับสู่ร่างเดิมพร้อมเหลือ 1 แต้มเจ็บ\n· สัตว์ขนาดกลาง: มี 3 แต้มเจ็บเท่าตัวละครปกติ\n· สัตว์ใหญ่: ได้แต้มเจ็บเพิ่มอีก 1 แต้ม\n· ถ้าอยู่ในช่วงเล่าเรื่อง (ไม่จับเวลา) แปลงร่างได้เลยไม่ยาก · แต่ถ้าอยู่ในช่วงแอ็กชัน ต้องทอยชนะเต๋าต้านทานจึงจะแปลงได้\n· ปรึกษา RR เรื่องโบว์นของร่างสัตว์ · RR จะทำให้สัตว์ที่บินได้ ตัวเล็ก หรือว่องไว ถูกตีโดนยากขึ้น'}
 };
 /* แนวถนัด 30 อย่าง — ชื่ออังกฤษทับศัพท์ + คำอธิบายไทย + ผลพิเศษตอนสร้างตัวละคร */
 const INCLINATIONS=[
@@ -1717,15 +1733,16 @@ function applyRules(c,opts){
   c.karma=startKarma(c);
   c.heroDieMax=startHeroDice(c); c.heroDie=c.heroDieMax;
   // ม้วนคาถาเริ่มต้น 2 ม้วน
-  if(grantsScrolls(c)){ if(!c.scrolls.length || opts.reroll) c.scrolls=pickUnique(SCROLLS.map(s=>s[0]),2); }
+  if(grantsScrolls(c)){ if(!c.scrolls.length || opts.reroll) c.scrolls=pickUnique(SCROLLS.map(s=>s[0]+' — '+s[1]),2); }
   else if(!opts.keepExtras) c.scrolls=[];
   // ยาเริ่มต้น
   const pg=potionGrants(c);
   if(pg.length){
     if(!c.potions.length || opts.reroll){
+      const heal=HEAL_POTION[0]+' — '+HEAL_POTION[1];
       const list=[];
-      if(pg.includes('alchemist')) list.push(HEAL_POTION[0],HEAL_POTION[0]);
-      if(pg.includes('halfling')) list.push(HEAL_POTION[0]);
+      if(pg.includes('alchemist')) list.push(heal,heal);
+      if(pg.includes('halfling')) list.push(heal);
       c.potions=list;
     }
   } else if(!opts.keepExtras) c.potions=[];
@@ -1871,8 +1888,16 @@ function sheetHTML(c){
   /* ความสามารถเส้นทาง — โชว์แต่ชื่อ กดแล้วกาง */
   const featHTML=p ? p.features.map(f=>infoItem('feat:'+f[0],`<b>${esc(f[0])}</b>`,f[1])).join('')
                    : '<div class="val"><span class="muted">—</span></div>';
-  /* โบนัส — โชว์แต่ชื่อ กดแล้วกาง */
-  const boonHTML=p ? infoItem('boon',`<b>โบนัส (Boon)</b>`,p.boon) : '<span class="muted">—</span>';
+  /* โบนัส — เปิดค้างไว้เสมอ ใช้บ่อย */
+  const boonHTML=p
+    ? `<div class="boon-open"><b>โบนัส (Boon)</b> — ${esc(p.boon)}</div>`
+    : '<span class="muted">—</span>';
+  /* ตระกูลเวท — กางเก็บได้ อยู่ใต้เส้นทางฮีโร่ */
+  const circleHTML = (c.path==='conjurer')
+    ? (c.circle
+        ? infoItem('circle',`<b>${esc(CIRCLES[c.circle].th)}</b> <span class="tag">${esc(CIRCLES[c.circle].en)}</span>`,CIRCLES[c.circle].note)
+        : '<div class="val"><span class="muted">ยังไม่ได้เลือกตระกูลเวท</span></div>')
+    : '';
 
   const fixedTxt=fixedGear(c).map(g=>g.txt+' ('+g.src+')');
 
@@ -1886,6 +1911,7 @@ function sheetHTML(c){
         ${sp?' &nbsp;·&nbsp; '+esc(sp.th)+' <span class="tag">'+esc(sp.en)+'</span>':''}</div>
         ${sp?`<div class="val" style="font-size:13px;color:var(--soft);margin-top:3px">${esc(sp.note)}</div>`:''}
         <div style="margin-top:5px">${boonHTML}</div></div>
+      ${circleHTML?`<div class="sbox"><h3>ตระกูลเวท · Circle of Sorcery <span class="tag">แตะเพื่อกาง</span></h3>${circleHTML}</div>`:''}
       <div class="sbox"><h3>ความสามารถประจำเส้นทาง · Features
         <button class="btn xs" data-expand="feat">${allOpen('feat',featKeys)?'ปิด':'กางทั้งหมด'}</button></h3>${featHTML}</div>
       <div class="sbox"><h3>แนวถนัด · Inclinations
@@ -1895,9 +1921,6 @@ function sheetHTML(c){
         <button class="btn xs" id="btn-add-trait" style="margin-top:6px">＋ เพิ่มคุณลักษณะ</button>
         <div class="legend"><span><i class="sw empty"></i>ว่าง</span><span><i class="sw def"></i>ปกติ</span>
           <span><i class="sw prom"></i>เด่น</span><span><i class="sw tmp"></i>ชั่วคราว</span></div></div>
-      ${c.path==='conjurer'?`<div class="sbox"><h3>ตระกูลเวท · Circle of Sorcery</h3>
-        <div class="val">${c.circle?esc(CIRCLES[c.circle].th)+' <span class="tag">'+esc(CIRCLES[c.circle].en)+'</span>':'<span class="muted">—</span>'}</div>
-        ${c.circle?`<div class="val" style="font-size:13px;color:var(--soft);margin-top:3px">${esc(CIRCLES[c.circle].note)}</div>`:''}</div>`:''}
     </div>
 
     <div class="sheet-side">
@@ -1925,7 +1948,7 @@ function sheetHTML(c){
       <div class="gsec"><button class="btn xs" data-act="session-reset" style="width:100%">เริ่มเซสชันใหม่ (คืนคาร์มา/เต๋า/เลือด)</button></div>
       ${gearSec(c,'weapons','🗡 อาวุธ · Weapons',c.weapons||[],null)}
       ${gearSec(c,'scrolls','📜 ม้วนคาถา · Scrolls',c.scrolls||[],SCROLLS.map(s=>({label:s[0],value:s[0]+' — '+s[1]})))}
-      ${gearSec(c,'potions','⚗ ยา · Potions',c.potions||[],POTIONS.map(s=>({label:s[0],value:s[0]+' — '+s[1]})).concat([{label:HEAL_POTION[0],value:HEAL_POTION[0]}]))}
+      ${gearSec(c,'potions','⚗ ยา · Potions',c.potions||[],POTIONS.map(s=>({label:s[0],value:s[0]+' — '+s[1]})).concat([{label:HEAL_POTION[0],value:HEAL_POTION[0]+' — '+HEAL_POTION[1]}]))}
       ${gearSec(c,'equipment','🎒 อุปกรณ์ · Equipment',c.equipment||[],null,fixedTxt)}
       <div class="gsec"><h3>💰 ความมั่งคั่ง · Wealth
         <button class="btn" data-gedit="wealth">${editBox==='wealth'?'เสร็จ':'แก้ไข'}</button></h3>
@@ -2145,7 +2168,7 @@ function wireSheetExtras(){
       const k=pa.dataset.gpickadd, sel=$(`[data-gpick="${k}"]`);
       if(sel.value==='') return;
       const list = k==='scrolls' ? SCROLLS.map(s=>s[0]+' — '+s[1])
-                 : POTIONS.map(s=>s[0]+' — '+s[1]).concat([HEAL_POTION[0]]);
+                 : POTIONS.map(s=>s[0]+' — '+s[1]).concat([HEAL_POTION[0]+' — '+HEAL_POTION[1]]);
       c[k].push(list[+sel.value]);
       saveParties(); renderChars(); renderSheetTraits(); return;
     }
@@ -2608,7 +2631,7 @@ function wireDice(){
     const pd=Array.from({length:cast.pl},()=>d6()), rd=Array.from({length:cast.rs},()=>d6());
     const ok=Math.max(...pd)>=Math.max(...rd), ones=pd.filter(v=>v===1).length;
     $('#cast-result').innerHTML=`<div class="stamp-wrap"><span class="stamp ${ok?'crit':'odd'}">${ok?'ร่ายสำเร็จ':'ร่ายไม่สำเร็จ'}<small>พลังเวท [${pd.join(', ')}] vs ต้าน [${rd.join(', ')}]</small></span></div>`
-      +(ones?`<p class="hint">มีลูกพลังเวทออก 1 จำนวน ${ones} ลูก — เสี่ยงจุดไฟเวท (รับดาเมจ 1 แต้ม/ลูก เพื่อฝืนร่ายต่อ)</p>`:'');
+      +(ones?`<p class="hint">มีลูกพลังเวทออก 1 จำนวน ${ones} ลูก — เสี่ยง Spellburn (รับดาเมจ 1 แต้ม/ลูก เพื่อฝืนร่ายต่อ)</p>`:'');
   });
   // เช็ก Triple-O
   const F={obv:$('#f-obv'),opt:$('#f-opt'),odd:$('#f-odd')};
