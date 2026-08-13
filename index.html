@@ -123,8 +123,13 @@ select{-webkit-appearance:none;appearance:none;background-image:linear-gradient(
 .prow .go:active{background:var(--green2)}
 .prow .pname{font-family:'Mitr',sans-serif;font-weight:500;font-size:17px;display:block}
 .prow .pmeta{font-size:12px;color:var(--soft);display:block;margin-top:2px}
-.prow .pdel{flex:0 0 46px;background:none;border:0;border-left:var(--line) solid var(--ink);font-size:18px;color:var(--pink)}
+.prow .pact{flex:0 0 42px;background:none;border:0;border-left:var(--line) solid var(--ink);font-size:16px;color:var(--ink)}
+.prow .pact:active{background:var(--green);color:#fff}
+.prow .pdel{flex:0 0 42px;background:none;border:0;border-left:var(--line) solid var(--ink);font-size:18px;color:var(--pink)}
 .prow .pdel:active{background:var(--pink);color:#fff}
+.prow-edit{padding:9px;gap:7px;align-items:center;flex-wrap:wrap}
+.prow-edit input{flex:1 1 140px;min-width:0;border-width:2px;padding:7px 9px}
+.prow-edit .btn{flex:none}
 
 /* ---------- แถวรายการแก้ไขได้ ---------- */
 .lrow{display:flex;align-items:stretch;border:var(--line) solid var(--ink);margin-bottom:8px}
@@ -428,6 +433,24 @@ footer{font-size:12px;color:var(--soft);line-height:1.7;border-top:var(--line) s
     </div>
     <p class="hint">ปาร์ตี้หนึ่งมีตัวละครได้ไม่เกิน 4 คน</p>
   </div></div>
+
+  <details class="ref" id="io-box"><summary>ย้ายข้อมูลไปเครื่องอื่น <span class="tag">ส่งออก / นำเข้า</span></summary>
+    <div class="rc-body">
+      <p class="hint" style="margin:0 0 9px">ส่งออกเป็นไฟล์ไปเปิดในเครื่องอื่น หรือคัดลอกข้อความไปวางก็ได้ · ปุ่ม ⤓ ที่แต่ละแถวคือส่งออกเฉพาะปาร์ตี้นั้น</p>
+      <div class="row">
+        <button class="btn sm grow" id="btn-export-all">⤓ ส่งออกทุกปาร์ตี้</button>
+        <button class="btn sm grow" id="btn-pick-file">📂 นำเข้าจากไฟล์</button>
+      </div>
+      <input type="file" id="import-file" accept="application/json,.json,text/plain" class="hide">
+      <label class="fld" style="margin-top:10px"><span>หรือวางข้อความที่ส่งออกไว้ตรงนี้</span>
+        <textarea id="io-text" rows="4" placeholder="วางข้อความที่ได้จากการส่งออก แล้วกดนำเข้า"></textarea></label>
+      <div class="row">
+        <button class="btn sm grow" id="btn-import-text">นำเข้าจากข้อความ</button>
+        <button class="btn sm" id="btn-copy-io">คัดลอก</button>
+      </div>
+      <p class="hint" id="io-msg"></p>
+    </div>
+  </details>
 </section>
 
 <!-- ==================== หน้าหลัก ==================== -->
@@ -704,7 +727,8 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const d6=()=>1+Math.floor(Math.random()*6);
 const dN=n=>1+Math.floor(Math.random()*n);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-const uid=()=>Date.now()*1000+Math.floor(Math.random()*1000);
+let _uidSeq=0;
+const uid=()=>Date.now()*1000+((_uidSeq=(_uidSeq+1)%1000));
 function grow(el){ if(!el) return; el.style.height='auto'; el.style.height=(el.scrollHeight+3)+'px'; }
 function growAllIn(sel){ $$(sel+' textarea').forEach(grow); }
 const codeOf=i=>(Math.floor(i/6)+1)*10+(i%6+1);
@@ -1802,15 +1826,27 @@ function showMain(){
   renderChars(); renderCombat(); renderPad();
   window.scrollTo({top:0});
 }
+let editParty=null;   // id ปาร์ตี้ที่กำลังแก้ชื่ออยู่
 function renderPartyRows(){
   const box=$('#party-rows');
-  if(!parties.length){ box.innerHTML='<p class="hint" style="text-align:center;margin-bottom:16px">ยังไม่มีปาร์ตี้ — ตั้งชื่อแล้วกดสร้างด้านล่าง</p>'; return; }
+  if(!parties.length){
+    box.innerHTML='<p class="hint" style="text-align:center;margin-bottom:16px">ยังไม่มีปาร์ตี้ — ตั้งชื่อแล้วกดสร้างด้านล่าง หรือนำเข้าจากเครื่องอื่น</p>';
+    return;
+  }
   box.innerHTML=parties.map(p=>{
+    if(editParty===p.id){
+      return `<div class="prow prow-edit">
+        <input type="text" id="rename-input" value="${esc(p.name)}" maxlength="60" aria-label="ชื่อปาร์ตี้">
+        <button class="btn sm" data-renamesave="${p.id}">บันทึก</button>
+        <button class="btn sm" data-renamecancel="1">ยกเลิก</button></div>`;
+    }
     const names=p.chars.map(c=>c.name||'ไม่มีชื่อ').join(', ')||'ยังไม่มีตัวละคร';
     return `<div class="prow"><button class="go" data-open="${p.id}">
       <span class="pname">${esc(p.name)}</span>
       <span class="pmeta">${p.chars.length}/4 คน · ${esc(names)}</span></button>
-      <button class="pdel" data-delparty="${p.id}" aria-label="ลบปาร์ตี้">✕</button></div>`;
+      <button class="pact" data-renameparty="${p.id}" aria-label="แก้ชื่อปาร์ตี้" title="แก้ชื่อ">✎</button>
+      <button class="pact" data-exportparty="${p.id}" aria-label="ส่งออกปาร์ตี้นี้" title="ส่งออก">⤓</button>
+      <button class="pdel" data-delparty="${p.id}" aria-label="ลบปาร์ตี้" title="ลบ">✕</button></div>`;
   }).join('');
 }
 
@@ -2065,6 +2101,75 @@ function wireNav(){
 /* =========================================================================
    หน้าปาร์ตี้
    ========================================================================= */
+/* ---------- ส่งออก / นำเข้าปาร์ตี้ ---------- */
+const IO_TAG='ezd6-tripleo';
+function exportPayload(list){
+  return JSON.stringify({app:IO_TAG, version:1, exported:new Date().toISOString(), parties:list}, null, 1);
+}
+function ioMsg(t,bad){ const el=$('#io-msg'); if(el){ el.textContent=t; el.style.color=bad?'var(--pink)':'var(--green)'; } }
+function downloadText(filename,text){
+  try{
+    const blob=new Blob([text],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },0);
+    return true;
+  }catch(e){ return false; }
+}
+function safeName(s){ return String(s||'party').replace(/[^\w\u0E00-\u0E7F -]/g,'').trim().slice(0,40)||'party'; }
+function doExport(list,filename){
+  const text=exportPayload(list);
+  $('#io-text').value=text;
+  $('#io-box').open=true;
+  const ok=downloadText(filename,text);
+  ioMsg(ok ? 'ส่งออกแล้ว '+list.length+' ปาร์ตี้ — ถ้าไฟล์ไม่ถูกดาวน์โหลด ให้กดคัดลอกข้อความด้านล่างไปวางแทน'
+           : 'เครื่องนี้ดาวน์โหลดไฟล์ไม่ได้ — กดคัดลอกข้อความด้านล่างไปวางในเครื่องอื่นแทน', !ok);
+}
+/* สร้าง id ใหม่ทั้งหมดตอนนำเข้า กันชนกับข้อมูลเดิมในเครื่อง */
+function adoptParty(raw){
+  const p=newParty(String(raw&&raw.name||'ปาร์ตี้นำเข้า').slice(0,60));
+  const idMap={};
+  p.chars=((raw&&raw.chars)||[]).slice(0,4).map(c=>{
+    const nc=Object.assign(newChar(), c||{});
+    idMap[c&&c.id]=nc.id=uid();
+    ['incl','equipment','weapons','potions','scrolls','traits'].forEach(k=>{ if(!Array.isArray(nc[k])) nc[k]=[]; });
+    nc.healthMax=Math.max(1,parseInt(nc.healthMax)||3);
+    nc.healthCur=Math.max(0,Math.min(nc.healthMax,parseInt(nc.healthCur)));
+    nc.karma=Math.max(0,parseInt(nc.karma)||0);
+    nc.heroDieMax=Math.max(0,parseInt(nc.heroDieMax)||1);
+    nc.heroDie=Math.max(0,Math.min(nc.heroDieMax,parseInt(nc.heroDie)));
+    return nc;
+  });
+  const enc=(raw&&raw.encounter)||{};
+  p.encounter={
+    enemies:((enc.enemies)||[]).map(e=>{
+      const ne=newEnemy(e&&e.name,e&&e.max,e&&e.tohit,e&&e.note);
+      const cur=parseInt(e&&e.cur); ne.cur=isNaN(cur)?ne.max:Math.max(0,Math.min(ne.max,cur));
+      return ne;
+    }),
+    partyIds:((enc.partyIds)||[]).map(x=>idMap[x]).filter(Boolean),
+    notes:String(enc.notes||'')
+  };
+  const nt=(raw&&raw.notes)||{};
+  p.notes={pad:String(nt.pad||''),obv:String(nt.obv||''),opt:String(nt.opt||''),odd:String(nt.odd||'')};
+  return p;
+}
+function doImport(text){
+  let data;
+  try{ data=JSON.parse(text); }
+  catch(e){ ioMsg('อ่านข้อมูลไม่ได้ — ข้อความไม่ใช่ไฟล์ที่ส่งออกจากแอปนี้',true); return; }
+  let list=null;
+  if(data && Array.isArray(data.parties)) list=data.parties;
+  else if(Array.isArray(data)) list=data;
+  else if(data && Array.isArray(data.chars)) list=[data];      // ไฟล์ปาร์ตี้เดี่ยว
+  if(!list||!list.length){ ioMsg('ไม่พบข้อมูลปาร์ตี้ในไฟล์นี้',true); return; }
+  const added=list.map(adoptParty);
+  parties=parties.concat(added);
+  saveParties(); renderPartyRows();
+  $('#io-text').value='';
+  ioMsg('นำเข้าสำเร็จ '+added.length+' ปาร์ตี้: '+added.map(p=>p.name).join(', '));
+}
 function wireParty(){
   $('#btn-create-party').addEventListener('click',()=>{
     const nm=$('#new-party-name').value.trim();
@@ -2074,6 +2179,22 @@ function wireParty(){
   });
   $('#new-party-name').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();$('#btn-create-party').click();} });
   $('#party-rows').addEventListener('click',e=>{
+    const rn=e.target.closest('[data-renameparty]');
+    if(rn){ editParty=Number(rn.dataset.renameparty); renderPartyRows(); const i=$('#rename-input'); if(i){i.focus();i.select();} return; }
+    const rs=e.target.closest('[data-renamesave]');
+    if(rs){
+      const p=parties.find(x=>x.id===Number(rs.dataset.renamesave));
+      const v=$('#rename-input').value.trim();
+      if(p&&v) p.name=v.slice(0,60);
+      editParty=null; saveParties(); renderPartyRows(); return;
+    }
+    if(e.target.closest('[data-renamecancel]')){ editParty=null; renderPartyRows(); return; }
+    const ex=e.target.closest('[data-exportparty]');
+    if(ex){
+      const p=parties.find(x=>x.id===Number(ex.dataset.exportparty));
+      if(p) doExport([p],'ezd6-'+safeName(p.name)+'.json');
+      return;
+    }
     const open=e.target.closest('[data-open]');
     if(open){ pid=Number(open.dataset.open); saveParties(); showMain(); return; }
     const del=e.target.closest('[data-delparty]');
@@ -2085,6 +2206,36 @@ function wireParty(){
       if(pid===id) pid=null;
       saveParties(); renderPartyRows();
     }
+  });
+  $('#party-rows').addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return;
+    const i=e.target.closest('#rename-input'); if(!i) return;
+    e.preventDefault();
+    const b=$('[data-renamesave]'); if(b) b.click();
+  });
+  $('#btn-export-all').addEventListener('click',()=>{
+    if(!parties.length){ ioMsg('ยังไม่มีปาร์ตี้ให้ส่งออก',true); return; }
+    doExport(parties,'ezd6-all-parties.json');
+  });
+  $('#btn-pick-file').addEventListener('click',()=>$('#import-file').click());
+  $('#import-file').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>doImport(String(r.result||''));
+    r.onerror=()=>ioMsg('เปิดไฟล์ไม่สำเร็จ',true);
+    r.readAsText(f);
+    e.target.value='';
+  });
+  $('#btn-import-text').addEventListener('click',()=>{
+    const t=$('#io-text').value.trim();
+    if(!t){ ioMsg('ยังไม่ได้วางข้อความ',true); return; }
+    doImport(t);
+  });
+  $('#btn-copy-io').addEventListener('click',async()=>{
+    const t=$('#io-text').value;
+    if(!t){ ioMsg('ยังไม่มีข้อความให้คัดลอก — กดส่งออกก่อน',true); return; }
+    try{ await navigator.clipboard.writeText(t); ioMsg('คัดลอกแล้ว'); }
+    catch(e){ $('#io-text').select(); document.execCommand('copy'); ioMsg('คัดลอกแล้ว'); }
   });
   $('#btn-switch-party').addEventListener('click',()=>{ pid=null; saveParties(); showPartyScreen(); });
 }
