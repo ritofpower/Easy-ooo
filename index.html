@@ -276,6 +276,25 @@ details.foot .foot-body{padding:9px 11px;font-size:14px;line-height:1.6;white-sp
 
 /* ---------- การ์ดสนามรบ ---------- */
 .ecard{border:var(--line) solid var(--ink);background:var(--paper);margin-bottom:12px;padding:10px}
+/* สนามรบ: ศัตรูเรียงเป็นตาราง 2 ตัว/แถว · ตัวที่กางจะกินเต็มแถว */
+#enemy-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+#enemy-list>p.hint{grid-column:1/-1;margin:0}
+#enemy-list .ecard{margin-bottom:0}
+#enemy-list .ecard.open{grid-column:1/-1}
+.ecard.mini{position:relative;padding:9px 8px;display:flex;flex-direction:column;
+  justify-content:space-between;min-height:112px}
+.etoggle{background:none;border:0;padding:0;text-align:left;width:100%;
+  display:flex;flex-direction:column;gap:5px;align-items:flex-start;color:inherit}
+.etoggle.inline{width:auto;flex:1 1 auto;flex-direction:row;align-items:baseline}
+.etoggle .ename{font-family:'Mitr',sans-serif;font-weight:500;font-size:14px;line-height:1.25;
+  overflow-wrap:anywhere;padding-right:20px}
+.etoggle .ename::after{content:' ⌄';color:var(--soft);font-size:12px}
+.etoggle.inline b{font-family:'Mitr',sans-serif;font-weight:500;font-size:15px}
+.etoggle.inline b::after{content:' ⌃';color:var(--soft);font-size:12px}
+.mini-hp{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px}
+.hpnum.mini{min-width:44px;font-size:14px}
+.mini-del{position:absolute;top:6px;right:6px;width:22px;height:22px;font-size:13px;
+  border-width:2px;line-height:1;padding:0}
 .ecard.defeated{opacity:.5}
 .ecard.defeated .hpnum{text-decoration:line-through}
 .ecard-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px}
@@ -2467,19 +2486,38 @@ function partyCardHTML(c){
       <button class="btn xs" data-act="karma-1">−1</button><b class="knum">${c.karma}</b><button class="btn xs" data-act="karma+1">+1</button>
       <span class="fld-label" style="margin-left:6px">เต๋าฮีโร่</span>
       <button class="btn xs" data-act="hd-1">−1</button><b class="knum">${c.heroDie}</b><button class="btn xs" data-act="hd+1">+1</button></div>
-    ${(c.traits||[]).some(t=>t.t)?`<div class="trait-strip">${traitChipsHTML(c)}</div>`:''}
   </div>`;
 }
+const openEnemies=new Set();   // ศัตรูที่กางการ์ดเต็มอยู่
 function enemyCardHTML(en){
   const pct=en.max>0?Math.max(0,Math.min(100,Math.round(en.cur/en.max*100))):0;
   const dead=en.cur<=0;
-  return `<div class="ecard ${dead?'defeated':''}" data-kind="enemy" data-id="${en.id}">
-    <div class="ecard-head"><b>${esc(en.name)}</b><span class="tag pink">โดนที่ ${esc(en.tohit)}+</span>
+  const open=openEnemies.has(en.id);
+  if(!open){
+    /* ยุบ: ช่องสี่เหลี่ยม โชว์ชื่อ / โดนที่ / เลือดพร้อม +- */
+    return `<div class="ecard mini ${dead?'defeated':''}" data-kind="enemy" data-id="${en.id}">
+      <button class="etoggle" data-toggle-enemy="${en.id}" aria-expanded="false">
+        <span class="ename">${esc(en.name)}</span>
+        <span class="tag pink">โดนที่ ${esc(en.tohit)}+</span></button>
+      <div class="mini-hp">
+        <button class="btn xs" data-hp="-1">−</button>
+        <span class="hpnum mini">${en.cur}/${en.max}</span>
+        <button class="btn xs" data-hp="1">+</button></div>
+      <button class="del mini-del" data-act="del-enemy" aria-label="ลบศัตรู">×</button>
+      ${dead?'<p class="dead-tag">ปราบแล้ว</p>':''}</div>`;
+  }
+  /* กาง: เต็มความกว้าง โชว์หลอดเลือดและวิธีต่อสู้ทั้งหมด */
+  return `<div class="ecard open ${dead?'defeated':''}" data-kind="enemy" data-id="${en.id}">
+    <div class="ecard-head">
+      <button class="etoggle inline" data-toggle-enemy="${en.id}" aria-expanded="true">
+        <b>${esc(en.name)}</b></button>
+      <span class="tag pink">โดนที่ ${esc(en.tohit)}+</span>
+      <button class="btn xs" data-toggle-enemy="${en.id}">ยุบ</button>
       <button class="del" data-act="del-enemy" aria-label="ลบศัตรู">×</button></div>
     <div class="hpbar"><div class="hpbar-track"><div class="hpbar-fill pink" style="width:${pct}%"></div></div>
-      <div class="hpbar-row"><button class="btn xs" data-hp="-1">−1</button>
+      <div class="hpbar-row"><button class="btn xs" data-hp="-1">−</button>
         <span class="hpnum">${en.cur}/${en.max}</span>
-        <button class="btn xs" data-hp="1">+1</button></div></div>
+        <button class="btn xs" data-hp="1">+</button></div></div>
     ${en.note?`<p class="edesc">${esc(en.note)}</p>`:''}
     ${dead?'<p class="dead-tag">ปราบแล้ว</p>':''}</div>`;
 }
@@ -2509,6 +2547,12 @@ function wireCombat(){
     const id=Number(b.dataset.pid), enc=ENC(), at=enc.partyIds.indexOf(id);
     if(at>-1) enc.partyIds.splice(at,1); else enc.partyIds.push(id);
     saveParties(); renderCombat();
+  });
+  $('#enemy-list').addEventListener('click',e=>{
+    const t=e.target.closest('[data-toggle-enemy]'); if(!t) return;
+    const id=Number(t.dataset.toggleEnemy);
+    if(openEnemies.has(id)) openEnemies.delete(id); else openEnemies.add(id);
+    renderCombat();
   });
   $('#btn-toggle-picker').addEventListener('click',()=>{
     $('#mon-picker').classList.toggle('hide'); $('#add-enemy-form').classList.add('hide');
